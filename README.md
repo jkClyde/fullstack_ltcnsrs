@@ -11,7 +11,7 @@
   - Material-UI (MUI)
   
 - Backend:
-  - PHP
+  - Laravel (Php)
 
 ## <span style="color: #2ecc71;">Frontend</span>
 
