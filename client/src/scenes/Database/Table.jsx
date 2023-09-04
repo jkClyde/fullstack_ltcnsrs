@@ -38,6 +38,19 @@ const Table = () => {
       headerName: "Father",
       flex: 1,
       cellClassName: "name-column--cell",
+      renderCell: renderWrappedCell,
+    },
+    {
+      field: "fathersEthnicity",
+      headerName: "Father's Ethnicity",
+      flex: 1,
+      renderCell: renderWrappedCell,
+    },
+    {
+      field: "fathersOccupation",
+      headerName: "Father's Occupation",
+      flex: 1,
+      renderCell: renderWrappedCell,
     },
     {
       field: "mothersName",
