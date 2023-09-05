@@ -20,7 +20,16 @@ const StatBox = ({ title, subtitle, icon, progress, increase }) => {
           </Typography>
         </Box>
         <Box>
-          <ProgressCircle progress={progress} />
+          {/* <ProgressCircle progress={progress} /> */}
+          {/* Display the progress value directly */}
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            fontSize="27px"
+            sx={{ color: "white" }}
+          >
+            {progress}
+          </Typography>
         </Box>
       </Box>
       <Box display="flex" justifyContent="space-between" mt="2px">
