@@ -405,13 +405,13 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="number"
-                label="BMI"
+                label="MUAC"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                name="bmi"
-                value={values.bmi}
-                error={!!touched.bmi && !!errors.bmi}
-                helperText={touched.bmi && errors.bmi}
+                name="midUpperArmCircumference"
+                value={values.midUpperArmCircumference}
+                error={!!touched.midUpperArmCircumference && !!errors.midUpperArmCircumference}
+                helperText={touched.midUpperArmCircumference && errors.midUpperArmCircumference}
                 sx={{ gridColumn: "span 1" }}
               />
               
@@ -453,7 +453,7 @@ const phoneRegExp =
 
     weight: yup.string().required("required"),
     height: yup.string().required("required"),
-    bmi: yup.string().required("required"),
+    midUpperArmCircumference: yup.string().required("required"),
 
     birthdate: yup.string().required("required"),
     dow: yup.string().required("required"),
@@ -477,7 +477,7 @@ const phoneRegExp =
     dow: null,//Removed the initial value
     weight: 0,
     height: 0,
-    bmi: 0,
+    midUpperArmCircumference: 0,
 
   };
   

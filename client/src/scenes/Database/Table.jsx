@@ -16,6 +16,7 @@ const renderWrappedCell = (params) => (
   </Typography>
 );
 
+
 const Table = () => {
 
   
@@ -95,7 +96,7 @@ const Table = () => {
 
     {
       field: "parentsOccupation",
-      headerName: "P. Occupation",
+      headerName: "Occupation",
       flex: 3,
       renderCell: (params) => (
         <div>
@@ -108,7 +109,7 @@ const Table = () => {
     },
     {
       field: "parentsEthnicity",
-      headerName: "P. Ethnicity",
+      headerName: "Ethnicity",
       flex: 3,
       renderCell: (params) => (
         <div>
@@ -117,9 +118,23 @@ const Table = () => {
         </div>),
     },
     {
+      field: "midUpperArmCircumference",
+      headerName: "MUAC",
+      type: "number", 
+      flex: 1,
+      renderCell: renderWrappedCell,
+    },
+    {
+      field: "disability",
+      headerName: "Disability",
+      flex: 2,
+      renderCell: renderWrappedCell,
+    },
+    
+    {
       field: "givenVAC",
       headerName: "VAC",
-      type: "number", //need to identify if value is text/number
+      // type: "number", date datatype
       flex: 1,
       renderCell: renderWrappedCell,
     },
@@ -127,7 +142,7 @@ const Table = () => {
     {
       field: "givenPurga",
       headerName: "Purga",
-      type: number,//need to identify if value is text/number
+      // type: number, date datatype
       flex: 1,
       renderCell: renderWrappedCell,
     }
