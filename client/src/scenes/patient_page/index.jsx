@@ -31,6 +31,28 @@ const PatientPage = ({ patient }) => {
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
   };
+  const renderTextField = (label, name, value) => (
+    <Box mt="16px">
+      {isEditing ? (
+        <TextField
+          fullWidth
+          name={name}
+          label={label}
+          variant="outlined"
+          value={value}
+          onChange={handleInputChange}
+        />
+      ) : (
+        <>
+          <Typography variant="h4" style={{ fontWeight: "bold" }}>
+            {label}:
+          </Typography>
+          <Typography variant="body1">{value}</Typography>
+        </>
+      )}
+    </Box>
+  );
+
   return (
     <Box p="16px">
       <Box
@@ -75,196 +97,25 @@ const PatientPage = ({ patient }) => {
 
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="name"
-                label="Name"
-                variant="outlined"
-                value={editedPatient.name}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>Name:</Typography>
-                <Typography variant="body1">{editedPatient.name}</Typography>
-              </>
-            )}
-          </Box>
-
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="birthdate"
-                label="Date of Birth"
-                variant="outlined"
-                value={editedPatient.birthdate}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>Date of Birth:</Typography>
-                <Typography variant="body1">{editedPatient.birthdate}</Typography>
-              </>
-            )}
-          </Box>
-
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="dow"
-                label="DOW"
-                variant="outlined"
-                value={editedPatient.dateOfWeighing}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>DOW:</Typography>
-                <Typography variant="body1">{editedPatient.dateOfWeighing}</Typography>
-              </>
-            )}
-          </Box>
-
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="ageInMonths"
-                label="Age in Months"
-                variant="outlined"
-                value={editedPatient.ageInMonths}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>Age in Months:</Typography>
-                <Typography variant="body1">{editedPatient.ageInMonths}</Typography>
-              </>
-            )}
-          </Box>
+          {renderTextField("Name", "name", editedPatient.name)}
+          {renderTextField("Date of Birth", "birthdate", editedPatient.birthdate)}
+          {renderTextField("DOW", "dow", editedPatient.dateOfWeighing)}
+          {renderTextField("Age in Months", "ageInMonths", editedPatient.ageInMonths)}
+          {renderTextField("P/T", "permanentOrTransient", editedPatient.permanentOrTransient)}
         </Grid>
 
-        <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="permanentOrTransient"
-                label="P/T"
-                variant="outlined"
-                value={editedPatient.permanentOrTransient}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>P/T:</Typography>
-                <Typography variant="body1">{editedPatient.permanentOrTransient}</Typography>
-              </>
-            )}
-          </Box>
-
         <Grid item xs={6}>
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="weight"
-                label="Weight"
-                variant="outlined"
-                value={editedPatient.weight}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>Weight:</Typography>
-                <Typography variant="h4">{editedPatient.weight}</Typography>
-              </>
-            )}
-          </Box>
-
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="height"
-                label="Height"
-                variant="outlined"
-                value={editedPatient.height}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>Height:</Typography>
-                <Typography variant="body1">{editedPatient.height}</Typography>
-              </>
-            )}
-          </Box>
-
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="address"
-                label="Address"
-                variant="outlined"
-                value={editedPatient.address}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>Address:</Typography>
-                <Typography variant="body1">{editedPatient.address}</Typography>
-              </>
-            )}
-          </Box>
-
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="sex"
-                label="Gender"
-                variant="outlined"
-                value={editedPatient.sex}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>Gender:</Typography>
-                <Typography variant="body1">{editedPatient.sex}</Typography>
-              </>
-            )}
-          </Box>
-
-          <Box mt="16px">
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="sex"
-                label="Gender"
-                variant="outlined"
-                value={editedPatient.sex}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <>
-                <Typography variant="h4" style={{ fontWeight: "bold" }}>Gender:</Typography>
-                <Typography variant="body1">{editedPatient.sex}</Typography>
-              </>
-            )}
-          </Box>
-
-
-          
+          {renderTextField("Weight", "weight", editedPatient.weight)}
+          {renderTextField("Height", "height", editedPatient.height)}
+          {renderTextField("Address", "address", editedPatient.address)}
+          {renderTextField("Gender", "sex", editedPatient.sex)}
+         
         </Grid>
       </Grid>
 
       {isEditing ? (
         <Box mt="16px">
-          <Button variant="contained" color="primary" onClick={handleSaveClick} >
+          <Button variant="contained" color="primary" onClick={handleSaveClick}>
             Save
           </Button>
           <Button variant="outlined" color="secondary" onClick={handleCancelClick}>
