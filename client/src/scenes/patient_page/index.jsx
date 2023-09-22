@@ -96,7 +96,7 @@ const PatientPage = ({ patient }) => {
       <Divider />
 
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           {renderTextField("Name", "name", editedPatient.name)}
           {renderTextField("Date of Birth", "birthdate", editedPatient.birthdate)}
           {renderTextField("DOW", "dow", editedPatient.dateOfWeighing)}
@@ -104,13 +104,19 @@ const PatientPage = ({ patient }) => {
           {renderTextField("P/T", "permanentOrTransient", editedPatient.permanentOrTransient)}
         </Grid>
 
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           {renderTextField("Weight", "weight", editedPatient.weight)}
           {renderTextField("Height", "height", editedPatient.height)}
           {renderTextField("Address", "address", editedPatient.address)}
           {renderTextField("Gender", "sex", editedPatient.sex)}
-         
         </Grid>
+        
+        <Grid item xs={4}>
+        {renderTextField("Disability", "disabilty", editedPatient.disability)}
+          {renderTextField("Vaccination", "vacc", editedPatient.vac)}
+          {renderTextField("Purga", "purga", editedPatient.purga)}
+        </Grid>
+     
       </Grid>
 
       {isEditing ? (

@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
 
 import lt_logo from './../../assets/lt_logo.ico';
-import bg from './../../assets/charles.jpg';
+import bg from './../../assets/lt_bg.jpg';
 
 
 function Copyright(props) {
@@ -75,7 +75,7 @@ export default function SignInSide() {
             }}
             
           >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <Avatar sx={{ m: 1, bgcolor: 'secondary.main', width: '100px'  }}>
               <img src={lt_logo} alt="LT Logo" />
             </Avatar>
             <Typography component="h1" variant="h5">
@@ -107,14 +107,16 @@ export default function SignInSide() {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In
-              </Button>
+              <Link to="/" style={{ textDecoration: 'none' }}>
+               <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Sign In
+                </Button>
+              </Link>
               <Grid container>
                 <Grid item xs>
                   <Link href="#" variant="body2">

@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+
+import lt_logo from './../../assets/lt_logo.ico';
+
 import {Link as RouterLink} from 'react-router-dom';
 
 function Copyright(props) {
@@ -20,7 +23,7 @@ function Copyright(props) {
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+        CNSRS
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -55,7 +58,7 @@ export default function SignUp() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <img src={lt_logo} alt="LT Logo" />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
@@ -97,6 +100,16 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
+                  id="address"
+                  label="Address"
+                  name="address"
+                  autoComplete="address"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
                   name="password"
                   label="Password"
                   type="password"
@@ -104,12 +117,12 @@ export default function SignUp() {
                   autoComplete="new-password"
                 />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <FormControlLabel
                   control={<Checkbox value="allowExtraEmails" color="primary" />}
                   label="I want to receive inspiration, marketing promotions and updates via email."
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
             <Button
               type="submit"
@@ -121,7 +134,7 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-               <Link component={RouterLink} to="/" variant="body2">  
+               <Link component={RouterLink} to="/login" variant="body2">  
                   Already have an account? Sign in
                 </Link>
               </Grid>

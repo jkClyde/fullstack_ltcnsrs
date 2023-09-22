@@ -71,7 +71,7 @@ const Table = () => {
       renderCell: renderWrappedCell,
     },
     {
-      field: "ageInMonths",
+      field: "aim",
       headerName: "AIM",
       type: "number",
       flex: 1,
@@ -147,14 +147,14 @@ const Table = () => {
       ),
     },
     {
-      field: "givenVAC",
+      field: "vac",
       headerName: "VAC",
       type: "number", //need to identify if value is text/number
       flex: 1,
       renderCell: renderWrappedCell,
     },
     {
-      field: "givenPurga",
+      field: "purga",
       headerName: "Purga",
       type: "number", //need to identify if value is text/number
       flex: 1,
