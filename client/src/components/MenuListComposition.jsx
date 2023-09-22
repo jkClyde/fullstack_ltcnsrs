@@ -91,6 +91,9 @@ export  function AccountItem() {
                      <Link to="/profile">
                       <MenuItem onClick={handleClose}>Profile</MenuItem>
                     </Link>
+                    <Link to="/profile2">
+                      <MenuItem onClick={handleClose}>Patient Profile</MenuItem>
+                    </Link>
                     <MenuItem onClick={handleClose}>Logout</MenuItem>
                   </MenuList>
                 </ClickAwayListener>

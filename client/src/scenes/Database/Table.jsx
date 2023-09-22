@@ -1,6 +1,15 @@
-import { Box, Typography, useTheme, Button, TextField } from "@mui/material";
+import React, { useState } from "react";
+
+import {
+  Box,
+  Typography,
+  useTheme,
+  Button,
+  Dialog,
+  DialogContent,
+} from "@mui/material";
+
 import { DownloadOutlined as DownloadOutlinedIcon, Search, SearchOffOutlined } from "@mui/icons-material"; // Import DownloadOutlinedIcon from @mui/icons-material
-import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { mockDataTeam } from "../../data/mockData";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
@@ -8,19 +17,39 @@ import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
 import { number } from "yup";
+import {
+  DataGrid,
+  GridToolbarColumnsButton,
+  GridToolbarFilterButton,
+} from "@mui/x-data-grid";
+import PatientPage from "../patient_page";
 
-// This wraps the texts on each column
-const renderWrappedCell = (params) => (
-  <Typography variant="body2" sx={{ whiteSpace: "normal" }}>
-    {params.value}
-  </Typography>
-);
 
 const Table = () => {
-
-  
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // State for the dialog
+
+
+  const handleRowClick = (params) => {
+    // params.row contains the data of the clicked row
+    setSelectedPatient(params.row);
+    setIsProfileOpen(true); // Open the profile dialog
+
+  };
+
+  const handleCloseProfile = () => {
+    setIsProfileOpen(false); // Close the profile dialog
+  };
+
+  // This wraps the texts on each column
+  const renderWrappedCell = (params) => (
+    <Typography variant="body2" sx={{ whiteSpace: "normal" }}>
+      {params.value}
+    </Typography>
+  );
+
   const columns = [
     {
       field: "name",
@@ -92,7 +121,6 @@ const Table = () => {
       cellClassName: "name-column--cell",
       renderCell: renderWrappedCell,
     },
-
     {
       field: "parentsOccupation",
       headerName: "P. Occupation",
@@ -104,7 +132,8 @@ const Table = () => {
 
           {/* Father Occupation */}
           {renderWrappedCell({ value: `${params.row.fathersOccupation}` })}
-        </div>),
+        </div>
+      ),
     },
     {
       field: "parentsEthnicity",
@@ -114,7 +143,8 @@ const Table = () => {
         <div>
           {renderWrappedCell({ value: `${params.row.mothersEthnicity}` })}
           {renderWrappedCell({ value: `${params.row.fathersEthnicity}` })}
-        </div>),
+        </div>
+      ),
     },
     {
       field: "givenVAC",
@@ -123,26 +153,51 @@ const Table = () => {
       flex: 1,
       renderCell: renderWrappedCell,
     },
-
     {
       field: "givenPurga",
       headerName: "Purga",
-      type: number,//need to identify if value is text/number
+      type: "number", //need to identify if value is text/number
       flex: 1,
       renderCell: renderWrappedCell,
-    }
+    },
   ];
 
   return (
-    <Box m="0px 10px"  >
-
+    <Box m="0px 10px" sx={{
+      "& .MuiDataGrid-root": {
+        border: "none",
+      },
+      "& .MuiDataGrid-cell": {
+        borderBottom: "none",
+      },
+      "& .name-column--cell": {
+        color: colors.greenAccent[300],
+      },
+      "& .MuiDataGrid-columnHeaders": {
+        backgroundColor: colors.blueAccent[700],
+        borderBottom: "none",
+      },
+      "& .MuiDataGrid-virtualScroller": {
+        backgroundColor: colors.primary[400],
+      },
+      "& .MuiDataGrid-footerContainer": {
+        borderTop: "none",
+        backgroundColor: colors.blueAccent[700],
+      },
+      "& .MuiCheckbox-root": {
+        color: `${colors.greenAccent[200]} !important`,
+      },
+    }}>
       {/* Button Export Data */}
-      <Box display="flex" justifyContent="flex-end" alignItems="center" p="10px">
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        p="10px"
 
-        {/* <Header title="Masterlist"/> */}
-
-      <Box>
-        <Button
+        
+      >
+          <Button
           sx={{
             backgroundColor: colors.blueAccent[700],
             color: colors.grey[100],
@@ -150,12 +205,10 @@ const Table = () => {
             fontWeight: "bold",
             padding: "10px 20px",
             marginRight: "10px", // Add margin to create space
-          }}
-        >
+          }}>
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Import Data
         </Button>
-        
 
         <Button
           sx={{
@@ -170,44 +223,48 @@ const Table = () => {
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Export Data
         </Button>
-      </Box>
+          
       </Box>
 
       {/* Data Grid */}
       <Box
         m="10px 0 0 0"
-        height="75vh" // Change height to "auto" to make it flexible
-        minHeight="50vh" // Optionally set a minimum height
+        height="75vh"
+        minHeight="50vh"
         sx={{
-          "& .MuiDataGrid-root": {
-            border: "none",
-          },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.greenAccent[300],
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.blueAccent[700],
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary[400],
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.blueAccent[700],
-          },
-          "& .MuiCheckbox-root": {
-            color: `${colors.greenAccent[200]} !important`,
-          },
+          // Styles for the data grid
         }}
       >
-         <Box height= "100%"  overflow= "auto" >
-          <DataGrid rows={mockDataTeam} columns={columns}/>
+        <Box height="100%" overflow="auto">
+          <DataGrid
+            rows={mockDataTeam}
+            columns={columns}
+            onRowClick={handleRowClick}
+            components={{
+              Toolbar: () => (
+                <div>
+                  <GridToolbarColumnsButton />
+                  <GridToolbarFilterButton />
+                </div>
+              ),
+            }}
+          />
         </Box>
       </Box>
+
+      {/* Profile Dialog */}
+    <Dialog
+      open={isProfileOpen}
+      onClose={handleCloseProfile}
+      maxWidth="md" // Adjust the size as needed
+      fullWidth
+    >
+      <DialogContent>
+        {/* Display the patient profile */}
+        {selectedPatient && <PatientPage patient={selectedPatient} />}
+      </DialogContent>
+    </Dialog>
+
     </Box>
   );
 };

@@ -15,6 +15,7 @@ import Pie from "./scenes/Charts/PieChart";
 import Line from "./scenes/charts/Line/index";
 import UserProfile from "./scenes/profile";
 import Users from "./scenes/users";
+import PatientProfile from './scenes/patient_profile/index'
 
 const Routes = createBrowserRouter([
  
@@ -65,6 +66,10 @@ const Routes = createBrowserRouter([
       {
         path: '/users',
         element: <Users/>
+      },
+      {
+        path: '/profile2',
+        element: <PatientProfile/>
       },
     ]
   },

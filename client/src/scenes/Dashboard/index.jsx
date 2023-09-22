@@ -14,6 +14,8 @@ import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
 
+import EventsList from './../../components/Upcoming Events';
+
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -63,16 +65,18 @@ const Dashboard = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Children Nutrional Status Reporting System" subtitle="Welcome to your dashboard" />
 
-        <Box>
+
+      {/* DropDown */}
+      <Box>
         <Select
         value={selectedCategory}
         onChange={handleCategoryChange}
         sx={{
-          backgroundColor: colors.blueAccent[700],
+          backgroundColor: colors.blueAccent[800],
           color: colors.grey[100],
           fontSize: "17px",
           fontWeight: "bold",
-          padding: "0px 20px",
+          padding: "0px 10px",
           }}
         >
         {Object.keys(data).map(category => (
@@ -143,48 +147,36 @@ const Dashboard = () => {
             <LineChart isDashboard={true} />
           </Box>
         </Box>
+
+           {/* EVENTS */}
         <Box
           gridColumn="span 4"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
-          overflow="auto"
+          overflow="hidden" /* Hide the scrollbar for the container */
         >
           <Box
             display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            borderBottom={`4px solid ${colors.primary[500]}`}
+            flexDirection="column" /* Ensure the children stack vertically */
             colors={colors.grey[100]}
             p="15px"
+            height="100%" /* Make sure the container takes up the full height */
           >
-            <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              Logs
-            </Typography>
-          </Box>
-          {mockTransactions.map((transaction, i) => (
             <Box
-              key={`${transaction.txId}-${i}`}
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
               borderBottom={`4px solid ${colors.primary[500]}`}
-              p="15px"
+              paddingBottom="15px"
             >
-              <Box>
-                <Typography
-                  color={colors.greenAccent[500]}
-                  variant="h5"
-                  fontWeight="600"
-                >
-                  Brgy. Alapng
-                </Typography>
-                <Typography color={colors.grey[100]}>
-                  Sent a Document
-                </Typography>
-              </Box>
-              <Box color={colors.grey[100]}>{transaction.date}</Box>
+              <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
+                Upcoming Events
+              </Typography>
             </Box>
-          ))}
+            <Box
+              overflow="auto" /* Allow only the EventsList component to scroll */
+              flex="1" /* Make the EventsList take up remaining vertical space */
+            >
+              <EventsList />
+            </Box>
+          </Box>
         </Box>
 
         {/* ROW 3 */}
