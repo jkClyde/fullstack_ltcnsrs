@@ -100,10 +100,10 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="address"
-                  label="Address"
-                  name="address"
-                  autoComplete="address"
+                  id="barangay"
+                  label="Barangay"
+                  name="barangay"
+                  autoComplete="barangay"
                 />
               </Grid>
               <Grid item xs={12}>

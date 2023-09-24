@@ -52,10 +52,24 @@ const Table = () => {
 
   const columns = [
     {
-      field: "name",
-      headerName: "Name",
+      field: "fname",
+      headerName: "First Name",
       flex: 3,
-      cellClassName: "name-column--cell",
+      cellClassName: "fname-column--cell",
+      renderCell: renderWrappedCell,
+    },
+    {
+      field: "mname",
+      headerName: "Middle Name",
+      flex: 1,
+      cellClassName: "mname-column--cell",
+      renderCell: renderWrappedCell,
+    },
+    {
+      field: "lname",
+      headerName: "Last Name",
+      flex: 3,
+      cellClassName: "lname-column--cell",
       renderCell: renderWrappedCell,
     },
     {
@@ -81,18 +95,20 @@ const Table = () => {
       field: "weight",
       headerName: "Weight",
       type: "number",
+      flex: 1.5,
       renderCell: renderWrappedCell,
     },
     {
       field: "height",
       headerName: "Height",
       type: "number",
+      flex: 1.5,
       renderCell: renderWrappedCell,
     },
     {
-      field: "address",
+      field: "barangay",
       flex: 2,
-      headerName: "Address",
+      headerName: "Barangay",
       renderCell: renderWrappedCell,
     },
     {
@@ -157,6 +173,18 @@ const Table = () => {
       field: "purga",
       headerName: "Purga",
       type: "number", //need to identify if value is text/number
+      flex: 1,
+      renderCell: renderWrappedCell,
+    },
+    {
+      field: "sWeight",
+      headerName: "Status (Weight)",
+      flex: 1,
+      renderCell: renderWrappedCell,
+    },
+    {
+      field: "sHeight",
+      headerName: "Status (Height)",
       flex: 1,
       renderCell: renderWrappedCell,
     },

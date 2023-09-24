@@ -116,14 +116,42 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Full Name"
+                label="First Name"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.fullname}
-                name="fullname"
-                error={!!touched.fullname && !!errors.fullname}
-                helperText={touched.fullname && errors.fullname}
-                sx={{ gridColumn: "span 2" }}
+                value={values.firstName}
+                name="firstName"
+                error={!!touched.firstName && !!errors.firstName}
+                helperText={touched.firstName && errors.firstName}
+                sx={{ gridColumn: "span 1" }}
+              />
+
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Middle Initial"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.middleName}
+                name="middleName"
+                error={!!touched.middleName && !!errors.middleName}
+                helperText={touched.middleName && errors.middleName}
+                sx={{ gridColumn: "span 1" }}
+              />
+
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Last Name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.lastName}
+                name="lastName"
+                error={!!touched.lastName && !!errors.lastName}
+                helperText={touched.lastName && errors.lastName}
+                sx={{ gridColumn: "span 1" }}
               />
               {/*Address*/}
               
@@ -375,7 +403,7 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="number"
-                label="Weight"
+                label="Weight(kg)"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.weight}
@@ -390,7 +418,7 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="number"
-                label="Height"
+                label="Height(cm)"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.height}
