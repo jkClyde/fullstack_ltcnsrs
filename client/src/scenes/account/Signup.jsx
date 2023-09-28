@@ -13,10 +13,14 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-
 import lt_logo from './../../assets/lt_logo.ico';
 
-import {Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+
+// Import InputLabel, Select, and MenuItem
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 function Copyright(props) {
   return (
@@ -45,6 +49,25 @@ export default function SignUp() {
     });
   };
 
+  const barangays = [
+    "Alapang",
+    "Alno",
+    "Ambiong",
+    "Balili",
+    "Bahong",
+    "Beckel",
+    "Betag",
+    "Bineng",
+    "Cruz",
+    "Lubas",
+    "Pico",
+    "Poblacion",
+    "Puguis",
+    "Shilan",
+    "Tawang",
+    "Wangal",
+  ];
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -58,7 +81,7 @@ export default function SignUp() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <img src={lt_logo} alt="LT Logo" />
+            <img src={lt_logo} alt="LT Logo" />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
@@ -97,14 +120,21 @@ export default function SignUp() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+                <InputLabel id="barangay-label">Barangay</InputLabel>
+                <Select
+                  labelId="barangay-label"
+                  id="barangay"
+                  name="barangay"
                   required
                   fullWidth
-                  id="barangay"
                   label="Barangay"
-                  name="barangay"
-                  autoComplete="barangay"
-                />
+                >
+                  {barangays.map((barangay, index) => (
+                    <MenuItem key={index} value={barangay}>
+                      {barangay}
+                    </MenuItem>
+                  ))}
+                </Select>
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -134,7 +164,7 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-               <Link component={RouterLink} to="/login" variant="body2">  
+                <Link component={RouterLink} to="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
