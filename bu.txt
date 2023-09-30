@@ -1,0 +1,156 @@
+import { useState, useEffect } from "react";
+import { formatDate } from '@fullcalendar/core'
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import Header from "../../components/Header";
+import { tokens } from "../../theme";
+import axios from "axios"; // Import Axios
+
+
+const Calendar = () => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const [currentEvents, setCurrentEvents] = useState([]);
+
+
+  const handleDateClick = (selected) => {
+    const title = prompt("Please enter a new title for your event");
+    const calendarApi = selected.view.calendar;
+    calendarApi.unselect();
+  
+    if (title) {
+      const newEvent = {
+        title,
+        date: selected.startStr, // Corrected the "start" field to "date" to match your Django model
+      };
+  
+      calendarApi.addEvent(newEvent);
+  
+      // Send a POST request to your Django backend to save the event
+      axios
+        .post("http://127.0.0.1:8000/", newEvent) // Use the correct backend API endpoint
+        .then((response) => {
+          console.log("Event saved to the database:", response.data);
+          // Optionally, you can update your currentEvents state with the newly saved event.
+          setCurrentEvents([...currentEvents, response.data]);
+        })
+        .catch((error) => {
+          console.error("Error saving event to the database:", error);
+        });
+    }
+  };
+
+  
+  const handleEventClick = (selected) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the event '${selected.event.title}'`
+      )
+    ) {
+      selected.event.remove();
+    }
+  };
+
+  useEffect(() => {
+    axios.get("http://127.0.0.1:8000/")
+      .then((response) => {
+        console.log("Response data:", response.data); // Log the response data
+        setCurrentEvents(response.data); // Set currentEvents state with the array of events
+      })
+      .catch((error) => {
+        console.error("Error fetching events data:", error);
+      });
+  }, []);
+  
+  // Log date values before formatting
+  console.log("Current Events:", currentEvents);
+  
+  // Inside the map function
+  currentEvents.map((event) => {
+    console.log("Event Date:", event.date);
+  });
+
+
+  return (
+    <Box m="20px">
+      <Header subtitle="Events Calendar"  />
+
+      <Box display="flex" justifyContent="space-between">
+        {/* CALENDAR SIDEBAR */}
+        <Box
+          flex="1 1 20%"
+          backgroundColor={colors.primary[400]}
+          p="15px"
+          borderRadius="4px"
+        >
+          <Typography variant="h5">Events</Typography>
+          <List>
+            {currentEvents.map((event) => (
+              <ListItem
+                key={event.id}
+                sx={{
+                  backgroundColor: colors.greenAccent[500],
+                  margin: "10px 0",
+                  borderRadius: "2px",
+                }}
+              >
+                <ListItemText
+                  primary={event.title}
+                  secondary={
+                    <Typography>
+                      {formatDate(event.start, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        {/* CALENDAR */}
+        <Box flex="1 1 100%" ml="15px">
+          <FullCalendar
+            height="75vh"
+            plugins={[
+              dayGridPlugin,
+              timeGridPlugin,
+              interactionPlugin,
+              listPlugin,
+            ]}
+            headerToolbar={{
+              left: "prev,next today",
+              center: "title",
+              right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+            }}
+            initialView="dayGridMonth"
+            editable={true}
+            selectable={true}
+            selectMirror={true}
+            dayMaxEvents={true}
+            select={handleDateClick}
+            eventClick={handleEventClick}
+            events={currentEvents} // Use events prop instead of initialEvents
+
+          />
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default Calendar;
