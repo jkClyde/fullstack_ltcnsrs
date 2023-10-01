@@ -1,22 +1,20 @@
-# fullstack_ltcnsrs
+# React-Django Setup & Integration
 
-## <span style="color: #e74c3c;">Anong Bago????</span>
-- Implemented working environment for backend (Php)
+## Running the server
+- npm run dev (react/frontend)
+- python manage.py runserver (django/backend) Follow steps below
+* Need naka open yung dalawang server para gumana
 
-## <span style="color: #e74c3c;">Technologies Used</span>
 
-- Frontend:
-  - React
-  - Tailwind CSS
-  - Material-UI (MUI)
-  
-- Backend:
-  - Laravel (Php)
+### Activate muna environment ng backend
+- cd server
+- venv/Scripts/Activate
 
-## <span style="color: #2ecc71;">Frontend</span>
+### Running Django Server
+- cd server
+- cd LTCNSRS
+- python manage.py runserver
 
-The frontend part of the project is located in the `client` folder.
 
-## <span style="color: #9b59b6;">Backend</span>
 
-The backend part of the project is located in the `server` folder.
+ 
