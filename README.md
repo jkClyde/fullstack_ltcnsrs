@@ -15,6 +15,10 @@
 - cd LTCNSRS
 - python manage.py runserver
 
+# Progress so far
+- Yung calendar feature lang muna nalagyan ng backend, isu nag praktis ak
+
+
 
 
  
