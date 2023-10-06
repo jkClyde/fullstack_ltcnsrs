@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 # Create a router for the CalendarEventViewSet
 
 urlpatterns = [
-    path('', CalendarView.as_view(),  name='event-list'), 
+    path('calendar/', CalendarView.as_view(),  name='event-list'), 
     path('events/<int:pk>/', EventDeleteView.as_view(), name='event-delete'),
 
 ]

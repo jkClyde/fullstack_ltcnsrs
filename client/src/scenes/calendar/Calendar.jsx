@@ -24,7 +24,7 @@ const Calendar = () => {
 
   const fetchEvents = () => {
     axios
-      .get("http://127.0.0.1:8000/")
+      .get("http://127.0.0.1:8000/calendar/calendar")
       .then((response) => {
         console.log("Response data:", response.data);
         setCurrentEvents(response.data);
@@ -52,7 +52,7 @@ const Calendar = () => {
       calendarApi.addEvent(newEvent);
 
       axios
-        .post("http://127.0.0.1:8000/", newEvent)
+        .post("http://127.0.0.1:8000/calendar/calendar", newEvent)
         .then((response) => {
           console.log("Event saved to the database:", response.data);
           setCurrentEvents([...currentEvents, response.data]);

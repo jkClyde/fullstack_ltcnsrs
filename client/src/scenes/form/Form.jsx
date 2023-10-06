@@ -10,27 +10,101 @@ import { Formik  } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
+import axios from "axios"; // Import Axios
+import React, { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
 
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   
+  const [names, setNames] = useState([]);
+
+  const fetchNames = () => {
+    axios
+      .get("http://127.0.0.1:8000/forms/")  // Replace with your API endpoint
+      .then((response) => {
+        // Assuming the API response is an array of objects with 'first_name', 'middle_name', and 'last_name' fields
+        const retrievedNames = response.data.map((item) => {
+          return {
+            firstName: item.firstName,
+            middleName: item.middleName,
+            lastName: item.lastName,
+            address: item.address,
+            temporary: item.temporary,
+            gender: item.gender,
+            birthdate: item.birthdate,
+            bpe: item.bpe,
+            disability: item.disability,
+            father_name: item.father_name,
+            father_occupation: item.father_occupation,
+            father_ethnicity: item.father_ethnicity,
+            mother_name: item.mother_name,
+            mother_occupation: item.mother_occupation,
+            mother_ethnicity: item.mother_ethnicity,
+            dow: item.dow,
+            weight: item.weight,
+            height: item.height,
+            midUpperArmCircumference: item.midUpperArmCircumference,
+            purga: item.purga,
+            vac: item.vac
+
+          };
+        });
+        setNames(retrievedNames);
+      })
+      .catch((error) => {
+        console.error("Error fetching names data:", error);
+      });
+  };
+
+  useEffect(() => {
+    fetchNames();
+  }, []);
 
   const handleChange = (field, value) => {
     // Handle date fields separately
     if (field === "birthdate") {
-      setValues({ ...values, birthdate: value });
+      handleChange("birthdate")(value);
     } else if (field === "dow") {
-      setValues({ ...values, dow: value });
-    } 
-    // else {
-    //   setValues({ ...values, [field]: value });// This line handles other fields if you want to add another
-    // }
+      handleChange("dow")(value);
+    }else if (field === "purga") {
+      handleChange("purga")(value); 
+    }else if (field === "vac") {
+      handleChange("vac")(value); 
+    }
+    else {
+      // For other fields, use the Formik handleChange normally
+      handleChange(field)(value);
+    }
   };
-
-  const handleFormSubmit = (values) => {
-    console.log(values);
+  const handleFormSubmit = (values, { resetForm }) => {
+    // Format the birthdate using dayjs
+    const formattedBirthdate = dayjs(values.birthdate).format('YYYY-MM-DD');
+    const formattedDow = dayjs(values.dow).format('YYYY-MM-DD');
+    const formattedPurga = dayjs(values.purga).format('YYYY-MM-DD');
+    const formattedVac = dayjs(values.vac).format('YYYY-MM-DD');
+    const confirmed = window.confirm("Are you sure you want to submit?");
+    if (confirmed) {
+      axios
+        .post("http://127.0.0.1:8000/forms/", {
+          ...values,
+          birthdate: formattedBirthdate, // Replace the original birthdate with the formatted one
+          dow: formattedDow,
+          purga: formattedPurga,
+          vac: formattedVac,
+        })
+        .then((response) => {
+          console.log("Data successfully added to the database:", response.data);
+          // Optionally, you can reset the form after successful submission
+          resetForm();
+        })
+        .catch((error) => {
+          console.error("Error adding data to the database:", error);
+          console.log("Full error response:", error.response);
+        });
+    }
   };
-
+  
   
   
   const handleClearForm = (resetForm) => {
@@ -153,9 +227,9 @@ const Form = () => {
                 helperText={touched.lastName && errors.lastName}
                 sx={{ gridColumn: "span 1" }}
               />
-              {/*Address*/}
+                {/*Address*/}
               
-              <TextField
+                <TextField
                 fullWidth
                 variant="filled"
                 type="text"
@@ -200,7 +274,7 @@ const Form = () => {
                 <MenuItem value="temporary">Temporary</MenuItem>
               </TextField>
 
-              {/*Gender*/}
+               {/*Gender*/}
               <TextField
                 select
                 fullWidth
@@ -217,25 +291,34 @@ const Form = () => {
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
               </TextField>
-              
+
               {/*Birthdate*/}
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 fullWidth
                 variant="filled"
-                type="text"
                 label="Birth Date"
                 onBlur={handleBlur}
-                onChange={(date) => handleChange("birthdate", date)}
+                onChange={(date) => {
+                  // Use Formik's handleChange to update the "birthdate" value
+                  handleChange({
+                    target: {
+                      name: "birthdate",
+                      value: date,
+                    },
+                  });
+                  console.log("Birthdate changed:", date);
+                }}
                 name="birthdate"
                 value={values.birthdate}
                 error={!!touched.birthdate && !!errors.birthdate}
                 helperText={touched.birthdate && errors.birthdate}
                 sx={{ gridColumn: "span 1" }}
               />
-              </LocalizationProvider>
+            </LocalizationProvider>
 
-              {/* Bilateral Pitting Edema */}
+            {/* Bilateral Pitting Edema */}
               <TextField
                 select
                 fullWidth
@@ -267,7 +350,7 @@ const Form = () => {
                 helperText={touched.disability && errors.disability}
                 sx={{ gridColumn: "span 1" }}
               />
-            {/* Parent/Guradian Information */}
+               {/* Parent/Guradian Information */}
             <Box    sx={{ gridColumn: "span 4" }}>
               <Header subtitle="Parent/Guradian Information" />    
             </Box>
@@ -377,7 +460,7 @@ const Form = () => {
               </TextField>
             
              {/* Child Nutrional Information */}
-             <Box    sx={{ gridColumn: "span 4" }}>
+            <Box    sx={{ gridColumn: "span 4" }}>
               <Header subtitle="Child Nutrional Information" />    
             </Box>
 
@@ -389,7 +472,16 @@ const Form = () => {
                 type="text"
                 label="Date of Weighing"
                 onBlur={handleBlur}
-                onChange={(date) => handleChange("dow", date)}
+                onChange={(date) => {
+                  // Use Formik's handleChange to update the "birthdate" value
+                  handleChange({
+                    target: {
+                      name: "dow",
+                      value: date,
+                    },
+                  });
+                  console.log("Dow changed:", date);
+                }}
                 name="dow"
                 value={values.dow}
                 error={!!touched.dow && !!errors.dow}
@@ -397,8 +489,7 @@ const Form = () => {
                 sx={{ gridColumn: "span 1" }}
               />
             </LocalizationProvider>
-            
-            {/* Weight */}
+             {/* Weight */}
             <TextField
                 fullWidth
                 variant="filled"
@@ -414,7 +505,7 @@ const Form = () => {
               />
 
             {/* Heigth */}
-              <TextField
+            <TextField
                 fullWidth
                 variant="filled"
                 type="number"
@@ -442,7 +533,56 @@ const Form = () => {
                 helperText={touched.midUpperArmCircumference && errors.midUpperArmCircumference}
                 sx={{ gridColumn: "span 1" }}
               />
-              
+                {/* Date of Vaccination */}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Date of Vaccination"
+                onBlur={handleBlur}
+                onChange={(date) => {
+                  
+                  handleChange({
+                    target: {
+                      name: "vac",
+                      value: date,
+                    },
+                  });
+                  console.log("Vaccination changed:", date);
+                }}
+                name="vac"
+                value={values.vac}
+                error={!!touched.dow && !!errors.vac}
+                helperText={touched.dow && errors.vac}
+                sx={{ gridColumn: "span 1" }}
+              />
+            </LocalizationProvider>
+               {/* Date of Purga */}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Date of Purga"
+                onBlur={handleBlur}
+                onChange={(date) => {
+                  
+                  handleChange({
+                    target: {
+                      name: "purga",
+                      value: date,
+                    },
+                  });
+                  console.log("Purga changed:", date);
+                }}
+                name="purga"
+                value={values.purga}
+                error={!!touched.purga && !!errors.purga}
+                helperText={touched.purga && errors.purga}
+                sx={{ gridColumn: "span 1" }}
+              />
+            </LocalizationProvider>
             </Box>
               {/* Buttons  */}
             <Box display="flex" justifyContent="center" mt="20px" mb="200px">
@@ -466,9 +606,11 @@ const phoneRegExp =
   /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
   const checkoutSchema = yup.object().shape({
-    fullname: yup.string().required("required"),
+    firstName: yup.string().required("required"),
+    middleName: yup.string().required("required"),
+    lastName: yup.string().required("required"),
+    address: yup.string().required("required"), 
     gender: yup.string().required("required"),
-    address: yup.string().required("required"),
     bpe: yup.string().required("required"),
     temporary: yup.string().required('Please select an option'),
     disability: yup.string().required("required"),
@@ -479,19 +621,23 @@ const phoneRegExp =
     mother_occupation: yup.string().required("required"),
     mother_ethnicity: yup.string().required("required"),
 
-    weight: yup.string().required("required"),
-    height: yup.string().required("required"),
-    midUpperArmCircumference: yup.string().required("required"),
+    weight: yup.number().required("Weight is required"),
+    height: yup.number().required("Height is required"),
+    midUpperArmCircumference: yup.number().required("MUAC is required"),
 
-    birthdate: yup.string().required("required"),
-    dow: yup.string().required("required"),
-  });
+    birthdate: yup.date().nullable().required("Birthdate is required"),
+    dow: yup.date().nullable().required("Date of Weighing is required"),
+    purga: yup.date().nullable().required("Date of Purga is required"),
+    vac: yup.date().nullable().required("Date of Vaccination is required"),
+});
   
 
   const initialValues = {
-    fullname: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
     gender: "", // Add the "gender" field with an initial empty value
-    birthdate: null, //Removed the initial value
+    birthdate: '', //Removed the initial value
     address: "",
     temporary: '',
     bpe: "",
@@ -502,10 +648,12 @@ const phoneRegExp =
     mother_name: "",
     mother_occupation: "",
     mother_ethnicity: "",
-    dow: null,//Removed the initial value
-    weight: 0,
-    height: 0,
-    midUpperArmCircumference: 0,
+    dow: '',//Removed the initial value
+    weight: '',
+    height: '',
+    midUpperArmCircumference: '',
+    vac: '',
+    purga: '',
 
   };
   

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'app_calendar.apps.AppCalendarConfig',
     'rest_framework',
      'corsheaders',
+     'app_form'
 ]
 
 MIDDLEWARE = [
