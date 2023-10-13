@@ -11,7 +11,7 @@ function EventsList() {
   
   const fetchEvents = () => {
     axios
-      .get("http://127.0.0.1:8000/")
+      .get("http://127.0.0.1:8000/calendar")
       .then((response) => {
         console.log("Response data:", response.data);
         // Assuming the response data is an array, you can sort it by date

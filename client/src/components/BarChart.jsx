@@ -1,15 +1,29 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
-import { mockBarangayData as data } from "../data/mockData";
 
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [chartData, setChartData] = useState([]);
 
+  useEffect(() => {
+    // Fetch data from your API endpoint
+    axios
+      .get("http://127.0.0.1:8000/forms/")  // Replace with your actual API endpoint
+      .then((response) => {
+        // Assuming your API response has a structure similar to mockBarangayData
+        setChartData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
   return (
     <ResponsiveBar
-      data={data}
+      data={chartData}
       theme={{
         // added
         axis: {

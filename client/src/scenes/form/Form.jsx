@@ -3,92 +3,95 @@ import DateInput from "./formComponents/DateInput";
 import MenuSelect from "./formComponents/MenuSelect";
 import MenuInput from "./formComponents/MenuInput";
 
-import { Box, Button} from "@mui/material";
-import { Formik  } from "formik";
+import { Box, Button } from "@mui/material";
+import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 import axios from "axios"; // Import Axios
-import React, { useState, useEffect,useCallback,useMemo } from 'react';
-import dayjs from 'dayjs';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import dayjs from "dayjs";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-
-import ethnicityOptions from './ethnicityOptions'; // Adjust the path as needed
-
+import ethnicityOptions from "./ethnicityOptions"; // Adjust the path as needed
+import barangayOptions from "./barangayOptions";
 
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedBirthdate, setSelectedBirthdate] = useState(null);
   const [selectedVaccinationDate, setSelectedVaccinationDate] = useState(null);
+  const [selectedCurrentDate, setSelectedCurrentDate] = useState(null);
   const [selectedDOW, setSelectedDOW] = useState(null);
   const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
-  const [selectedGender, setSelectedGender] = useState(null);
+  const notify = () => toast.success("Data added successfully!");
 
-
-  const handleDateChange = (name, date,dateType) => {
-    
-    const formattedDate = date ? dayjs(date).format('MM/DD/YYYY') : null;
-    if (dateType === 'birthdate') {
+  const handleDateChange = (name, date, dateType) => {
+    const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
+    if (dateType === "birthdate") {
       setSelectedBirthdate(formattedDate);
-    } else if (dateType === 'vaccination') {
+    } else if (dateType === "vaccination") {
       setSelectedVaccinationDate(formattedDate);
-    } else if (dateType === 'dow') {
+    } else if (dateType === "dow") {
       setSelectedDOW(formattedDate);
-    } else if (dateType === 'purga') {
+    } else if (dateType === "purga") {
       setSelectedPurgaDate(formattedDate);
+    } else if (dateType === "current_date") {
+      setSelectedCurrentDate(formattedDate);
     }
-      setSelectedDate(formattedDate);
-    };
-    const [names, setNames] = useState([]);
-    const fetchNames = () => {
-      axios
-        .get("http://127.0.0.1:8000/forms/")  // Replace with your API endpoint
-        .then((response) => {
-          // Assuming the API response is an array of objects with 'first_name', 'middle_name', and 'last_name' fields
-          const retrievedNames = response.data.map((item) => {
-            return {
-              firstName: item.firstName,
-              middleName: item.middleName,
-              lastName: item.lastName,
-              address: item.address,
-              pt: item.pt,
-              gender: item.gender,
-              birthdate: item.birthdate,
-              bpe: item.bpe,
-              disability: item.disability,
-              parent_name: item.parentName,
-              relationship: item.relationship,
-              parent_occupation: item.occupation,
-              parent_ethnicity: item.ethnicity,
-              dow: item.dow,
-              weight: item.weight,
-              height: item.height,
-              muac: item.muac,
-              purga: item.purga,
-              vac: item.vac
-  
-            };
-          });
-          setNames(retrievedNames);
-        })
-        .catch((error) => {
-          console.error("Error fetching names data:", error);
+    setSelectedDate(formattedDate);
+  };
+  const [names, setNames] = useState([]);
+  const fetchNames = () => {
+    axios
+      .get("http://127.0.0.1:8000/forms/") // Replace with your API endpoint
+      .then((response) => {
+        // Assuming the API response is an array of objects with 'first_name', 'middle_name', and 'last_name' fields
+        const retrievedNames = response.data.map((item) => {
+          return {
+            firstName: item.firstName,
+            middleName: item.middleName,
+            lastName: item.lastName,
+            address: item.address,
+            pt: item.pt,
+            gender: item.gender,
+            birthdate: item.birthdate,
+            bpe: item.bpe,
+            disability: item.disability,
+            parentName: item.parentName,
+            relationship: item.relationship,
+            occupation: item.occupation,
+            ethnicity: item.ethnicity,
+            dow: item.dow,
+            weight: item.weight,
+            height: item.height,
+            muac: item.muac,
+            purga: item.purga,
+            vac: item.vac,
+            current_date: item.current_date,
+            barangay: item.barangay,
+          };
         });
-    };
-  
-    useEffect(() => {
-      fetchNames();
-    }, []);
-    const handleChange = (field, value) => {
-      // For other fields, use setFieldValue normally
-        setFieldValue(field, value);
-      // }
-    };
-    const handleFormSubmit = (values, { resetForm }, required) => {
-      // Format the birthdate using dayjs
-       // Check if the date field is empty
-        // Check if the birthdate field is empty (required)
+        setNames(retrievedNames);
+      })
+      .catch((error) => {
+        console.error("Error fetching names data:", error);
+      });
+  };
+
+  useEffect(() => {
+    fetchNames();
+  }, []);
+  const handleChange = (field, value) => {
+    // For other fields, use setFieldValue normally
+    setFieldValue(field, value);
+    // }
+  };
+  const handleFormSubmit = (values, { resetForm }, required) => {
+    // Format the birthdate using dayjs
+    // Check if the date field is empty
+    // Check if the birthdate field is empty (required)
     if (!selectedBirthdate && required) {
       alert("Birthdate is required");
       return;
@@ -97,82 +100,90 @@ const Form = () => {
       alert("Date of Weighing is required");
       return;
     }
-  
-        // Set the vaccination field to null if selectedVaccinationDate is null, let the database accept null value since its optional
-        const vaccinationDate = selectedVaccinationDate ? dayjs(selectedVaccinationDate).format('YYYY-MM-DD') : null;
-        const purgaDate = selectedPurgaDate ? dayjs(selectedPurgaDate).format('YYYY-MM-DD') : null;
-      const formattedBirthdate = dayjs(selectedDate).format('YYYY-MM-DD');
-      
-      const formattedDow = dayjs(selectedDOW).format('YYYY-MM-DD');
-      // const formattedPurga = dayjs(values.purga).format('YYYY-MM-DD');
-      // const formattedVac = dayjs(values.vac).format('YYYY-MM-DD');
-      const confirmed = window.confirm("Are you sure you want to submit?");
-      if (confirmed) {
-        
-        axios
-          .post("http://127.0.0.1:8000/forms/", {
-            ...values,
-            birthdate: formattedBirthdate,
-            dow: formattedDow,
-            purga: purgaDate,
-            vac: vaccinationDate,
-          })
-          .then((response) => {
-            console.log("Data successfully added to the database:", response.data);
-            // Optionally, you can reset the form after successful submission
-            resetForm();
-          })
-          .catch((error) => {
-            console.error("Error adding data to the database:", error);
-            console.log("Full error response:", error.response);
-          });
-      }
-    };
-    const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
-      const confirmed = window.confirm("Are you sure you want to clear the form?");
-      if (confirmed) {
-        resetForm();
-        setSelectedDate(null); // Clear the selected date
-        setSelectedBirthdate(null); // Clear the selected birthdate
-        setSelectedVaccinationDate(null); // Clear the selected vaccination date
-        setSelectedDOW(null); // Clear the selected vaccination date
-        setSelectedPurgaDate(null);
+
+    // Set the vaccination field to null if selectedVaccinationDate is null, let the database accept null value since its optional
+    const vaccinationDate = selectedVaccinationDate
+      ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
+      : null;
+    const purgaDate = selectedPurgaDate
+      ? dayjs(selectedPurgaDate).format("YYYY-MM-DD")
+      : null;
+    const formattedBirthdate = dayjs(selectedDate).format("YYYY-MM-DD");
+
+    const formattedDow = dayjs(selectedDOW).format("YYYY-MM-DD");
+    // const formattedPurga = dayjs(values.purga).format('YYYY-MM-DD');
+    // const formattedVac = dayjs(values.vac).format('YYYY-MM-DD');
+    const confirmed = window.confirm("Are you sure you want to submit?");
+    if (confirmed) {
+      axios
+        .post("http://127.0.0.1:8000/forms/", {
+          ...values,
+          birthdate: formattedBirthdate,
+          dow: formattedDow,
+          purga: purgaDate,
+          vac: vaccinationDate,
+        })
+        .then((response) => {
+          console.log(
+            "Data successfully added to the database:",
+            response.data
+          );
+          // Optionally, you can reset the form after successful submission
+          resetForm();
+          // Show notification
+          notify();
+        })
+        .catch((error) => {
+          console.error("Error adding data to the database:", error);
+          console.log("Full error response:", error.response);
+        });
+    }
+  };
+  const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to clear the form?"
+    );
+    if (confirmed) {
+      resetForm();
+      setSelectedDate(null); // Clear the selected date
+      setSelectedBirthdate(null); // Clear the selected birthdate
+      setSelectedVaccinationDate(null); // Clear the selected vaccination date
+      setSelectedDOW(null); // Clear the selected vaccination date
+      setSelectedPurgaDate(null);
 
         
-  ;    }
-    }, []);  
+    }
+  }, []);
 
-
-
-    return (
-      <Box m="20px">
-        <Header  subtitle="Child Information"/>
-        <Formik
-    onSubmit={(values, { resetForm }) => handleFormSubmit(values, { resetForm }, true)} // Pass required as true
-    initialValues={initialValues}
-          validationSchema={checkoutSchema}
-        >
-      
-          {({
-            values,
-            errors,
-            touched,
-            handleBlur,
-            handleChange,
-            handleSubmit,
-            resetForm,
-            setFieldValue, // Access the resetForm function from Formik context
-            
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Box
-                display="grid"
-                gap="15px"
-                gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-                sx={{
-                  "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-                }}
-              >
+  return (
+    <Box m="20px">
+      <Header subtitle="Child Information" />
+      <Formik
+        onSubmit={(values, { resetForm }) =>
+          handleFormSubmit(values, { resetForm }, true)
+        } // Pass required as true
+        initialValues={initialValues}
+        validationSchema={checkoutSchema}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+          resetForm,
+          setFieldValue, // Access the resetForm function from Formik context
+                  }) => (
+          <form onSubmit={handleSubmit}>
+            <Box
+              display="grid"
+              gap="15px"
+              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+              sx={{
+                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+              }}
+            >
               {/*Personal Information*/}
                 <TextInput
                   fullWidth
@@ -477,48 +488,68 @@ const Form = () => {
     );
   };
 
-
-
-
 const phoneRegExp =
   /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
-  const checkoutSchema = yup.object().shape({
-    firstName: yup.string().required("Required").matches(
+const checkoutSchema = yup.object().shape({
+  firstName: yup
+    .string()
+    .required("Required")
+    .matches(
       /^[A-Za-z\s]{2,16}$/,
       "Should contain only 2-16 letters (no special characters)"
     ),
-    middleName: yup.string().required("required").matches(
+  middleName: yup
+    .string()
+    .required("required")
+    .matches(
       /^[A-Za-z\s]{1,16}$/,
       "Should contain only 1-16 letters (no special characters)"
     ),
-    lastName: yup.string().required("required").matches(
+  lastName: yup
+    .string()
+    .required("required")
+    .matches(
       /^[A-Za-z\s]{2,16}$/,
       "Should contain only 2-16 letters (no special characters)"
     ),
-    gender: yup.string().required("Gender is required"),
-    relationship: yup.string().required("Relationship is required"),
-    ethnicity: yup.string().required("Ethnicity is required"),
-    address: yup.string().required("required").matches(
+  gender: yup.string().required("Gender is required"),
+  relationship: yup.string().required("Relationship is required"),
+  ethnicity: yup.string().required("Ethnicity is required"),
+  address: yup
+    .string()
+    .required("required")
+    .matches(
       /^[A-Za-z\s0-9]{2,50}$/,
       "Should contain only 2-20 letters (no special characters)"
     ),
-    pt: yup.string().required("Required"),
-    parentName: yup.string().required("Required").matches(
+  pt: yup.string().required("Required"),
+  parentName: yup
+    .string()
+    .required("Required")
+    .matches(
       /^[A-Za-z\s]{2,16}$/,
       "Should contain only 2-16 letters (no special characters)"
     ),
-    occupation: yup.string().required("Required").matches(
+  occupation: yup
+    .string()
+    .required("Required")
+    .matches(
       /^[A-Za-z\s]{2,16}$/,
       "Should contain only 2-16 letters (no special characters)"
     ),
-    weight: yup.number().required("Required").typeError("Weight must be a number"),
-    height: yup.number().required("Required").typeError("Height must be a number"),
-    muac: yup.number().required("Required").typeError("MUAC must be a number"),
-    bpe: yup.string().required("BPE is required"),
-    disability: yup.string().notRequired(),
-  });
-
+  weight: yup
+    .number()
+    .required("Required")
+    .typeError("Weight must be a number"),
+  height: yup
+    .number()
+    .required("Required")
+    .typeError("Height must be a number"),
+  muac: yup.number().required("Required").typeError("MUAC must be a number"),
+  bpe: yup.string().required("BPE is required"),
+  disability: yup.string().notRequired(),
+});
 
   const initialValues = {
     firstName: "",
