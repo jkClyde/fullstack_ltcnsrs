@@ -23,6 +23,8 @@ const Form = () => {
   const [selectedVaccinationDate, setSelectedVaccinationDate] = useState(null);
   const [selectedDOW, setSelectedDOW] = useState(null);
   const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
+  const [selectedGender, setSelectedGender] = useState(null);
+
 
   const handleDateChange = (name, date,dateType) => {
     
@@ -126,7 +128,7 @@ const Form = () => {
           });
       }
     };
-    const handleClearForm = useCallback((resetForm) => {
+    const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
       const confirmed = window.confirm("Are you sure you want to clear the form?");
       if (confirmed) {
         resetForm();
@@ -135,6 +137,8 @@ const Form = () => {
         setSelectedVaccinationDate(null); // Clear the selected vaccination date
         setSelectedDOW(null); // Clear the selected vaccination date
         setSelectedPurgaDate(null);
+
+        
   ;    }
     }, []);  
 
@@ -158,7 +162,7 @@ const Form = () => {
             handleSubmit,
             resetForm,
             setFieldValue, // Access the resetForm function from Formik context
-  
+            
           }) => (
             <form onSubmit={handleSubmit}>
               <Box
@@ -243,6 +247,7 @@ const Form = () => {
                   error={!!touched.gender && !!errors.gender}
                   helperText={touched.gender && errors.gender}
                   options={[
+                    { value: "", label: 'Select', isDisabled: true }, // Add a null option
                     { value: 'Male', label: 'Male' },
                     { value: 'Female', label: 'Female' },
                   ]}
@@ -272,6 +277,7 @@ const Form = () => {
                   error={!!touched.pt && !!errors.pt}
                   helperText={touched.pt && errors.pt}
                   options={[
+                    { value: "", label: 'Select', isDisabled: true }, // Add a null option
                     { value: 'Permanent', label: 'Permanent' },
                     { value: 'Transient', label: 'Transient' },
                   ]}
@@ -307,6 +313,7 @@ const Form = () => {
                   error={!!touched.relationship && !!errors.relationship}
                   helperText={touched.relationship && errors.relationship}
                   options={[
+                    { value: "", label: 'Select', isDisabled: true }, // Add a null option
                     { value: 'Mother', label: 'Mother' },
                     { value: 'Father', label: 'Father' },
                     { value: 'Guardian', label: 'Guardian' },
@@ -406,6 +413,7 @@ const Form = () => {
                   error={!!touched.bpe && !!errors.bpe}
                   helperText={touched.bpe && errors.bpe}
                   options={[
+                    { value: "", label: 'Select', isDisabled: true }, // Add a null option
                     { value: 'Yes', label: 'Yes' },
                     { value: 'No', label: 'No' },
                   ]}
@@ -458,7 +466,7 @@ const Form = () => {
                 <Button type="submit" color="secondary" variant="contained">
                   Add New Child
                 </Button>
-                <Button type='button' color="warning" variant="contained" sx={{ml:'10px'}}   onClick={() => handleClearForm(resetForm)}>
+                <Button type='button' color="warning" variant="contained" sx={{ml:'10px'}}   onClick={() => handleClearForm(resetForm, values, setFieldValue)}>
                   Clear Form
                 </Button>
               </Box>
@@ -516,7 +524,7 @@ const phoneRegExp =
     firstName: "",
     middleName: "",
     lastName: "",
-    // gender: "", // Add the "gender" field with an initial empty value
+    gender: "", // Add the "gender" field with an initial empty value
 //     birthdate: null,
     address: "",
     pt: "",

@@ -8,6 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
@@ -70,14 +71,28 @@ export default function SignUp() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
+      <div
+        style={{ 
+          width: '70vh',
+          margin: '0 auto 0 auto', // Center horizontally
+          display: 'block', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+       }}
+      >
         <CssBaseline />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square borderRadius={5}>
+
         <Box
           sx={{
-            marginTop: 8,
+            my: 8,
+            mx: 5,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            mt: 3,
+            mb: 3,
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -147,12 +162,6 @@ export default function SignUp() {
                   autoComplete="new-password"
                 />
               </Grid>
-              {/* <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid> */}
             </Grid>
             <Button
               type="submit"
@@ -171,8 +180,9 @@ export default function SignUp() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
-      </Container>
+        <Copyright sx={{ mt: 1, pb:2}} />
+        </Grid>
+      </div>
     </ThemeProvider>
   );
 }
