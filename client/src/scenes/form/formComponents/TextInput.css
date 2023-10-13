@@ -1,0 +1,37 @@
+.textInput {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  input {
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: 1px solid;
+    outline: none;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    font-size: 1rem;
+  }
+  
+  input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  label {
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+  
+  .error {
+    border-color: red;
+  }
+  
+  .errorText {
+    font-size: 0.875rem;
+    padding: 0.25rem;
+    color: red;
+    display: block;
+  }
+  /* Light Mode Styles */

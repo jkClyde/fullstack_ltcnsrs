@@ -1,0 +1,11 @@
+/* MenuInput.css */
+.menuInput label{
+    display: block;
+}
+
+.helper-text{
+    color: red;
+    font-size: 13px;
+    padding-top: 12px;
+}
+  

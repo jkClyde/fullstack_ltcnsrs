@@ -1,18 +1,23 @@
 from django.db import models
 
 housing_CHOICES = (
-    ('permanent','Permanent'),
-    ('temporary', 'Temporary'),
+    ('Permanent','Permanent'),
+    ('Temporary', 'Temporary'),
 
 )
 
 gender_choices = (
-    ('male', 'Male'),
-    ('female', 'Female'),
+    ('Male', 'Male'),
+    ('Female', 'Female'),
 )
 bpe_choices = (
-    ('yes', 'Yes'),
-    ('no', 'No')
+    ('Yes', 'Yes'),
+    ('No', 'No')
+)
+relationship_choices = (
+    ('Mother', 'Mother'),
+    ('Father', 'Father'),
+    ('Guardian', 'Guardian')
 )
 ethnicity_choices = (
     ('Aggay', 'Aggay'),
@@ -60,20 +65,21 @@ class Forms(models.Model):
     middleName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
     address = models.CharField(max_length=255, default='Not specified')
-    temporary = models.CharField(max_length=30, choices=housing_CHOICES, default='')
+    pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
     gender = models.CharField(max_length=10, choices=gender_choices, default='Not specified')
     birthdate = models.DateField(null=True, blank=True)
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
-    disability = models.CharField(max_length=50, default='')
-    father_name = models.CharField(max_length=255, default='Unknown')
-    father_occupation = models.CharField(max_length=255, default='Unknown')
-    father_ethnicity = models.CharField(max_length=200, choices=ethnicity_choices, default='Not specified')
-    mother_name = models.CharField(max_length=255, default='Unknown')
-    mother_occupation = models.CharField(max_length=255, default='Unknown')
-    mother_ethnicity = models.CharField(max_length=200, choices=ethnicity_choices, default='Not specified')
+    disability = models.CharField(max_length=50, blank=True, default='')
+    parentName = models.CharField(max_length=255, default='Unknown')
+    occupation = models.CharField(max_length=255, default='Unknown')
+    relationship = models.CharField(max_length=200, choices=relationship_choices, default='Not specified')
+    ethnicity = models.CharField(max_length=200, choices=ethnicity_choices, default='Not specified')
+    # mother_name = models.CharField(max_length=255, default='Unknown')
+    # mother_occupation = models.CharField(max_length=255, default='Unknown')
+    # mother_ethnicity = models.CharField(max_length=200, choices=ethnicity_choices, default='Not specified')
     dow = models.DateField(null=True, blank=True)
     weight = models.FloatField(max_length=255,default= 0)
     height = models.FloatField(max_length=255,default= 0)
-    midUpperArmCircumference = models.FloatField(max_length=255, default=0)
+    muac = models.FloatField(max_length=255, default=0)
     purga = models.DateField(null=True, blank=True)
     vac = models.DateField(null=True, blank=True)

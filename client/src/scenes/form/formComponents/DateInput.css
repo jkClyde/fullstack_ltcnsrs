@@ -1,0 +1,41 @@
+/* DateInput.css */
+:root {
+  --theme-class: light-theme; /* Set a default theme class */
+}
+.dateInput label {
+    /* Add styles for the label (e.g., positioning) */
+    display: block; /* Display the label as a block element to place it above the input */
+    /* Add more styles as needed */
+}
+
+/* .dateInput Formik{
+  background: red;
+} */
+.error {
+  color: red;
+}
+.flatpickr-input{
+  width: 100%;
+}
+
+.dark-theme.flatpickr-input {
+  background-color: #3d3d3d;
+  border-color: #3d3d3d;
+  color: white;
+  width: 100%;
+}
+
+.light-theme.flatpickr-input {
+  background-color: white;
+  color: black;
+  width: 100%;
+
+}
+
+flatpickr-input.dark-theme{
+  background-color: #3d3d3d;
+  border-color: #3d3d3d;
+  color: white;
+  width: 100%;
+
+}

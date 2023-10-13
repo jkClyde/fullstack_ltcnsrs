@@ -5,9 +5,8 @@ class FormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Forms
         fields = ('id', 'firstName', 'middleName', 'lastName', 'address', 
-                  'temporary', 'gender', 'birthdate', 'bpe', 'disability',                  
-                  'father_name', 'father_occupation', 'father_ethnicity',
-                  'mother_name', 'mother_occupation', 'mother_ethnicity',
-                  'dow','weight', 'height', 'midUpperArmCircumference', 'purga', 'vac')
+                  'pt', 'gender', 'birthdate', 'bpe', 'disability',                  
+                  'parentName', 'occupation', 'ethnicity', 'relationship',
+                  'dow','weight', 'height', 'muac', 'purga', 'vac')
 
                  
