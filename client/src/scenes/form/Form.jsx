@@ -11,7 +11,7 @@ import Header from "../../components/Header";
 import axios from "axios"; // Import Axios
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import dayjs from "dayjs";
-import { ToastContainer, toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import ethnicityOptions from "./ethnicityOptions"; // Adjust the path as needed
@@ -25,6 +25,7 @@ const Form = () => {
   const [selectedCurrentDate, setSelectedCurrentDate] = useState(null);
   const [selectedDOW, setSelectedDOW] = useState(null);
   const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
+  const notify = () => toast.success("Data added successfully!");
 
   const handleDateChange = (name, date, dateType) => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
@@ -58,10 +59,10 @@ const Form = () => {
             birthdate: item.birthdate,
             bpe: item.bpe,
             disability: item.disability,
-            parent_name: item.parentName,
+            parentName: item.parentName,
             relationship: item.relationship,
-            parent_occupation: item.occupation,
-            parent_ethnicity: item.ethnicity,
+            occupation: item.occupation,
+            ethnicity: item.ethnicity,
             dow: item.dow,
             weight: item.weight,
             height: item.height,
@@ -110,7 +111,6 @@ const Form = () => {
     const formattedBirthdate = dayjs(selectedDate).format("YYYY-MM-DD");
 
     const formattedDow = dayjs(selectedDOW).format("YYYY-MM-DD");
-    const formattedcurrentdate = dayjs(selectedDate).format("YYYY-MM-DD");
     // const formattedPurga = dayjs(values.purga).format('YYYY-MM-DD');
     // const formattedVac = dayjs(values.vac).format('YYYY-MM-DD');
     const confirmed = window.confirm("Are you sure you want to submit?");
@@ -122,29 +122,20 @@ const Form = () => {
           dow: formattedDow,
           purga: purgaDate,
           vac: vaccinationDate,
-          current_date: formattedcurrentdate,
         })
         .then((response) => {
           console.log(
             "Data successfully added to the database:",
             response.data
           );
-          //clears dateinput
-
-          // Show success notification
-          toast.success("Child added successfully!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
           // Optionally, you can reset the form after successful submission
           resetForm();
+          // Show notification
+          notify();
         })
         .catch((error) => {
           console.error("Error adding data to the database:", error);
           console.log("Full error response:", error.response);
-
-          toast.error("Error adding child to the database", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
         });
     }
   };
@@ -159,7 +150,6 @@ const Form = () => {
       setSelectedVaccinationDate(null); // Clear the selected vaccination date
       setSelectedDOW(null); // Clear the selected vaccination date
       setSelectedPurgaDate(null);
-      setSelectedCurrentDate(null);
     }
   }, []);
 
@@ -429,8 +419,8 @@ const Form = () => {
                 error={!!touched.bpe && !!errors.bpe}
                 helperText={touched.bpe && errors.bpe}
                 options={[
-                  { value: "yes", label: "Yes" },
-                  { value: "no", label: "No" },
+                  { value: "Yes", label: "Yes" },
+                  { value: "No", label: "No" },
                 ]}
                 sx={{ gridColumn: "span 1" }}
               />
@@ -493,10 +483,10 @@ const Form = () => {
                 name="current_date"
                 value={selectedCurrentDate}
                 onChange={(name, date) =>
-                  handleDateChange(name, date, "current_date")
+                  handleDateChange(name, date, "Current")
                 }
-                error={!!touched.current_date && !!errors.current_date}
-                helperText={touched.current_date && errors.current_date}
+                error={!!touched.vac && !!errors.vac}
+                helperText={touched.vac && errors.vac}
                 className="dateInput" // You can add custom CSS classes if needed
                 sx={{ gridColumn: "span 1" }}
                 selectedDate={selectedDate} // Pass the selectedDate prop here
@@ -516,7 +506,7 @@ const Form = () => {
               >
                 Clear Form
               </Button>
-              <ToastContainer />
+              <ToastContainer position="bottom-center" />
             </Box>
           </form>
         )}
@@ -592,7 +582,7 @@ const initialValues = {
   firstName: "",
   middleName: "",
   lastName: "",
-  gender: "", // Add the "gender" field with an initial empty value
+  // gender: "", // Add the "gender" field with an initial empty value
   //     birthdate: null,
   address: "",
   pt: "",
@@ -609,7 +599,7 @@ const initialValues = {
   //     vac: null,
   //     purga: null,
   //date_added: "",
-  barangay: "",
+  //barangay: "",
 };
 
 export default Form;
