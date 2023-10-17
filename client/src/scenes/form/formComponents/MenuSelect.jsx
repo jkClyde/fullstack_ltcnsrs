@@ -14,7 +14,7 @@ const MenuSelect = ({ label, name, value, onChange, error, helperText, options }
     theme.palette.mode === "dark" ? theme.palette.neutral.dark : theme.palette.background.default;
 
   const handleChange = (selectedOption) => {
-    onChange(name, selectedOption.value);
+    onChange(name, selectedOption.value ? selectedOption.value : "");
   };
 
   // Custom styles to remove manual input feature
