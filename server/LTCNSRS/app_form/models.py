@@ -85,6 +85,7 @@ class Forms(models.Model):
     pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
     gender = models.CharField(max_length=10, choices=gender_choices, default='Not specified')
     birthdate = models.DateField(null=True, blank=True)
+    aim = models.IntegerField(default=0)
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
     disability = models.CharField(max_length=50, blank=True, default='')
     parentName = models.CharField(max_length=255, default='Unknown')
@@ -98,4 +99,5 @@ class Forms(models.Model):
     purga = models.DateField(null=True, blank=True)
     vac = models.DateField(null=True, blank=True)
     barangay = models.CharField(max_length=200, choices=barangay_choices, default='Not specified')
+    
 

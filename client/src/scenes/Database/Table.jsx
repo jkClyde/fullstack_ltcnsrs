@@ -39,10 +39,15 @@ const Table = () => {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const handleRowClick = (params) => {
-    // params.row contains the data of the clicked row
-    setSelectedPatient(params.row);
-    setIsProfileOpen(true); // Open the profile dialog
+  const handleRowClick = (params, event) => {
+    // Check if the click occurred on the profile button
+    const isButtonClick = event.target.tagName === "BUTTON";
+
+    if (isButtonClick) {
+      // Click occurred on the button, show the profile
+      setSelectedPatient(params.row);
+      setIsProfileOpen(true);
+    }
   };
 
   const handleCloseProfile = () => {
@@ -76,36 +81,14 @@ const Table = () => {
     <Typography variant="body2" sx={{ whiteSpace: "normal" }}>
       {params.colDef?.field === "aim"
         ? calculateAgeInMonths(params.row.birthdate)
-        : params.colDef?.field === "sWeight"
-        ? calculateWeightStatus(params.row)
-        : params.colDef?.field === "sHeight"
-        ? params.value // Assuming sHeight is already a status
         : params.value}
     </Typography>
   );
 
-  const calculateWeightStatus = (patient) => {
-    const { weight, height } = patient;
-    if (weight && height) {
-      const heightInMeters = height / 100; // Convert height to meters
-      const bmi = (1.3 * weight) / Math.pow(heightInMeters, 2.5);
-
-      // Determine the weight status based on the new BMI formula
-      if (bmi <= 18.49) {
-        return `Underweight / BMI: ${bmi.toFixed(2)}`;
-      } else if (bmi <= 24.99) {
-        return `Normal weight / BMI: ${bmi.toFixed(2)}`;
-      } else if (bmi <= 29.99) {
-        return `Overweight / BMI: ${bmi.toFixed(2)}`;
-      } else if (bmi <= 39.99) {
-        return `Obese / BMI: ${bmi.toFixed(2)}`;
-      } else {
-        return `Morbidly obese / BMI: ${bmi.toFixed(2)}`;
-      }
-    }
-    return "";
+  const handleProfileButtonClick = (patient) => {
+    setSelectedPatient(patient);
+    setIsProfileOpen(true);
   };
-
   // const handleDelete = (id) => {
   //   fetch(`http://127.0.0.1:8000/forms/${id}/`, {
   //     method: "DELETE",
@@ -179,7 +162,7 @@ const Table = () => {
       renderCell: renderWrappedCell,
     },
     {
-      field: "midUpperArmCircumference",
+      field: "muac",
       headerName: "MUAC",
       type: "number",
       flex: 1.5,
@@ -216,6 +199,28 @@ const Table = () => {
       headerName: "Status (Height)",
       flex: 2,
       renderCell: renderWrappedCell,
+    },
+    {
+      field: "profile",
+      headerName: "Profile",
+      flex: 2,
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          color="secondary" // Set the color of the button (you can use any valid color)
+          sx={
+            {
+              // Add additional styling here if needed
+            }
+          }
+          onClick={(e) => {
+            e.stopPropagation(); // Stop the event from propagating to the row
+            handleProfileButtonClick(params.row);
+          }}
+        >
+          View Profile
+        </Button>
+      ),
     },
     // {
     //   field: "delete",
@@ -315,7 +320,7 @@ const Table = () => {
           <DataGrid
             rows={gridData}
             columns={columns}
-            onRowClick={handleRowClick}
+            onRowClick={(params, event) => handleRowClick(params, event)}
             components={{
               Toolbar: () => (
                 <div>

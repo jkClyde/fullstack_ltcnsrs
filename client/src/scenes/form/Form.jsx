@@ -139,7 +139,7 @@ const Form = () => {
         });
     }
   };
-  const handleClearForm = useCallback((resetForm) => {
+  const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
     const confirmed = window.confirm(
       "Are you sure you want to clear the form?"
     );
@@ -256,12 +256,42 @@ const Form = () => {
                 error={!!touched.gender && !!errors.gender}
                 helperText={touched.gender && errors.gender}
                 options={[
+                  { value: "", label: "Select", isDisabled: true }, // Add a null option
                   { value: "Male", label: "Male" },
                   { value: "Female", label: "Female" },
                 ]}
                 sx={{ gridColumn: "span 1" }}
               />
-
+              <TextInput
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Address"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.address}
+                name="address"
+                error={!!touched.address && !!errors.address}
+                helperText={touched.address && errors.address}
+                className="textInput"
+                sx={{ gridColumn: "span 1" }}
+              />
+              <MenuSelect
+                label="Permanent or Transient"
+                name="pt"
+                value={values.pt}
+                onChange={(name, value) => {
+                  setFieldValue(name, value);
+                }}
+                error={!!touched.pt && !!errors.pt}
+                helperText={touched.pt && errors.pt}
+                options={[
+                  { value: "", label: "Select", isDisabled: true }, // Add a null option
+                  { value: "Permanent", label: "Permanent" },
+                  { value: "Transient", label: "Transient" },
+                ]}
+                sx={{ gridColumn: "span 1" }}
+              />
               {/* Parent/Guradian Information */}
               <Box sx={{ gridColumn: "span 4" }}>
                 <Header subtitle="Parent/Guradian Information" />
@@ -292,6 +322,7 @@ const Form = () => {
                 error={!!touched.relationship && !!errors.relationship}
                 helperText={touched.relationship && errors.relationship}
                 options={[
+                  { value: "", label: "Select", isDisabled: true }, // Add a null option
                   { value: "Mother", label: "Mother" },
                   { value: "Father", label: "Father" },
                   { value: "Guardian", label: "Guardian" },
@@ -322,36 +353,6 @@ const Form = () => {
                 className="textInput"
                 sx={{ gridColumn: "span 1" }}
               />
-              <TextInput
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Address"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.address}
-                name="address"
-                error={!!touched.address && !!errors.address}
-                helperText={touched.address && errors.address}
-                className="textInput"
-                sx={{ gridColumn: "span 1" }}
-              />
-              <MenuSelect
-                label="Permanent or Transient"
-                name="pt"
-                value={values.pt}
-                onChange={(name, value) => {
-                  setFieldValue(name, value);
-                }}
-                error={!!touched.pt && !!errors.pt}
-                helperText={touched.pt && errors.pt}
-                options={[
-                  { value: "Permanent", label: "Permanent" },
-                  { value: "Transient", label: "Transient" },
-                ]}
-                sx={{ gridColumn: "span 1" }}
-              />
-
               <Box sx={{ gridColumn: "span 4" }}>
                 <Header subtitle="Child Health Information" />
               </Box>
@@ -419,6 +420,7 @@ const Form = () => {
                 error={!!touched.bpe && !!errors.bpe}
                 helperText={touched.bpe && errors.bpe}
                 options={[
+                  { value: "", label: "Select", isDisabled: true }, // Add a null option
                   { value: "Yes", label: "Yes" },
                   { value: "No", label: "No" },
                 ]}
@@ -462,35 +464,6 @@ const Form = () => {
                 sx={{ gridColumn: "span 1" }}
                 selectedDate={selectedDate} // Pass the selectedDate prop here
               />
-              {/* User Information*/}
-              <Box sx={{ gridColumn: "span 4" }}>
-                <Header subtitle="User Information" />
-              </Box>
-              <MenuInput
-                label="Barangay"
-                name="barangay"
-                value={values.barangay}
-                onChange={(name, value) => setFieldValue(name, value)}
-                error={!!touched.barangay && !!errors.barangay}
-                helperText={touched.barangay && errors.barangay}
-                options={barangayOptions}
-                sx={{ gridColumn: "span 1" }}
-              />
-
-              {/* Current Date */}
-              <DateInput
-                label="Current Date"
-                name="current_date"
-                value={selectedCurrentDate}
-                onChange={(name, date) =>
-                  handleDateChange(name, date, "Current")
-                }
-                error={!!touched.vac && !!errors.vac}
-                helperText={touched.vac && errors.vac}
-                className="dateInput" // You can add custom CSS classes if needed
-                sx={{ gridColumn: "span 1" }}
-                selectedDate={selectedDate} // Pass the selectedDate prop here
-              />
             </Box>
             {/* Buttons  */}
             <Box display="flex" justifyContent="center" mt="20px" mb="200px">
@@ -502,11 +475,12 @@ const Form = () => {
                 color="warning"
                 variant="contained"
                 sx={{ ml: "10px" }}
-                onClick={() => handleClearForm(resetForm)}
+                onClick={() =>
+                  handleClearForm(resetForm, values, setFieldValue)
+                }
               >
                 Clear Form
               </Button>
-              <ToastContainer position="bottom-center" />
             </Box>
           </form>
         )}
@@ -582,7 +556,7 @@ const initialValues = {
   firstName: "",
   middleName: "",
   lastName: "",
-  // gender: "", // Add the "gender" field with an initial empty value
+  gender: "", // Add the "gender" field with an initial empty value
   //     birthdate: null,
   address: "",
   pt: "",
@@ -598,8 +572,6 @@ const initialValues = {
   muac: "",
   //     vac: null,
   //     purga: null,
-  //date_added: "",
-  //barangay: "",
 };
 
 export default Form;

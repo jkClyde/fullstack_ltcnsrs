@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ethnicityOptions from "../form/ethnicityOptions";
 import {
   Box,
   Typography,
@@ -14,46 +15,7 @@ import MuiAlert from "@mui/material/Alert";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
-const ethnicityOptions = [
-  "Aggay",
-  "Akeanon/Aklanon",
-  "Apayao/Yapayao",
-  "Ayangan",
-  "Balangao/Baliwon",
-  "Bikol/Bicol",
-  "Bisaya/Binisaya",
-  "Bontok/Binontok",
-  "Cebuano",
-  "Hamtikanon",
-  "Hiligaynon,Ilonggo",
-  "Ibaloi/Inibaloi",
-  "Ibanag",
-  "Ibontoc",
-  "Ifugao",
-  "Kalanguya/Ikalahan",
-  "Ilocano",
-  "Iranon",
-  "Itneg",
-  "Kalinga",
-  "Kankanai/Kankanaey",
-  "Kapampangan",
-  "Karao",
-  "Kinalinga",
-  "Kiniray-a",
-  "Maranao",
-  "Masbateno/Masbatean",
-  "Pangasinan/Panggalato",
-  "Surigaonon",
-  "Tagalog",
-  "Tausug",
-  "Waray",
-  "Other Local Ethnicity",
-  "Chinese",
-  "American/English",
-  "Other Foreign Ethnicity",
-  "Not Reported",
-];
+import { format } from "date-fns";
 
 // Function to calculate age in months
 const calculateAgeInMonths = (birthdate) => {
@@ -87,8 +49,12 @@ const PatientProfile = ({ patient, updatePatientData }) => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    // Recalculate and update aim when birthdate changes
+    setEditedPatient((prevPatient) => ({
+      ...prevPatient,
+      aim: calculateAgeInMonths(prevPatient.birthdate),
+    }));
+  }, [editedPatient.birthdate]);
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -112,8 +78,11 @@ const PatientProfile = ({ patient, updatePatientData }) => {
     // Prepare the data to be sent to the backend
     const updatedPatientData = {
       ...editedPatient,
-      aim: calculateAgeInMonths(editedPatient.birthdate),
+      birthdate: format(new Date(editedPatient.birthdate), "yyyy-MM-dd"), // Format birthdate
+      aim: calculateAgeInMonths(editedPatient.birthdate), // Recalculate age in months
     };
+
+    console.log("Updated patient data before API call:", updatedPatientData);
 
     // Send a PUT request to update the patient data
     fetch(`http://127.0.0.1:8000/forms/${editedPatient.id}/`, {
@@ -152,12 +121,28 @@ const PatientProfile = ({ patient, updatePatientData }) => {
 
     // Update the edited patient data
     setEditedPatient((prevPatient) => {
-      const updatedPatient = {
-        ...prevPatient,
-        [name]: value,
-        aim:
-          name === "birthdate" ? calculateAgeInMonths(value) : prevPatient.aim,
-      };
+      let updatedPatient;
+
+      if (name === "birthdate") {
+        const birthdate = format(new Date(value), "yyyy-MM-dd");
+        const aim = calculateAgeInMonths(birthdate);
+
+        updatedPatient = {
+          ...prevPatient,
+          [name]: birthdate,
+          aim: aim,
+        };
+      } else if (name === "dow" || name === "purga" || name === "vac") {
+        updatedPatient = {
+          ...prevPatient,
+          [name]: value,
+        };
+      } else {
+        updatedPatient = {
+          ...prevPatient,
+          [name]: value,
+        };
+      }
 
       console.log("Updated Patient Data:", updatedPatient);
 
@@ -198,36 +183,30 @@ const PatientProfile = ({ patient, updatePatientData }) => {
 
   const renderTextField = (label, name, value, unit = "") => (
     <Box mt="16px">
-      {console.log("Rendering TextField:", name, value)}{" "}
+      {console.log("Rendering TextField:", name, value)}
       {/* Add this line for debugging */}
       {isEditing ? (
         name === "birthdate" ||
         name === "dow" ||
-        name === "vacc" ||
+        name === "vac" ||
         name === "purga" ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            {console.log("Rendering DatePicker:", name, value)}{" "}
-            {/* Add this line for debugging */}
             <DatePicker
               label={label}
               value={value ? new Date(value) : null}
               onChange={(newValue) => {
-                console.log("New Value:", newValue);
-                handleInputChange({
-                  target: { name, value: newValue },
-                });
+                const formattedDate = newValue
+                  ? format(newValue, "yyyy-MM-dd")
+                  : "";
+                const fakeEvent = { target: { name, value: formattedDate } };
+                handleInputChange(fakeEvent);
               }}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  variant="outlined"
-                  value={value ? new Date(value).toLocaleDateString() : ""}
-                />
+                <TextField {...params} fullWidth variant="outlined" />
               )}
             />
           </LocalizationProvider>
-        ) : name === "aim" ? null : (
+        ) : (
           <TextField
             fullWidth
             name={name}
@@ -285,12 +264,13 @@ const PatientProfile = ({ patient, updatePatientData }) => {
         {renderTextField("Weight", "weight", editedPatient.weight, "kg")}
         {renderTextField("Height", "height", editedPatient.height, "cm")}
         {renderTextField("Date of Birth", "birthdate", editedPatient.birthdate)}
-        {renderTextField("Age in Months", "aim", editedPatient.aim, "Months")}
+        {!isEditing &&
+          renderTextField("Age in Months", "aim", editedPatient.aim, "Months")}
       </Grid>
 
       <Grid item xs={3}>
         {renderTextField("DOW", "dow", editedPatient.dow)}
-        {renderTextField("Vaccination", "vacc", editedPatient.vac)}
+        {renderTextField("Vaccination", "vac", editedPatient.vac)}
         {renderTextField("Purga", "purga", editedPatient.purga)}
       </Grid>
 
@@ -305,21 +285,16 @@ const PatientProfile = ({ patient, updatePatientData }) => {
   const renderParentInformation = () => (
     <Grid container spacing={2}>
       <Grid item xs={4}>
-        {renderTextField(
-          "Parent Name",
-          "parent_name",
-          editedPatient.parent_name
-        )}
+        {renderTextField("Parent Name", "parentName", editedPatient.parentName)}
         {/* Replace the "Parent-Child Relation" TextField with a Select */}
         {isEditing ? (
-          // Render the gender field only when editing
           <Box mt="16px">
             <Select
               fullWidth
-              id="parent_relation"
-              name="parent_relation"
-              label="parent_relation"
-              value={editedPatient.parent_relation}
+              id="relationship"
+              name="relationship"
+              label="relationship"
+              value={editedPatient.relationship}
               onChange={handleInputChange}
               variant="outlined"
             >
@@ -329,13 +304,12 @@ const PatientProfile = ({ patient, updatePatientData }) => {
             </Select>
           </Box>
         ) : (
-          // Display gender information when not editing
           <Box mt="16px">
             <Typography variant="h4" style={{ fontWeight: "bold" }}>
-              Parent-Child Relation
+              Parent-Child Relation:
             </Typography>
             <Typography variant="body1">
-              {editedPatient.parent_relation}
+              {editedPatient.relationship}
             </Typography>
           </Box>
         )}
@@ -348,10 +322,10 @@ const PatientProfile = ({ patient, updatePatientData }) => {
           <Box mt="16px">
             <Select
               fullWidth
-              id="temporary"
-              name="temporary"
-              label="temporary"
-              value={editedPatient.temporary}
+              id="pt"
+              name="pt"
+              label="pt"
+              value={editedPatient.pt}
               onChange={handleInputChange}
               variant="outlined"
             >
@@ -363,9 +337,9 @@ const PatientProfile = ({ patient, updatePatientData }) => {
           // Display gender information when not editing
           <Box mt="16px">
             <Typography variant="h4" style={{ fontWeight: "bold" }}>
-              Perma/Transient
+              Perma/Transient:
             </Typography>
-            <Typography variant="body1">{editedPatient.temporary}</Typography>
+            <Typography variant="body1">{editedPatient.pt}</Typography>
           </Box>
         )}
       </Grid>
@@ -373,18 +347,18 @@ const PatientProfile = ({ patient, updatePatientData }) => {
       <Grid item xs={4}>
         {renderTextField(
           "Parent's Occupation",
-          "parent_occupation",
-          editedPatient.parent_occupation
+          "occupation",
+          editedPatient.occupation
         )}
         {isEditing ? (
           // Render the ethnicity field only when editing
           <Box mt="16px">
             <Select
               fullWidth
-              id="parent_ethnicity"
-              name="parent_ethnicity"
+              id="ethnicity"
+              name="ethnicity"
               label="Parent's Ethnicity"
-              value={editedPatient.parent_ethnicity}
+              value={editedPatient.ethnicity}
               onChange={handleInputChange}
               variant="outlined"
             >
@@ -399,11 +373,9 @@ const PatientProfile = ({ patient, updatePatientData }) => {
           // Display ethnicity information when not editing
           <Box mt="16px">
             <Typography variant="h4" style={{ fontWeight: "bold" }}>
-              Parent's Ethnicity
+              Parent's Ethnicity:
             </Typography>
-            <Typography variant="body1">
-              {editedPatient.parent_ethnicity}
-            </Typography>
+            <Typography variant="body1">{editedPatient.ethnicity}</Typography>
           </Box>
         )}
       </Grid>

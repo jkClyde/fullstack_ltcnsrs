@@ -44,7 +44,7 @@ const GeographyChart = ({ isDashboard = false }) => {
       unknownColor="#666666"
       label="properties.name"
       valueFormat=".2s"
-      projectionScale={isDashboard ? 71100 : 314000}// problem with this is it isnt responsive
+      projectionScale={isDashboard ? 71100 : 314000} // problem with this is it isnt responsive
       projectionTranslation={isDashboard ? [-352, 104] : [-442.6, 135.1]}
       projectionRotation={[0, 0, 0]}
       borderWidth={1.5}
