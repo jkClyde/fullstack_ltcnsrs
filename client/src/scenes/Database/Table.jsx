@@ -29,13 +29,26 @@ const Table = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedQuarter, setSelectedQuarter] = useState("1st Quarter");
+  const [selectedQuarter, setSelectedQuarter] = useState("All Quarter");
+
+  const getQuarterOptions = () => {
+    // Add an "ALL QUARTER" option to the list of quarters
+    return [
+      "All Quarter",
+      "1st Quarter",
+      "2nd Quarter",
+      "3rd Quarter",
+      "4th Quarter",
+    ];
+  };
 
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
     // Add logic to handle the change, if needed
   };
-
+  const handleQuarterChange = (event) => {
+    setSelectedQuarter(event.target.value);
+  };
   useEffect(() => {
     // Fetch data from Django API endpoint based on selected year and quarter
     const fetchData = async () => {
@@ -60,17 +73,19 @@ const Table = () => {
       const itemMonth = new Date(item.dow).getMonth() + 1; // January is 0
       const itemYear = new Date(item.dow).getFullYear();
 
-      // Instead of hardcoding the phase, use the selected quarter
-      const selectedPhase = selectedQuarter;
-
-      return (
-        itemYear.toString() === selectedYear.toString() &&
-        getQuarter(itemMonth) === selectedPhase
-      );
+      if (selectedQuarter === "All Quarter") {
+        // If "ALL QUARTER" is selected, only filter by year
+        return itemYear.toString() === selectedYear.toString();
+      } else {
+        // If a specific quarter is selected, filter by both year and quarter
+        const selectedPhase = selectedQuarter;
+        return (
+          itemYear.toString() === selectedYear.toString() &&
+          getQuarter(itemMonth) === selectedPhase
+        );
+      }
     });
   };
-
-  // Function to get quarter based on month
   const getQuarter = (month) => {
     if (month >= 1 && month <= 3) {
       return "1st Quarter";
@@ -82,7 +97,6 @@ const Table = () => {
       return "4th Quarter";
     }
   };
-
   const fetchData = async () => {
     try {
       const response = await fetch(
@@ -357,13 +371,14 @@ const Table = () => {
             labelId="quarter-select-label"
             id="quarter-select"
             value={selectedQuarter}
-            onChange={(event) => setSelectedQuarter(event.target.value)}
+            onChange={handleQuarterChange}
             sx={{ marginRight: "10px" }}
           >
-            <MenuItem value="1st Quarter">1st Quarter</MenuItem>
-            <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
-            <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
-            <MenuItem value="4th Quarter">4th Quarter</MenuItem>
+            {getQuarterOptions().map((quarter) => (
+              <MenuItem key={quarter} value={quarter}>
+                {quarter}
+              </MenuItem>
+            ))}
           </Select>
         </Box>
 
