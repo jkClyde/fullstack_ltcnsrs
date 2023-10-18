@@ -2,7 +2,7 @@ from django.db import models
 
 housing_CHOICES = (
     ('Permanent','Permanent'),
-    ('Temporary', 'Temporary'),
+    ('Transient', 'Transient'),
 
 )
 

@@ -130,8 +130,16 @@ const Form = () => {
           );
           // Optionally, you can reset the form after successful submission
           resetForm();
+
+          setSelectedBirthdate(null);
+          setSelectedDOW(null);
+          setSelectedPurgaDate(null);
+          setSelectedVaccinationDate(null);
+          setSelectedDate(null);
           // Show notification
           notify();
+          // Additional notification for child added
+          toast.success("Child added successfully!");
         })
         .catch((error) => {
           console.error("Error adding data to the database:", error);
@@ -150,6 +158,12 @@ const Form = () => {
       setSelectedVaccinationDate(null); // Clear the selected vaccination date
       setSelectedDOW(null); // Clear the selected vaccination date
       setSelectedPurgaDate(null);
+
+      // Show success notification
+      toast.success("Form cleared successfully!", {
+        position: "top-right",
+        autoClose: 3000, // Notification will automatically close after 3000 milliseconds (3 seconds)
+      });
     }
   }, []);
 
@@ -464,7 +478,18 @@ const Form = () => {
                 sx={{ gridColumn: "span 1" }}
                 selectedDate={selectedDate} // Pass the selectedDate prop here
               />
+              <MenuInput
+                label="Barangay"
+                name="barangay"
+                value={values.barangay}
+                onChange={(name, value) => setFieldValue(name, value)}
+                error={!!touched.barangay && !!errors.barangay}
+                helperText={touched.barangay && errors.barangay}
+                options={barangayOptions}
+                sx={{ gridColumn: "span 1" }}
+              />
             </Box>
+
             {/* Buttons  */}
             <Box display="flex" justifyContent="center" mt="20px" mb="200px">
               <Button type="submit" color="secondary" variant="contained">
@@ -482,6 +507,7 @@ const Form = () => {
                 Clear Form
               </Button>
             </Box>
+            <ToastContainer position="top-right" autoClose={3000} />
           </form>
         )}
       </Formik>

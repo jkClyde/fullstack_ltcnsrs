@@ -7,8 +7,9 @@ import {
   Button,
   Dialog,
   DialogContent,
+  Select, // Add this import statement
+  MenuItem, // Add this import statement
 } from "@mui/material";
-
 import {
   DownloadOutlined as DownloadOutlinedIcon,
   Search,
@@ -24,20 +25,77 @@ import {
 const Table = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [gridData, setGridData] = useState([]); // Corrected definition here
+  const [gridData, setGridData] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // State for the dialog
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedQuarter, setSelectedQuarter] = useState("1st Quarter");
+
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+    // Add logic to handle the change, if needed
+  };
 
   useEffect(() => {
-    // Fetch data from Django API endpoint
-    fetch("http://127.0.0.1:8000/forms/")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Fetched data:", data);
-        setGridData(data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+    // Fetch data from Django API endpoint based on selected year and quarter
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/forms/?year=${selectedYear}&quarter=${selectedQuarter}`
+        );
+        const data = await response.json();
+        const filteredData = filterDataByQuarter(data);
+        console.log("Fetched data:", filteredData);
+        setGridData(filteredData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [selectedYear, selectedQuarter]);
+
+  const filterDataByQuarter = (data) => {
+    return data.filter((item) => {
+      const itemMonth = new Date(item.dow).getMonth() + 1; // January is 0
+      const itemYear = new Date(item.dow).getFullYear();
+
+      // Instead of hardcoding the phase, use the selected quarter
+      const selectedPhase = selectedQuarter;
+
+      return (
+        itemYear.toString() === selectedYear.toString() &&
+        getQuarter(itemMonth) === selectedPhase
+      );
+    });
+  };
+
+  // Function to get quarter based on month
+  const getQuarter = (month) => {
+    if (month >= 1 && month <= 3) {
+      return "1st Quarter";
+    } else if (month >= 4 && month <= 6) {
+      return "2nd Quarter";
+    } else if (month >= 7 && month <= 9) {
+      return "3rd Quarter";
+    } else {
+      return "4th Quarter";
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/forms/?year=${selectedYear}&quarter=${selectedQuarter}`
+      );
+      const data = await response.json();
+      const filteredData = filterDataByQuarter(data, selectedQuarter);
+      console.log("Fetched data:", filteredData);
+      setGridData(filteredData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handleRowClick = (params, event) => {
     // Check if the click occurred on the profile button
@@ -80,11 +138,14 @@ const Table = () => {
   const renderWrappedCell = (params) => (
     <Typography variant="body2" sx={{ whiteSpace: "normal" }}>
       {params.colDef?.field === "aim"
-        ? calculateAgeInMonths(params.row.birthdate)
+        ? `${calculateAgeInMonths(params.row.birthdate)} ${
+            calculateAgeInMonths(params.row.birthdate) === 1
+              ? "month"
+              : "months"
+          } old`
         : params.value}
     </Typography>
   );
-
   const handleProfileButtonClick = (patient) => {
     setSelectedPatient(patient);
     setIsProfileOpen(true);
@@ -144,7 +205,7 @@ const Table = () => {
       field: "aim",
       headerName: "AIM",
       type: "number",
-      flex: 1,
+      flex: 2,
       renderCell: renderWrappedCell,
     },
     {
@@ -276,6 +337,36 @@ const Table = () => {
         alignItems="center"
         p="10px"
       >
+        {/* Year and Quarter Selects */}
+        <Box display="flex" alignItems="center">
+          <Select
+            labelId="year-select-label"
+            id="year-select"
+            value={selectedYear}
+            onChange={handleYearChange}
+            sx={{ marginRight: "10px" }}
+          >
+            {Array.from({ length: 5 }, (_, i) => (
+              <MenuItem key={i} value={new Date().getFullYear() - i}>
+                {new Date().getFullYear() - i}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Select
+            labelId="quarter-select-label"
+            id="quarter-select"
+            value={selectedQuarter}
+            onChange={(event) => setSelectedQuarter(event.target.value)}
+            sx={{ marginRight: "10px" }}
+          >
+            <MenuItem value="1st Quarter">1st Quarter</MenuItem>
+            <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
+            <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
+            <MenuItem value="4th Quarter">4th Quarter</MenuItem>
+          </Select>
+        </Box>
+
         <Button
           sx={{
             backgroundColor: colors.blueAccent[700],

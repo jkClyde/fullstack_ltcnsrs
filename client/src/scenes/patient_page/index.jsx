@@ -4,12 +4,12 @@ import {
   Box,
   Typography,
   Divider,
-  TextField,
   Button,
   Grid,
   Select,
   MenuItem,
   Snackbar,
+  OutlinedInput,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -202,16 +202,15 @@ const PatientProfile = ({ patient, updatePatientData }) => {
                 handleInputChange(fakeEvent);
               }}
               renderInput={(params) => (
-                <TextField {...params} fullWidth variant="outlined" />
+                <OutlinedInput {...params} fullWidth label={label} />
               )}
             />
           </LocalizationProvider>
         ) : (
-          <TextField
+          <OutlinedInput
             fullWidth
             name={name}
             label={label}
-            variant="outlined"
             value={value}
             onChange={handleInputChange}
           />
@@ -409,10 +408,11 @@ const PatientProfile = ({ patient, updatePatientData }) => {
             id="year-select"
             value={selectedYear}
             onChange={handleYearChange}
+            sx={{ marginRight: "10px" }}
           >
             {Array.from({ length: 5 }, (_, i) => (
-              <MenuItem key={i} value={2018 + i}>
-                {2018 + i}
+              <MenuItem key={i} value={new Date().getFullYear() - i}>
+                {new Date().getFullYear() - i}
               </MenuItem>
             ))}
           </Select>
