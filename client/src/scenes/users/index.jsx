@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
@@ -65,6 +66,24 @@ const Users = () => {
     },
   ];
 
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    async function fetchUsers() {
+      const response = await fetch("http://127.0.0.1:8000/auth/users/me/", {
+        headers: {
+          Authorization: "Bearer YOUR_ACCESS_TOKEN",
+        },
+      });
+
+      const data = await response.json();
+
+      setUsers(data);
+    }
+
+    fetchUsers();
+  }, []);
+
   return (
     <Box m="20px">
       <Header title="Registered System Users" />
@@ -97,7 +116,7 @@ const Users = () => {
           },
         }}
       >
-        <DataGrid  rows={mockUsers} columns={columns} />
+        <DataGrid rows={users} columns={columns} />
       </Box>
     </Box>
   );

@@ -15,44 +15,74 @@ import {
 } from "@mui/material";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
+import { useStateContext } from '../../contexts/ContextProvider'; 
 import axios from "axios"; // Import Axios
 
 const Calendar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [currentEvents, setCurrentEvents] = useState([]);
+  const { token, logout, fetchEvents } = useStateContext(); // Access setToken from context
 
-  const fetchEvents = () => {
-    axios
-      .get("http://127.0.0.1:8000/calendar/")
-      .then((response) => {
-        console.log("Response data:", response.data);
-        setCurrentEvents(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching events data:", error);
-      });
-  };
+  
+
+  // const fetchEvents = () => {
+  //   axios
+  //     .get("http://127.0.0.1:8000/api/events/")
+  //     .then((response) => {
+  //       console.log("Response data:", response.data);
+  //       setCurrentEvents(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching events data:", error);
+  //     });
+  // };
+
+
+//   let fetchEvents = async() =>{
+//     let response = await fetch('http://127.0.0.1:8000/api/events/', {
+//         method:'GET',
+//         headers:{
+//             'Content-Type':'application/json',
+//             'Authorization':'Bearer ' + String(token)
+//         }
+//     })
+//     let data = await response.json()
+
+//     if(response.status === 200){
+//       setCurrentEvents(data)
+//       console.log(data)
+//       console.log("yey?")
+//       console.log("hey" +  String(token))
+//     }else if(response.statusText === 'Unauthorized'){
+//         console.log("sad" + String(token))
+//     }
+// }
+
+
 
   useEffect(() => {
-    fetchEvents();
+    fetchEvents(setCurrentEvents);
   }, []);
 
   const handleDateClick = (selected) => {
     const title = prompt("Please enter a new title for your event");
     const calendarApi = selected.view.calendar;
     calendarApi.unselect();
-
+  
     if (title) {
       const newEvent = {
         title,
         date: selected.startStr,
       };
-
-      calendarApi.addEvent(newEvent);
-
+  
       axios
-        .post("http://127.0.0.1:8000/calendar/", newEvent)
+        .post("http://127.0.0.1:8000/api/events/create", newEvent, {
+          headers: {
+            'Authorization':'Bearer ' + token,
+            "Content-Type": "application/json",
+          },
+        })
         .then((response) => {
           console.log("Event saved to the database:", response.data);
           setCurrentEvents([...currentEvents, response.data]);
@@ -62,6 +92,8 @@ const Calendar = () => {
         });
     }
   };
+  
+
 
   const handleEventClick = (selected) => {
     if (
@@ -73,7 +105,7 @@ const Calendar = () => {
         .delete(`http://127.0.0.1:8000/events/${selected.event.id}/`)
         .then(() => {
           console.log("Event deleted from the database");
-          fetchEvents(); // Refetch events after deletion
+          fetchEvents(setCurrentEvents); // Refetch events after deletion
         })
         .catch((error) => {
           console.error("Error deleting event from the database:", error);

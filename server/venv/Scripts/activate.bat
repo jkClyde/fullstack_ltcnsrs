@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\Clyde\Desktop\PROJECT\fullstack_ltcnsrs\server\venv
+set VIRTUAL_ENV=C:\Users\Clyde\Desktop\CURRENT PROJECTS\Final_thesis\Final_thesis\server\venv
 
 if not defined PROMPT set PROMPT=$P$G
 

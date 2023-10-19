@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react'; // Import useState from 'react'
 import Button from '@mui/material/Button';
 import { IconButton } from "@mui/material";
 import { Link } from 'react-router-dom';
@@ -13,12 +13,15 @@ import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-
+import { useStateContext } from '../contexts/ContextProvider';
+import ConfirmationDialog from './DialogLogout';
 
 
 export  function AccountItem() {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // State for the confirmation dialog
+  const { logout } = useStateContext();
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -40,6 +43,22 @@ export  function AccountItem() {
       setOpen(false);
     }
   }
+
+  const handleLogoutClick = () => {
+    // Open the confirmation dialog
+    setConfirmDialogOpen(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    // Close the confirmation dialog and perform logout
+    setConfirmDialogOpen(false);
+    logout();
+  };
+
+  const handleLogoutCancel = () => {
+    // Close the confirmation dialog
+    setConfirmDialogOpen(false);
+  };
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
@@ -91,10 +110,12 @@ export  function AccountItem() {
                      <Link to="/profile">
                       <MenuItem onClick={handleClose}>Profile</MenuItem>
                     </Link>
-                    <Link to="/profile2">
-                      <MenuItem onClick={handleClose}>Patient Profile</MenuItem>
-                    </Link>
-                    <MenuItem onClick={handleClose}>Logout</MenuItem>
+                     <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+                      <ConfirmationDialog
+                        open={confirmDialogOpen}
+                        onClose={handleLogoutCancel}
+                        onConfirm={handleLogoutConfirm}
+                      />
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
@@ -155,42 +176,7 @@ export  function SettingsItem() {
         >
              <SettingsOutlinedIcon />
         </IconButton>
-        <Popper
-          open={open}
-          anchorEl={anchorRef.current}
-          role={undefined}
-          placement="bottom-start"
-          transition
-          disablePortal
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin:
-                  placement === 'bottom-start' ? 'left top' : 'left bottom',
-              }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={handleClose}>
-                  <MenuList
-                    autoFocusItem={open}
-                    id="composition-menu"
-                    aria-labelledby="composition-button"
-                    onKeyDown={handleListKeyDown}
-                  >
-                    <MenuItem onClick={handleClose}>Profile Settings</MenuItem>
-                    <MenuItem onClick={handleClose}>Notification Settings</MenuItem>
-                    <MenuItem onClick={handleClose}>Privacy Settings</MenuItem>
-                    <MenuItem onClick={handleClose}>Language and Localization</MenuItem>
-                    <MenuItem onClick={handleClose}>Data and Storage</MenuItem>
-
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
+       
       </div>
     </Stack>
   );

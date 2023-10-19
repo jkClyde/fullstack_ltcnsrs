@@ -1,170 +1,96 @@
-import TextInput from "./formComponents/TextInput";
-import DateInput from "./formComponents/DateInput";
-import MenuSelect from "./formComponents/MenuSelect";
-import MenuInput from "./formComponents/MenuInput";
 
-import { Box, Button } from "@mui/material";
-import { Formik } from "formik";
+/* this is for date picker */
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+/* this is for date picker */
+
+import { Box, Button, TextField, MenuItem } from "@mui/material";
+import { Formik  } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
-import axios from "axios"; // Import Axios
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import dayjs from "dayjs";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import ethnicityOptions from "./ethnicityOptions"; // Adjust the path as needed
-import barangayOptions from "./barangayOptions";
 
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedBirthdate, setSelectedBirthdate] = useState(null);
-  const [selectedVaccinationDate, setSelectedVaccinationDate] = useState(null);
-  const [selectedCurrentDate, setSelectedCurrentDate] = useState(null);
-  const [selectedDOW, setSelectedDOW] = useState(null);
-  const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
-  const notify = () => toast.success("Data added successfully!");
+  
 
-  const handleDateChange = (name, date, dateType) => {
-    const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
-    if (dateType === "birthdate") {
-      setSelectedBirthdate(formattedDate);
-    } else if (dateType === "vaccination") {
-      setSelectedVaccinationDate(formattedDate);
-    } else if (dateType === "dow") {
-      setSelectedDOW(formattedDate);
-    } else if (dateType === "purga") {
-      setSelectedPurgaDate(formattedDate);
-    } else if (dateType === "current_date") {
-      setSelectedCurrentDate(formattedDate);
-    }
-    setSelectedDate(formattedDate);
-  };
-  const [names, setNames] = useState([]);
-  const fetchNames = () => {
-    axios
-      .get("http://127.0.0.1:8000/forms/") // Replace with your API endpoint
-      .then((response) => {
-        // Assuming the API response is an array of objects with 'first_name', 'middle_name', and 'last_name' fields
-        const retrievedNames = response.data.map((item) => {
-          return {
-            firstName: item.firstName,
-            middleName: item.middleName,
-            lastName: item.lastName,
-            address: item.address,
-            pt: item.pt,
-            gender: item.gender,
-            birthdate: item.birthdate,
-            bpe: item.bpe,
-            disability: item.disability,
-            parentName: item.parentName,
-            relationship: item.relationship,
-            occupation: item.occupation,
-            ethnicity: item.ethnicity,
-            dow: item.dow,
-            weight: item.weight,
-            height: item.height,
-            muac: item.muac,
-            purga: item.purga,
-            vac: item.vac,
-            current_date: item.current_date,
-            barangay: item.barangay,
-          };
-        });
-        setNames(retrievedNames);
-      })
-      .catch((error) => {
-        console.error("Error fetching names data:", error);
-      });
-  };
-
-  useEffect(() => {
-    fetchNames();
-  }, []);
   const handleChange = (field, value) => {
-    // For other fields, use setFieldValue normally
-    setFieldValue(field, value);
+    // Handle date fields separately
+    if (field === "birthdate") {
+      setValues({ ...values, birthdate: value });
+    } else if (field === "dow") {
+      setValues({ ...values, dow: value });
+    } 
+    // else {
+    //   setValues({ ...values, [field]: value });// This line handles other fields if you want to add another
     // }
   };
-  const handleFormSubmit = (values, { resetForm }, required) => {
-    // Format the birthdate using dayjs
-    // Check if the date field is empty
-    // Check if the birthdate field is empty (required)
-    if (!selectedBirthdate && required) {
-      alert("Birthdate is required");
-      return;
-    }
-    if (!selectedDOW && required) {
-      alert("Date of Weighing is required");
-      return;
-    }
 
-    // Set the vaccination field to null if selectedVaccinationDate is null, let the database accept null value since its optional
-    const vaccinationDate = selectedVaccinationDate
-      ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
-      : null;
-    const purgaDate = selectedPurgaDate
-      ? dayjs(selectedPurgaDate).format("YYYY-MM-DD")
-      : null;
-    const formattedBirthdate = dayjs(selectedDate).format("YYYY-MM-DD");
-
-    const formattedDow = dayjs(selectedDOW).format("YYYY-MM-DD");
-    // const formattedPurga = dayjs(values.purga).format('YYYY-MM-DD');
-    // const formattedVac = dayjs(values.vac).format('YYYY-MM-DD');
-    const confirmed = window.confirm("Are you sure you want to submit?");
-    if (confirmed) {
-      axios
-        .post("http://127.0.0.1:8000/forms/", {
-          ...values,
-          birthdate: formattedBirthdate,
-          dow: formattedDow,
-          purga: purgaDate,
-          vac: vaccinationDate,
-        })
-        .then((response) => {
-          console.log(
-            "Data successfully added to the database:",
-            response.data
-          );
-          // Optionally, you can reset the form after successful submission
-          resetForm();
-          // Show notification
-          notify();
-        })
-        .catch((error) => {
-          console.error("Error adding data to the database:", error);
-          console.log("Full error response:", error.response);
-        });
-    }
+  const handleFormSubmit = (values) => {
+    console.log(values);
   };
-  const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to clear the form?"
-    );
+
+  
+  
+  const handleClearForm = (resetForm) => {
+    const confirmed = window.confirm("Are you sure you want to clear the form?");
     if (confirmed) {
       resetForm();
-      setSelectedDate(null); // Clear the selected date
-      setSelectedBirthdate(null); // Clear the selected birthdate
-      setSelectedVaccinationDate(null); // Clear the selected vaccination date
-      setSelectedDOW(null); // Clear the selected vaccination date
-      setSelectedPurgaDate(null);
-
-        
     }
-  }, []);
+  };
+
+  const ethnicityOptions =[
+    'Aggay',
+    'Akeanon/Aklanon',
+    'Apayao/Yapayao',
+    'Ayangan',
+    'Balangao/Baliwon',
+    'Bikol/Bicol',
+    'Bisaya/Binisaya',
+    'Bontok/Binontok',
+    'Cebuano',
+    'Hamtikanon',
+    'Hiligaynon,Ilonggo',
+    'Ibaloi/Inibaloi',
+    'Ibanag',
+    'Ibontoc',
+    'Ifugao',
+    'Kalanguya/Ikalahan',
+    'Ilocano',
+    'Iranon',
+    'Itneg',
+    'Kalinga',
+    'Kankanai/Kankanaey',
+    'Kapampangan',
+    'Karao',
+    'Kinalinga',
+    'Kiniray-a',
+    'Maranao',
+    'Masbateno/Masbatean',
+    'Pangasinan/Panggalato',
+    'Surigaonon',
+    'Tagalog',
+    'Tausug',
+    'Waray',
+    'Other Local Ethnicity',
+    'Chinese',
+    'American/English',
+    'Other Foreign Ethnicity',
+    'Not Reported',
+  ];
+
+  
 
   return (
     <Box m="20px">
-      <Header subtitle="Child Information" />
+      <Header  subtitle="Child Information"/>
       <Formik
-        onSubmit={(values, { resetForm }) =>
-          handleFormSubmit(values, { resetForm }, true)
-        } // Pass required as true
+        onSubmit={handleFormSubmit}
         initialValues={initialValues}
         validationSchema={checkoutSchema}
       >
+    
         {({
           values,
           errors,
@@ -172,9 +98,9 @@ const Form = () => {
           handleBlur,
           handleChange,
           handleSubmit,
-          resetForm,
-          setFieldValue, // Access the resetForm function from Formik context
-                  }) => (
+          resetForm, // Access the resetForm function from Formik context
+
+        }) => (
           <form onSubmit={handleSubmit}>
             <Box
               display="grid"
@@ -184,393 +110,402 @@ const Form = () => {
                 "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
               }}
             >
-              {/*Personal Information*/}
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="text"
-                  label="First Name"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.firstName}
-                  name="firstName"
-                  error={!!touched.firstName && !!errors.firstName}
-                  helperText={touched.firstName && errors.firstName}
-                  // Add any other props that your TextInput component requires
-                  // For example, you might need to pass classes like this:
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="text"
-                  label="Middle Name"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.middleName}
-                  name="middleName"
-                  error={!!touched.middleName && !!errors.middleName}
-                  helperText={touched.middleName && errors.middleName}
-                  // Add any other props that your TextInput component requires
-                  // For example, you might need to pass classes like this:
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-  
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="text"
-                  label="Last Name"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.lastName}
-                  name="lastName"
-                  error={!!touched.lastName && !!errors.lastName}
-                  helperText={touched.lastName && errors.lastName}
-                  // Add any other props that your TextInput component requires
-                  // For example, you might need to pass classes like this:
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <DateInput
-                  label="Birthdate"
-                  name="birthdate"
-                  value={selectedBirthdate}
-                  onChange={
-                    (name, date) => handleDateChange(name, date, 'birthdate')
-                  } 
-                  error={!!touched.birthdate && !!errors.birthdate}
-                  helperText={touched.birthdate && errors.birthdate}
-                  className="dateInput" // You can add custom CSS classes if needed
-                  sx={{ gridColumn: "span 1" }}
-                  selectedDate={selectedDate} // Pass the selectedDate prop here
-                  required={true} // Set required to true for this DateInput
-                  />
-                <MenuSelect
-                  label="Gender"
-                  name="gender"
-                  value={values.gender}
-                  onChange={(name, value) => {
-                    setFieldValue(name, value);
-                  }}
-                  error={!!touched.gender && !!errors.gender}
-                  helperText={touched.gender && errors.gender}
-                  options={[
-                    { value: "", label: 'Select', isDisabled: true }, // Add a null option
-                    { value: 'Male', label: 'Male' },
-                    { value: 'Female', label: 'Female' },
-                  ]}
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="text"
-                  label="Address"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.address}
-                  name="address"
-                  error={!!touched.address && !!errors.address}
-                  helperText={touched.address && errors.address}
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <MenuSelect
-                  label="Permanent or Transient"
-                  name="pt"
-                  value={values.pt}
-                  onChange={(name, value) => {
-                    setFieldValue(name, value);
-                  }}
-                  error={!!touched.pt && !!errors.pt}
-                  helperText={touched.pt && errors.pt}
-                  options={[
-                    { value: "", label: 'Select', isDisabled: true }, // Add a null option
-                    { value: 'Permanent', label: 'Permanent' },
-                    { value: 'Transient', label: 'Transient' },
-                  ]}
-                  sx={{ gridColumn: "span 1" }}
-                />
-               {/* Parent/Guradian Information */}
+            {/*Personal Information*/}
+              {/*Full Name*/}
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="First Name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.firstName}
+                name="firstName"
+                error={!!touched.firstName && !!errors.firstName}
+                helperText={touched.firstName && errors.firstName}
+                sx={{ gridColumn: "span 1" }}
+              />
+
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Middle Initial"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.middleName}
+                name="middleName"
+                error={!!touched.middleName && !!errors.middleName}
+                helperText={touched.middleName && errors.middleName}
+                sx={{ gridColumn: "span 1" }}
+              />
+
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Last Name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.lastName}
+                name="lastName"
+                error={!!touched.lastName && !!errors.lastName}
+                helperText={touched.lastName && errors.lastName}
+                sx={{ gridColumn: "span 1" }}
+              />
+              {/*Address*/}
+              
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="House No./Bldg. No.,floor/room"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.address}
+                name="address"
+                error={!!touched.address && !!errors.address}
+                helperText={touched.address && errors.address}
+                sx={{ gridColumn: "span 1" }}
+              />
+              {/* <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Sitio"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.address}
+                name="barangay"
+                error={!!touched.address && !!errors.barangay}
+                helperText={touched.address && errors.barangay}
+                sx={{ gridColumn: "span 1" }}
+              /> */}
+
+              {/*Permanent or Temporary*/}
+              <TextField
+                select
+                fullWidth
+                variant="filled"
+                label="Permanent/Temporary"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.temporary}
+                name="temporary"
+                error={!!touched.temporary && !!errors.temporary}
+                helperText={touched.temporary && errors.temporary}
+                sx={{ gridColumn: "span 1" }}
+              >
+                <MenuItem value="permanent">Permanent</MenuItem>
+                <MenuItem value="temporary">Temporary</MenuItem>
+              </TextField>
+
+              {/*Gender*/}
+              <TextField
+                select
+                fullWidth
+                variant="filled"
+                label="Gender"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.gender}
+                name="gender"
+                error={!!touched.gender && !!errors.gender}
+                helperText={touched.gender && errors.gender}
+                sx={{ gridColumn: "span 1" }}
+              >
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+              </TextField>
+              
+              {/*Birthdate*/}
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Birth Date"
+                onBlur={handleBlur}
+                onChange={(date) => handleChange("birthdate", date)}
+                name="birthdate"
+                value={values.birthdate}
+                error={!!touched.birthdate && !!errors.birthdate}
+                helperText={touched.birthdate && errors.birthdate}
+                sx={{ gridColumn: "span 1" }}
+              />
+              </LocalizationProvider>
+
+              {/* Bilateral Pitting Edema */}
+              <TextField
+                select
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Bilateral Pitting Edema"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.bpe}
+                name="bpe"
+                error={!!touched.bpe && !!errors.bpe}
+                helperText={touched.bpe && errors.bpe}
+                sx={{ gridColumn: "span 1" }}
+              >
+                <MenuItem value="yes">Yes</MenuItem>
+                <MenuItem value="no">No</MenuItem>
+              </TextField>
+
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Disability"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.disability}
+                name="disability"
+                error={!!touched.disability && !!errors.disability}
+                helperText={touched.disability && errors.disability}
+                sx={{ gridColumn: "span 1" }}
+              />
+            {/* Parent/Guradian Information */}
             <Box    sx={{ gridColumn: "span 4" }}>
               <Header subtitle="Parent/Guradian Information" />    
             </Box>
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="text"
-                  label="Parent Name"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.parentName}
-                  name="parentName"
-                  error={!!touched.parentName && !!errors.parentName}
-                  helperText={touched.parentName && errors.parentName}
-                  // Add any other props that your TextInput component requires
-                  // For example, you might need to pass classes like this:
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <MenuSelect
-                  label="Relationship"
-                  name="relationship"
-                  value={values.relationship}
-                  onChange={(name, value) => {
-                    setFieldValue(name, value);
-                  }}
-                  error={!!touched.relationship && !!errors.relationship}
-                  helperText={touched.relationship && errors.relationship}
-                  options={[
-                    { value: "", label: 'Select', isDisabled: true }, // Add a null option
-                    { value: 'Mother', label: 'Mother' },
-                    { value: 'Father', label: 'Father' },
-                    { value: 'Guardian', label: 'Guardian' },
-                  ]}
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <MenuInput
-                  label="Ethnicity"
-                  name="ethnicity"
-                  value={values.ethnicity}
-                  onChange={(name, value) => setFieldValue(name, value)}
-                  error={!!touched.ethnicity && !!errors.ethnicity}
-                  helperText={touched.ethnicity && errors.ethnicity}
-                  options={ethnicityOptions}
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="text"
-                  label="Occupation"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.occupation}
-                  name="occupation"
-                  error={!!touched.occupation && !!errors.occupation}
-                  helperText={touched.occupation && errors.occupation}
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-            <Box    sx={{ gridColumn: "span 4" }}>
-              <Header subtitle="Child Health Information" />    
-            </Box>
-                <DateInput
-                  label="Date of Weighing"
-                  name="dow"
-                  value={selectedDOW}
-                  onChange={
-                    (name, date) => handleDateChange(name, date, 'dow')
-                  } 
-                  error={!!touched.dow && !!errors.dow}
-                  helperText={touched.dow && errors.dow}
-                  className="dateInput" // You can add custom CSS classes if needed
-                  sx={{ gridColumn: "span 1" }}
-                  selectedDate={selectedDate} // Pass the selectedDate prop here
-                  required={true} // Set required to true for this DateInput
-                  />
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="number"
-                  label="Weight"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.weight}
-                  name="weight"
-                  error={!!touched.weight && !!errors.weight}
-                  helperText={touched.weight && errors.weight}
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="number"
-                  label="Height"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.height}
-                  name="height"
-                  error={!!touched.height && !!errors.height}
-                  helperText={touched.height && errors.height}
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="number"
-                  label="Mid-Upper Arm Circumference"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.muac}
-                  name="muac"
-                  error={!!touched.muac && !!errors.muac}
-                  helperText={touched.muac && errors.muac}
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <MenuSelect
-                  label="Bilateral Pitting Edema"
-                  name="bpe"
-                  value={values.bpe}
-                  onChange={(name, value) => {
-                    setFieldValue(name, value);
-                  }}
-                  error={!!touched.bpe && !!errors.bpe}
-                  helperText={touched.bpe && errors.bpe}
-                  options={[
-                    { value: "", label: 'Select', isDisabled: true }, // Add a null option
-                    { value: 'Yes', label: 'Yes' },
-                    { value: 'No', label: 'No' },
-                  ]}
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <TextInput
-                  fullWidth
-                  variant="filled"
-                  type="disability"
-                  label="Disability"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.disability}
-                  name="disability"
-                  error={!!touched.disability && !!errors.disability}
-                  helperText={touched.disability && errors.disability}
-                  className="textInput"
-                  sx={{ gridColumn: "span 1" }}
-                />
-                <DateInput
-                  label="Vaccination"
-                  name="vac"
-                  value={selectedVaccinationDate}
-                  onChange={
-                    (name, date) => handleDateChange(name, date, 'vaccination')
-                  } 
-                  error={!!touched.vac && !!errors.vac}
-                  helperText={touched.vac && errors.vac}
-                  className="dateInput" // You can add custom CSS classes if needed
-                  sx={{ gridColumn: "span 1" }}
-                  selectedDate={selectedDate} // Pass the selectedDate prop here
-                  />
-                <DateInput
-                  label="Purga"
-                  name="purga"
-                  value={selectedPurgaDate}
-                  onChange={
-                    (name, date) => handleDateChange(name, date, 'purga')
-                  } 
-                  error={!!touched.purga && !!errors.purga}
-                  helperText={touched.purga && errors.purga}
-                  className="dateInput" // You can add custom CSS classes if needed
-                  sx={{ gridColumn: "span 1" }}
-                  selectedDate={selectedDate} // Pass the selectedDate prop here
-                  />
 
-              </Box>
-                {/* Buttons  */}
-              <Box display="flex" justifyContent="center" mt="20px" mb="200px">
-                <Button type="submit" color="secondary" variant="contained">
-                  Add New Child
-                </Button>
-                <Button type='button' color="warning" variant="contained" sx={{ml:'10px'}}   onClick={() => handleClearForm(resetForm, values, setFieldValue)}>
-                  Clear Form
-                </Button>
-              </Box>
-            </form>
-          )}
-        </Formik>
-      </Box>
-    );
-  };
+            {/* Fathers Name */}
+            <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Fathers Name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.father_name}
+                name="father_name"
+                error={!!touched.father_name && !!errors.father_name}
+                helperText={touched.father_name && errors.father_name}
+                sx={{ gridColumn: "span 2" }}
+              />
+
+              {/* Father's Occupation */}
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Occupation"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.father_occupation}
+                name="father_occupation"
+                error={!!touched.father_occupation && !!errors.father_occupation}
+                helperText={touched.father_occupation && errors.father_occupation}
+                sx={{ gridColumn: "span 1" }}
+              />
+
+              {/* Father's Ethnicity */}
+               <TextField
+                select
+                fullWidth
+                variant="filled"
+                type='text'
+                label="Ethnicity"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                name="father_ethnicity"
+                value={values.father_ethnicity}
+                error={!!touched.father_ethnicity && !!errors.father_ethnicity}
+                helperText={touched.father_ethnicity && errors.father_ethnicity}
+                sx={{ gridColumn: "span 1" }}
+              >
+                {ethnicityOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+              
+              {/* Mother's Name */}
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Mother's Name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.mother_name}
+                name="mother_name"
+                error={!!touched.mother_name && !!errors.mother_name}
+                helperText={touched.mother_name && errors.mother_name}
+                sx={{ gridColumn: "span 2" }}
+              />
+
+              {/* Mother's Occupation */}
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Occupation"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.mother_occupation}
+                name="mother_occupation"
+                error={!!touched.mother_occupation && !!errors.mother_occupation}
+                helperText={touched.mother_occupation && errors.mother_occupation}
+                sx={{ gridColumn: "span 1" }}
+              />
+
+              {/* Mother's Ethnicity */}
+              <TextField
+                select
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Ethnicity"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.mother_ethnicity}
+                name="mother_ethnicity"
+                error={!!touched.mother_ethnicity && !!errors.mother_ethnicity}
+                helperText={touched.mother_ethnicity && errors.mother_ethnicity}
+                sx={{ gridColumn: "span 1" }}
+              >
+                {ethnicityOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+            
+             {/* Child Nutrional Information */}
+             <Box    sx={{ gridColumn: "span 4" }}>
+              <Header subtitle="Child Nutrional Information" />    
+            </Box>
+
+            {/* Date of Weighing */}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Date of Weighing"
+                onBlur={handleBlur}
+                onChange={(date) => handleChange("dow", date)}
+                name="dow"
+                value={values.dow}
+                error={!!touched.dow && !!errors.dow}
+                helperText={touched.dow && errors.dow}
+                sx={{ gridColumn: "span 1" }}
+              />
+            </LocalizationProvider>
+            
+            {/* Weight */}
+            <TextField
+                fullWidth
+                variant="filled"
+                type="number"
+                label="Weight(kg)"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.weight}
+                name="weight"
+                error={!!touched.weight && !!errors.weight}
+                helperText={touched.weight && errors.weight}
+                sx={{ gridColumn: "span 1 " }}
+              />
+
+            {/* Heigth */}
+              <TextField
+                fullWidth
+                variant="filled"
+                type="number"
+                label="Height(cm)"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.height}
+                name="height"
+                error={!!touched.height && !!errors.height}
+                helperText={touched.height && errors.height}
+                sx={{ gridColumn: "span 1" }}
+              />
+
+              {/* BMI */}
+               <TextField
+                fullWidth
+                variant="filled"
+                type="number"
+                label="MUAC"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                name="midUpperArmCircumference"
+                value={values.midUpperArmCircumference}
+                error={!!touched.midUpperArmCircumference && !!errors.midUpperArmCircumference}
+                helperText={touched.midUpperArmCircumference && errors.midUpperArmCircumference}
+                sx={{ gridColumn: "span 1" }}
+              />
+              
+            </Box>
+              {/* Buttons  */}
+            <Box display="flex" justifyContent="center" mt="20px" mb="200px">
+              <Button type="submit" color="secondary" variant="contained">
+                Add New Child
+              </Button>
+              <Button type='button' color="warning" variant="contained" sx={{ml:'10px'}}   onClick={() => handleClearForm(resetForm)}>
+                Clear Form
+              </Button>
+            </Box>
+          </form>
+        )}
+      </Formik>
+    </Box>
+  );
+};
+
+
 
 const phoneRegExp =
   /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
-const checkoutSchema = yup.object().shape({
-  firstName: yup
-    .string()
-    .required("Required")
-    .matches(
-      /^[A-Za-z\s]{2,16}$/,
-      "Should contain only 2-16 letters (no special characters)"
-    ),
-  middleName: yup
-    .string()
-    .required("required")
-    .matches(
-      /^[A-Za-z\s]{1,16}$/,
-      "Should contain only 1-16 letters (no special characters)"
-    ),
-  lastName: yup
-    .string()
-    .required("required")
-    .matches(
-      /^[A-Za-z\s]{2,16}$/,
-      "Should contain only 2-16 letters (no special characters)"
-    ),
-  gender: yup.string().required("Gender is required"),
-  relationship: yup.string().required("Relationship is required"),
-  ethnicity: yup.string().required("Ethnicity is required"),
-  address: yup
-    .string()
-    .required("required")
-    .matches(
-      /^[A-Za-z\s0-9]{2,50}$/,
-      "Should contain only 2-20 letters (no special characters)"
-    ),
-  pt: yup.string().required("Required"),
-  parentName: yup
-    .string()
-    .required("Required")
-    .matches(
-      /^[A-Za-z\s]{2,16}$/,
-      "Should contain only 2-16 letters (no special characters)"
-    ),
-  occupation: yup
-    .string()
-    .required("Required")
-    .matches(
-      /^[A-Za-z\s]{2,16}$/,
-      "Should contain only 2-16 letters (no special characters)"
-    ),
-  weight: yup
-    .number()
-    .required("Required")
-    .typeError("Weight must be a number"),
-  height: yup
-    .number()
-    .required("Required")
-    .typeError("Height must be a number"),
-  muac: yup.number().required("Required").typeError("MUAC must be a number"),
-  bpe: yup.string().required("BPE is required"),
-  disability: yup.string().notRequired(),
-});
+  const checkoutSchema = yup.object().shape({
+    fullname: yup.string().required("required"),
+    gender: yup.string().required("required"),
+    address: yup.string().required("required"),
+    bpe: yup.string().required("required"),
+    temporary: yup.string().required('Please select an option'),
+    disability: yup.string().required("required"),
+    father_name: yup.string().required("required"),
+    father_occupation: yup.string().required("required"),
+    father_ethnicity: yup.string().required("required"),
+    mother_name: yup.string().required("required"),
+    mother_occupation: yup.string().required("required"),
+    mother_ethnicity: yup.string().required("required"),
+
+    weight: yup.string().required("required"),
+    height: yup.string().required("required"),
+    midUpperArmCircumference: yup.string().required("required"),
+
+    birthdate: yup.string().required("required"),
+    dow: yup.string().required("required"),
+  });
+  
 
   const initialValues = {
-    firstName: "",
-    middleName: "",
-    lastName: "",
+    fullname: "",
     gender: "", // Add the "gender" field with an initial empty value
-//     birthdate: null,
+    birthdate: null, //Removed the initial value
     address: "",
-    pt: "",
+    temporary: '',
     bpe: "",
     disability: "",
-    parentName: "",
-    occupation: "",
-    relationship: "",
-    ethnicity: "",
-    dow: "",
-    weight: '',
-    height: '',
-    muac: '',
-//     vac: null,
-//     purga: null,
+    father_name: "",
+    father_occupation: "",
+    father_ethnicity: "",
+    mother_name: "",
+    mother_occupation: "",
+    mother_ethnicity: "",
+    dow: null,//Removed the initial value
+    weight: 0,
+    height: 0,
+    midUpperArmCircumference: 0,
 
   };
   
