@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import PatientProfile from "./../patient_page/index";
+import lengthForAgeStatus from "./Calculations/lengthForAgeStatus";
+import weightForAgeStatus from "./Calculations/weightForAgeStatus";
+import weightForLengthStatus from "./Calculations/weightForLengthStatus";
+import { calculateAgeInMonths } from "./Calculations/calculateAgeInMonths";
 import {
   Box,
   Typography,
@@ -134,21 +138,6 @@ const Table = () => {
     );
   };
 
-  const calculateAgeInMonths = (birthdate) => {
-    if (!birthdate) {
-      return ""; // Handle the case where birthdate is not available
-    }
-
-    const today = new Date();
-    const birthDate = new Date(birthdate);
-    const ageInMonths =
-      (today.getFullYear() - birthDate.getFullYear()) * 12 +
-      today.getMonth() -
-      birthDate.getMonth();
-
-    return ageInMonths;
-  };
-
   const renderWrappedCell = (params) => (
     <Typography variant="body2" sx={{ whiteSpace: "normal" }}>
       {params.colDef?.field === "aim"
@@ -157,6 +146,25 @@ const Table = () => {
               ? "month"
               : "months"
           } old`
+        : params.colDef?.field === "weightForAge"
+        ? `${weightForAgeStatus(
+            params.row.birthdate,
+            params.row.weight,
+            params.row.gender
+          )}`
+        : params.colDef?.field === "lengthForAge"
+        ? `${lengthForAgeStatus(
+            params.row.birthdate,
+            params.row.height,
+            params.row.gender
+          )}`
+        : params.colDef?.field === "weightForLength"
+        ? `${weightForLengthStatus(
+            params.row.birthdate,
+            params.row.height,
+            params.row.weight,
+            params.row.gender
+          )}`
         : params.value}
     </Typography>
   );
@@ -264,14 +272,20 @@ const Table = () => {
       renderCell: renderWrappedCell,
     },
     {
-      field: "sWeight",
-      headerName: "Status (Weight)",
+      field: "weightForAge",
+      headerName: "Weight For Age",
       flex: 2,
       renderCell: renderWrappedCell,
     },
     {
-      field: "sHeight",
-      headerName: "Status (Height)",
+      field: "lengthForAge",
+      headerName: "Length For Age",
+      flex: 2,
+      renderCell: renderWrappedCell,
+    },
+    {
+      field: "weightForLength",
+      headerName: "Weight For Length",
       flex: 2,
       renderCell: renderWrappedCell,
     },
@@ -293,7 +307,7 @@ const Table = () => {
             handleProfileButtonClick(params.row);
           }}
         >
-          View Profile
+          View
         </Button>
       ),
     },

@@ -274,8 +274,21 @@ const PatientProfile = ({ patient, updatePatientData }) => {
       </Grid>
 
       <Grid item xs={3}>
-        {renderTextField("Status (Weight)", "status", editedPatient.sWeight)}
-        {renderTextField("Status (Height)", "status", editedPatient.sHeight)}
+        {renderTextField(
+          "Weight For Age",
+          "status",
+          editedPatient.weigthForAge
+        )}
+        {renderTextField(
+          "Length For Age",
+          "status",
+          editedPatient.lengthForAge
+        )}
+        {renderTextField(
+          "Weight For Length",
+          "status",
+          editedPatient.weightForLength
+        )}
         {renderTextField("Disability", "disability", editedPatient.disability)}
       </Grid>
     </Grid>
@@ -446,6 +459,7 @@ const PatientProfile = ({ patient, updatePatientData }) => {
             variant="outlined"
             color="secondary"
             onClick={handleCancelClick}
+            sx={{ marginLeft: "10px" }}
           >
             Cancel
           </Button>

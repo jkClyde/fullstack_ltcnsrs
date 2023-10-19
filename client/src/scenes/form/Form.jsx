@@ -9,10 +9,11 @@ import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 import axios from "axios"; // Import Axios
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DuplicateRecordModal from "./DuplicateRecordModal";
 
 import ethnicityOptions from "./ethnicityOptions"; // Adjust the path as needed
 import barangayOptions from "./barangayOptions";
@@ -25,7 +26,18 @@ const Form = () => {
   const [selectedCurrentDate, setSelectedCurrentDate] = useState(null);
   const [selectedDOW, setSelectedDOW] = useState(null);
   const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
+  const [isDuplicateModalOpen, setDuplicateModalOpen] = useState(false);
+
   const notify = () => toast.success("Data added successfully!");
+
+  const handleDuplicateCancel = () => {
+    setDuplicateModalOpen(false);
+  };
+
+  const handleDuplicateConfirm = (values) => {
+    setDuplicateModalOpen(false);
+    handleFormSubmit(values, { resetForm }, true);
+  };
 
   const handleDateChange = (name, date, dateType) => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
@@ -114,6 +126,19 @@ const Form = () => {
     // const formattedPurga = dayjs(values.purga).format('YYYY-MM-DD');
     // const formattedVac = dayjs(values.vac).format('YYYY-MM-DD');
     const confirmed = window.confirm("Are you sure you want to submit?");
+
+    const isDuplicate = names.some(
+      (item) =>
+        item.firstName === values.firstName &&
+        item.middleName === values.middleName &&
+        item.lastName === values.lastName &&
+        item.dow === formattedDow
+    );
+
+    if (isDuplicate) {
+      setDuplicateModalOpen(true);
+      return;
+    }
     if (confirmed) {
       axios
         .post("http://127.0.0.1:8000/forms/", {
@@ -511,6 +536,12 @@ const Form = () => {
           </form>
         )}
       </Formik>
+      <DuplicateRecordModal
+        isOpen={isDuplicateModalOpen}
+        onConfirm={() => handleDuplicateConfirm(values)} // Pass values here
+        onCancel={handleDuplicateCancel}
+        onRequestClose={() => setDuplicateModalOpen(false)}
+      />
     </Box>
   );
 };
@@ -598,6 +629,7 @@ const initialValues = {
   muac: "",
   //     vac: null,
   //     purga: null,
+  barangay: "",
 };
 
 export default Form;
