@@ -15,9 +15,16 @@ import Pie from "./scenes/Charts/PieChart";
 import Line from "./scenes/charts/Line/index";
 import UserProfile from "./scenes/profile";
 import Users from "./scenes/users";
+import PatientProfile from './scenes/patient_profile/index'
+import VerificationNotice from "./components/registration/verificationNotice";
+import Verify from "./components/registration/verify";
 
-const Routes = createBrowserRouter([
+import { useStateContext } from "./contexts/ContextProvider";
+
+
+const MyRoutes = createBrowserRouter([
  
+
   {
     path: '/',
     element: <DefaltLayout/>,
@@ -66,8 +73,13 @@ const Routes = createBrowserRouter([
         path: '/users',
         element: <Users/>
       },
+      {
+        path: '/profile2',
+        element: <PatientProfile/>
+      },
     ]
   },
+  
   {
     path: '/',
     element: <GuestLayout/>,
@@ -79,13 +91,18 @@ const Routes = createBrowserRouter([
       {
         path:'/signup',
         element: <Signup/>
+      },
+      {
+        path:'/notice',
+        element: <VerificationNotice/>
+      },
+      {
+        path:'/activate/:uid/:token',
+        element: <Verify/>
       }
+      
     ]
   },
-
- 
-
-    
 ])
 
-export default Routes;
+export default MyRoutes;

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react'; // Import React and useState
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,9 +13,15 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
+import Axios from "axios"; // Import Axios
+import jwt_decode from "jwt-decode";
+
 
 import lt_logo from './../../assets/lt_logo.ico';
-import bg from './../../assets/charles.jpg';
+import bg from './../../assets/lt_bg.jpg';
+import { useStateContext } from '../../contexts/ContextProvider'; // Import the useStateContext hook
+import { useNavigate  } from 'react-router-dom'; // Import useHistory
+
 
 
 function Copyright(props) {
@@ -31,19 +37,53 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
+function SignInSide() {
+  const [email, setEmail] = useState(''); // Define email state
+  const [password, setPassword] = useState(''); // Define password state
+  const [wrongCredentials, setWrongcredentials] = useState(false);
+  const { setToken } = useStateContext(); // Access setToken from context
+  const navigate = useNavigate(); // Initialize useHistory
+  const { setUser } = useStateContext();
 
-const defaultTheme = createTheme();
 
-export default function SignInSide() {
-  const handleSubmit = (event) => {
+  
+  
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    try {
+      // Create a payload containing email and password
+      const payload = {
+        email: email,
+        password: password,
+      };
+      // Send a POST request to your backend API
+      const response = await Axios.post("http://127.0.0.1:8000/auth/jwt/create/", payload)
+  
+      // Handle the response from the backend
+      console.log("Login successful:", response.data);
+      if (response.status == 200){
+        setToken(response.data.access); // Call setToken with the token value
+        setUser(jwt_decode(response.data.access));
+        localStorage.setItem('ACCESS_TOKEN', JSON.stringify(response));
+        navigate('/dashboard'); 
+        
+
+      }else{
+        alert('Something went wrong!');
+
+      }
+  
+      // You can also redirect the user to another page or perform other actions here
+    } catch (error) {
+      // Handle login error, e.g., show an error message to the user
+      console.error("Login faileeeeed:", error);
+      setWrongcredentials(true)
+      
+    }
   };
+
+  const defaultTheme = createTheme();
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -64,7 +104,7 @@ export default function SignInSide() {
           }}
           className='fadeInDown'
         />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square >
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
             sx={{
               my: 8,
@@ -73,9 +113,8 @@ export default function SignInSide() {
               flexDirection: 'column',
               alignItems: 'center',
             }}
-            
           >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <Avatar sx={{ m: 1, bgcolor: 'secondary.main', width: '100px' }}>
               <img src={lt_logo} alt="LT Logo" />
             </Avatar>
             <Typography component="h1" variant="h5">
@@ -92,6 +131,8 @@ export default function SignInSide() {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                value={email} // Add value prop to bind to the state
+                onChange={(e) => setEmail(e.target.value)} // Add onChange handler to update state
               />
               <TextField
                 margin="normal"
@@ -102,19 +143,29 @@ export default function SignInSide() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
               />
+              {wrongCredentials && (
+              <Typography variant="body2" color="error">
+                Wrong email or password. Please try again.
+              </Typography>
+            )}
+           
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In
-              </Button>
+              <Link to="/" style={{ textDecoration: 'none' }}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Sign In
+                </Button>
+              </Link>
               <Grid container>
                 <Grid item xs>
                   <Link href="#" variant="body2">
@@ -122,7 +173,7 @@ export default function SignInSide() {
                   </Link>
                 </Grid>
                 <Grid item>
-                 <Link component={RouterLink} to="/signup" variant="body2">
+                  <Link component={RouterLink} to="/signup" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
@@ -135,3 +186,5 @@ export default function SignInSide() {
     </ThemeProvider>
   );
 }
+
+export default SignInSide;

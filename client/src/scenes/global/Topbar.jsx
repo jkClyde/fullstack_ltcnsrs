@@ -52,7 +52,6 @@ const Topbar = () => {
             <LightModeOutlinedIcon />
           )}
         </IconButton>
-        <SettingsItem />
         <AccountItem />
 
 

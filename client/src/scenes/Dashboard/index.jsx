@@ -1,4 +1,5 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Button,Select, MenuItem, IconButton, Typography, useTheme } from "@mui/material";
+import React from 'react';
 import { tokens } from "../../theme";
 import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
@@ -13,9 +14,50 @@ import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
 
+import EventsList from './../../components/Upcoming Events';
+
+
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+    // Categories and corresponding subtitles and progress values
+    const data = {
+      "Length for Age": [
+        {name: 'Severly Stunted', subtitle: 'Subtitle 1', progress: '10'},
+        {name: 'Stunted', subtitle: 'Subtitle 2', progress: '20'},
+        {name: 'Normal', subtitle: 'Subtitle 3', progress: '30'},
+        {name: 'Tall', subtitle: 'Subtitle 4', progress: '40'}
+      ],
+      "Weight for Length": [
+        {name: 'Severly Wasted', subtitle: 'Subtitle 5', progress: '50'},
+        {name: 'Wasted', subtitle: 'Subtitle 6', progress: '60'},
+        {name: 'Normal', subtitle: 'Subtitle 7', progress: '70'},
+        {name: 'Overweight', subtitle: 'Subtitle 8', progress: '80'},
+        {name: 'Obese', subtitle: 'Subtitle 9', progress: '90'}
+      ],
+      "Weight for Age": [
+        {name: 'Severly Underweight', subtitle: 'Subtitle 10', progress: '100'},
+        {name: 'Underweight', subtitle: 'Subtitle 11', progress: '110'},
+        {name: 'Normal', subtitle: 'Subtitle 12', progress: '120'},
+        {name: 'Overweight', subtitle: 'Subtitle 13', progress: '130'}
+      ],
+    };
+
+    const colorsOption = [
+      { background: "linear-gradient(to bottom right, #F56545, #99201C)" },
+      { background: "linear-gradient(to bottom right, #D7816A, #BD4F6C)" },
+      { background: "linear-gradient(to bottom right, #3EADCF, #44B09E)" },
+      { background: "linear-gradient(to bottom right, #B621FE, #1FD1F9)" }
+    ];
+
+  /* State for selected category */
+  const [selectedCategory, setSelectedCategory] = React.useState("Length for Age");
+
+  /* Function to be executed when a category is selected */
+  const handleCategoryChange = (event) => {
+      setSelectedCategory(event.target.value);
+  };
 
   return (
     <Box m="20px">
@@ -23,19 +65,24 @@ const Dashboard = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="Children Nutrional Status Reporting System" subtitle="Welcome to your dashboard" />
 
-        <Box>
-          <Button
-            sx={{
-              backgroundColor: colors.blueAccent[700],
-              color: colors.grey[100],
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-            }}
-          >
-            <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-            Download Reports
-          </Button>
+
+      {/* DropDown */}
+      <Box>
+        <Select
+        value={selectedCategory}
+        onChange={handleCategoryChange}
+        sx={{
+          backgroundColor: colors.blueAccent[800],
+          color: colors.grey[100],
+          fontSize: "17px",
+          fontWeight: "bold",
+          padding: "0px 10px",
+          }}
+        >
+        {Object.keys(data).map(category => (
+          <MenuItem key={category} value={category}>{category}</MenuItem>
+        ))}
+      </Select>
         </Box>
       </Box>
 
@@ -47,6 +94,7 @@ const Dashboard = () => {
         gridAutoRows="140px"
         gap="20px"
       >
+        {data[selectedCategory].map((item, index) => (
         <Box
           gridColumn="span 3"
           // backgroundColor="#D7816A"
@@ -54,95 +102,16 @@ const Dashboard = () => {
           alignItems="center"
           justifyContent="center"
           borderRadius={2}
-          sx={{
-            background: 'linear-gradient(to bottom right, #F56545, #99201C)',
-          }}
-        >
+          sx={colorsOption[index % colorsOption.length]} // looping through the colors array
+        >   
           <StatBox
-            title="Severly Stunted"
-            subtitle="651"
-            progress="0.43"
-            increase="+14%"
-            // icon={
-            //   <EmailIcon
-            //     sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-            //   />
-            // }
+            key={index}
+            title={item.name}
+            subtitle={item.subtitle}
+            progress={item.progress}
           />
         </Box>
-        <Box
-          gridColumn="span 3"
-          // backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius={2}
-          sx={{
-            background: 'linear-gradient(to bottom right, #D7816A, #BD4F6C)',
-          }}
-         
-        >
-          <StatBox
-            title="Stunted"
-            subtitle="674"
-            progress="0.47"
-            increase="+21%"
-            // icon={
-            //   <PointOfSaleIcon
-            //     sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-            //   />
-            // }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          // backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius={2}
-          sx={{
-            background: 'linear-gradient(to bottom right, #3EADCF, #44B09E)',
-          }}
-          
-        >
-          <StatBox
-            title="Normal"
-            subtitle="1,231"
-            progress="0.51"
-            increase="-5%"
-            // icon={
-            //   <PersonAddIcon
-            //     sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-            //   />
-            // }
-          />
-        </Box>
-        <Box
-          gridColumn="span 3"
-          // backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius={2}
-          sx={{
-            background: 'linear-gradient(to bottom right, #B621FE, #1FD1F9)',
-          }}
-        >
-          <StatBox
-            title="Tall"
-            subtitle="Data 4"
-            progress="0.80"
-            increase="+43%"
-            // icon={
-            //   <TrafficIcon
-            //     sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-            //   />
-            // }
-          />
-        </Box>
-        
-
+        ))}
 
         {/* ROW 2 */}
         <Box
@@ -178,48 +147,36 @@ const Dashboard = () => {
             <LineChart isDashboard={true} />
           </Box>
         </Box>
+
+           {/* EVENTS */}
         <Box
           gridColumn="span 4"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
-          overflow="auto"
+          overflow="hidden" /* Hide the scrollbar for the container */
         >
           <Box
             display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            borderBottom={`4px solid ${colors.primary[500]}`}
+            flexDirection="column" /* Ensure the children stack vertically */
             colors={colors.grey[100]}
             p="15px"
+            height="100%" /* Make sure the container takes up the full height */
           >
-            <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              Logs
-            </Typography>
-          </Box>
-          {mockTransactions.map((transaction, i) => (
             <Box
-              key={`${transaction.txId}-${i}`}
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
               borderBottom={`4px solid ${colors.primary[500]}`}
-              p="15px"
+              paddingBottom="15px"
             >
-              <Box>
-                <Typography
-                  color={colors.greenAccent[500]}
-                  variant="h5"
-                  fontWeight="600"
-                >
-                  Brgy. Alapng
-                </Typography>
-                <Typography color={colors.grey[100]}>
-                  Sent a Document
-                </Typography>
-              </Box>
-              <Box color={colors.grey[100]}>{transaction.date}</Box>
+              <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
+                Upcoming Events
+              </Typography>
             </Box>
-          ))}
+            <Box
+              overflow="auto" /* Allow only the EventsList component to scroll */
+              flex="1" /* Make the EventsList take up remaining vertical space */
+            >
+              <EventsList />
+            </Box>
+          </Box>
         </Box>
 
         {/* ROW 3 */}
@@ -286,5 +243,6 @@ const Dashboard = () => {
     </Box>
   );
 };
+
 
 export default Dashboard;

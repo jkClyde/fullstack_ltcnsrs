@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .activation-button {
+            text-align: center;
+            margin: 50px;
+        }
+
+        .button-link {
+            display: inline-block;
+            background-color: #007BFF; /* Button background color */
+            color: #fff; /* Text color */
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .button-link:hover {
+            background-color: #0056b3; /* Button background color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="activation-button">
+        <a href="{{ activation_url }}" class="button-link">Activate Now</a>
+    </div>
+</body>
+</html>

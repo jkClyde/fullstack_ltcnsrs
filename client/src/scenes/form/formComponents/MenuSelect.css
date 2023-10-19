@@ -1,0 +1,18 @@
+/* MenuInput.css */
+.menuSelect label{
+    display: block;
+}
+/* Define additional styles for dark mode here */
+select.dark-theme {
+    /* Define dark mode styles here */
+    /* For example, you can change the background color and text color */
+    background-color: #3d3d3d; /* Dark background color */
+    color: white; /* Text color in dark mode */
+    border-color: #3d3d3d;
+  }
+.helper-text{
+    color: red;
+    font-size: 13px;
+    padding-top: 12px;
+}
+  
