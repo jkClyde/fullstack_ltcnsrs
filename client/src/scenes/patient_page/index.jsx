@@ -74,7 +74,9 @@ const PatientProfile = ({ patient, updatePatientData }) => {
 
   const handleSaveClick = () => {
     setIsEditing(false);
-
+    const handleYearChange = (event) => {
+      setSelectedYear(event.target.value);
+    };
     // Prepare the data to be sent to the backend
     const updatedPatientData = {
       ...editedPatient,
@@ -155,6 +157,24 @@ const PatientProfile = ({ patient, updatePatientData }) => {
 
   const handleViewChange = (event) => {
     setSelectedView(event.target.value);
+
+    // Update selectedYear and selectedQuarter based on the conditions
+    if (event.target.value === "patient") {
+      // Find the patient with the same first name, middle name, last name, and dow
+      const matchingPatient = gridData.find(
+        (item) =>
+          item.firstName === editedPatient.firstName &&
+          item.middleName === editedPatient.middleName &&
+          item.lastName === editedPatient.lastName &&
+          item.dow === editedPatient.dow
+      );
+
+      // Update selectedYear and selectedQuarter based on the found patient
+      if (matchingPatient) {
+        setSelectedYear(matchingPatient.year);
+        setselectedQuarter(matchingPatient.quarter);
+      }
+    }
   };
 
   const renderFullName = () => (

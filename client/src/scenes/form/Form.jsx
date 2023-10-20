@@ -1,7 +1,12 @@
+import React, { useState, useEffect, useCallback } from "react";
+
 import TextInput from "./formComponents/TextInput";
 import DateInput from "./formComponents/DateInput";
 import MenuSelect from "./formComponents/MenuSelect";
 import MenuInput from "./formComponents/MenuInput";
+
+import ethnicityOptions from "./ethnicityOptions";
+import barangayOptions from "./barangayOptions";
 
 import { Box, Button } from "@mui/material";
 import { Formik } from "formik";
@@ -9,14 +14,9 @@ import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 import axios from "axios"; // Import Axios
-import React, { useState, useEffect, useCallback } from "react";
 import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import DuplicateRecordModal from "./DuplicateRecordModal";
-
-import ethnicityOptions from "./ethnicityOptions"; // Adjust the path as needed
-import barangayOptions from "./barangayOptions";
 
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -27,17 +27,7 @@ const Form = () => {
   const [selectedDOW, setSelectedDOW] = useState(null);
   const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
   const [isDuplicateModalOpen, setDuplicateModalOpen] = useState(false);
-
   const notify = () => toast.success("Data added successfully!");
-
-  const handleDuplicateCancel = () => {
-    setDuplicateModalOpen(false);
-  };
-
-  const handleDuplicateConfirm = (values) => {
-    setDuplicateModalOpen(false);
-    handleFormSubmit(values, { resetForm }, true);
-  };
 
   const handleDateChange = (name, date, dateType) => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
@@ -136,9 +126,23 @@ const Form = () => {
     );
 
     if (isDuplicate) {
-      setDuplicateModalOpen(true);
+      toast.error(
+        "Duplicate Data Found: There is already a duplicate entry in the table.",
+        {
+          position: toast.POSITION.TOP_CENTER,
+          toastStyle: {
+            top: "50%",
+            transform: "translateY(-50%)",
+            fontSize: "18px",
+            padding: "20px",
+          },
+          style: { fontSize: "18px", padding: "20px" },
+        }
+      );
+
       return;
     }
+
     if (confirmed) {
       axios
         .post("http://127.0.0.1:8000/forms/", {
@@ -536,12 +540,6 @@ const Form = () => {
           </form>
         )}
       </Formik>
-      <DuplicateRecordModal
-        isOpen={isDuplicateModalOpen}
-        onConfirm={() => handleDuplicateConfirm(values)} // Pass values here
-        onCancel={handleDuplicateCancel}
-        onRequestClose={() => setDuplicateModalOpen(false)}
-      />
     </Box>
   );
 };
