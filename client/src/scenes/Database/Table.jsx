@@ -172,6 +172,30 @@ const Table = () => {
     setSelectedPatient(patient);
     setIsProfileOpen(true);
   };
+
+  <Dialog
+    open={isProfileOpen}
+    onClose={handleCloseProfile}
+    maxWidth="md"
+    fullWidth
+  >
+    <DialogContent>
+      {/* Display the patient profile */}
+      {selectedPatient && (
+        <PatientProfile
+          patient={{
+            ...selectedPatient,
+            aim: calculateAgeInMonths(selectedPatient.birthdate),
+            weightForAge: selectedPatient.weightForAge,
+            lengthForAge: selectedPatient.lengthForAge,
+            weightForLength: selectedPatient.weightForLength,
+          }}
+          updatePatientData={updatePatientData}
+        />
+      )}
+    </DialogContent>
+  </Dialog>;
+
   // const handleDelete = (id) => {
   //   fetch(`http://127.0.0.1:8000/forms/${id}/`, {
   //     method: "DELETE",

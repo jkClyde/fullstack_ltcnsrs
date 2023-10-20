@@ -17,6 +17,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { format } from "date-fns";
 
+import lengthForAgeStatus from "../Database/Calculations/calculateAgeInMonths";
+import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
+import weightForLengthStatus from "../Database/Calculations/weightForLengthStatus";
 // Function to calculate age in months
 const calculateAgeInMonths = (birthdate) => {
   const today = new Date();
@@ -297,18 +300,19 @@ const PatientProfile = ({ patient, updatePatientData }) => {
         {renderTextField(
           "Weight For Age",
           "status",
-          editedPatient.weigthForAge
+          weightForAgeStatus(editedPatient)
         )}
         {renderTextField(
           "Length For Age",
           "status",
-          editedPatient.lengthForAge
+          lengthForAgeStatus(editedPatient)
         )}
         {renderTextField(
           "Weight For Length",
           "status",
-          editedPatient.weightForLength
+          weightForLengthStatus(editedPatient)
         )}
+
         {renderTextField("Disability", "disability", editedPatient.disability)}
       </Grid>
     </Grid>
