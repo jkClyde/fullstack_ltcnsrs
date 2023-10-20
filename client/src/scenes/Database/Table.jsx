@@ -223,7 +223,7 @@ const Table = () => {
     },
     {
       field: "middleName",
-      headerName: "Middle Name",
+      headerName: "MI",
       flex: 1,
       cellClassName: "mname-column--cell",
       renderCell: renderWrappedCell,
@@ -315,7 +315,7 @@ const Table = () => {
     },
     {
       field: "profile",
-      headerName: "Profile",
+      headerName: "Child Profile",
       flex: 2,
       renderCell: (params) => (
         <Button
