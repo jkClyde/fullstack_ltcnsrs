@@ -38,12 +38,28 @@ const PatientProfile = ({ patient, updatePatientData }) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [gridData, setGridData] = useState([]);
 
-  const fetchData = () => {
-    fetch("http://127.0.0.1:8000/forms/")
-      .then((response) => response.json())
+  const fetchData = (patientId, updatedPatient) => {
+    // Construct the API endpoint to fetch the data of the selected patient
+    const quarterEndpoint = calculateQuarter(editedPatient.dow);
+    const endpoint = `http://127.0.0.1:8000/${quarterEndpoint}`; // Replace 'patients' with your actual endpoint
+
+    // Make a GET request to fetch the data
+    fetch(endpoint)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          console.error("Error fetching data:", response.statusText);
+          throw new Error("Error fetching data");
+        }
+      })
       .then((data) => {
-        console.log("Fetched data:", data);
+        // Update your table data with the fetched data
         setGridData(data);
+        if (updatedPatient) {
+          // Update the updated patient data
+          setEditedPatient(updatedPatient);
+        }
       })
       .catch((error) => console.error("Error fetching data:", error));
   };
@@ -74,20 +90,22 @@ const PatientProfile = ({ patient, updatePatientData }) => {
 
   const handleSaveClick = () => {
     setIsEditing(false);
-    const handleYearChange = (event) => {
-      setSelectedYear(event.target.value);
-    };
+    const quarterEndpoint = calculateQuarter(editedPatient.dow);
+
+    if (quarterEndpoint === "Unknown Quarter") {
+      console.error("Could not determine the quarter endpoint.");
+      return;
+    }
+
     // Prepare the data to be sent to the backend
     const updatedPatientData = {
       ...editedPatient,
-      birthdate: format(new Date(editedPatient.birthdate), "yyyy-MM-dd"), // Format birthdate
-      aim: calculateAgeInMonths(editedPatient.birthdate), // Recalculate age in months
+      birthdate: format(new Date(editedPatient.birthdate), "yyyy-MM-dd"),
+      aim: calculateAgeInMonths(editedPatient.birthdate),
     };
 
-    console.log("Updated patient data before API call:", updatedPatientData);
-
     // Send a PUT request to update the patient data
-    fetch(`http://127.0.0.1:8000/forms/${editedPatient.id}/`, {
+    fetch(`http://127.0.0.1:8000/${quarterEndpoint}/${editedPatient.id}/`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -105,11 +123,34 @@ const PatientProfile = ({ patient, updatePatientData }) => {
       .then((updatedData) => {
         console.log("Updated data from API:", updatedData);
         onUpdateSuccess(updatedData);
-        // After saving, fetch the updated data
-        fetchData();
+
+        // Fetch the updated data of the selected patient immediately
+        fetchData(editedPatient.id, updatedData); // Pass the patient ID and updated patient data
+
         updatePatientData(updatedData);
       })
       .catch((error) => console.error("Error updating data:", error));
+  };
+
+  const calculateQuarter = (dow) => {
+    if (!dow) {
+      return "Unknown Quarter";
+    }
+
+    const dateOfWeighing = new Date(dow);
+    const month = dateOfWeighing.getMonth() + 1;
+
+    if (month >= 1 && month <= 3) {
+      return "firstquarter";
+    } else if (month >= 4 && month <= 6) {
+      return "secondquarter";
+    } else if (month >= 7 && month <= 9) {
+      return "thirdquarter";
+    } else if (month >= 10 && month <= 12) {
+      return "fourthquarter";
+    } else {
+      return "Unknown Quarter";
+    }
   };
 
   const handleCancelClick = () => {
@@ -151,6 +192,7 @@ const PatientProfile = ({ patient, updatePatientData }) => {
       return updatedPatient;
     });
   };
+
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
   };

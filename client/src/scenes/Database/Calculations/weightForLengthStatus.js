@@ -12,7 +12,7 @@ const weigthForLengthStatus = (birthdate, length, weight, gender) => {
       for (const wfl of weightForLengthGender1) {
         if (wfl.length === childLength) {
           if (weight <= wfl.SW) {
-            return "Severly Underweight";
+            return "Severely Underweight";
           } else if (weight >= wfl.WFrom && weight <= wfl.WTo) {
             return "Underweight";
           } else if (weight >= wfl.NFrom && weight <= wfl.NTo) {
@@ -20,22 +20,22 @@ const weigthForLengthStatus = (birthdate, length, weight, gender) => {
           } else if (weight >= wfl.OWFrom && weight <= wfl.OWTo) {
             return "Overweight";
           } else if (weight >= wfl.O) {
-            return "Overweight";
+            return "Obese";
           } else {
-            return "Data not available for this value";
+            return "Data N/A";
           }
         }
       }
-      return "Height not found in data";
+      return "Height N/A";
     } else {
-      return "Sex not found in data";
+      return "Gender N/A";
     }
   } else if (ageInMonths >= 24 && ageInMonths <= 60) {
     if (weightForLengthGender2) {
       for (const wfl of weightForLengthGender2) {
         if (wfl.length === childLength) {
           if (weight <= wfl.SW) {
-            return "Severly Underweight";
+            return "Severely Underweight";
           } else if (weight >= wfl.WFrom && weight <= wfl.WTo) {
             return "Underweight";
           } else if (weight >= wfl.NFrom && weight <= wfl.NTo) {
@@ -43,18 +43,18 @@ const weigthForLengthStatus = (birthdate, length, weight, gender) => {
           } else if (weight >= wfl.OWFrom && weight <= wfl.OWTo) {
             return "Overweight";
           } else if (weight >= wfl.O) {
-            return "Overweight";
+            return "Obese";
           } else {
-            return "Data not available for this value";
+            return "Data N/A";
           }
         }
       }
-      return "Height not found in data";
+      return "Height N/A";
     } else {
-      return "Sex not found in data";
+      return "Gender N/A";
     }
   } else {
-    return "Child is too old to be assessed";
+    return "Child > 60 mos. old";
   }
 };
 export default weigthForLengthStatus; // Export it as the default export

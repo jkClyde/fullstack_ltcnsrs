@@ -4,6 +4,12 @@ import lengthForAgeStatus from "./Calculations/lengthForAgeStatus";
 import weightForAgeStatus from "./Calculations/weightForAgeStatus";
 import weightForLengthStatus from "./Calculations/weightForLengthStatus";
 import { calculateAgeInMonths } from "./Calculations/calculateAgeInMonths";
+import { getCellClassNameWFA } from "./StatusReference/StatusCellColors/getCellClassNameWFA.js";
+import { getCellClassNameLFA } from "./StatusReference/StatusCellColors/getCellClassNameLFA.js";
+import { getCellClassNameWFL } from "./StatusReference/StatusCellColors/getCellClassNameWFL.js";
+import VisibilityIcon from "@mui/icons-material/Visibility"; // install this if needed
+import IconButton from "@mui/material/IconButton";
+
 import {
   Box,
   Typography,
@@ -45,6 +51,24 @@ const Table = () => {
       "4th Quarter",
     ];
   };
+  const handleDeleteRow = (id) => {
+    // Make an API request to delete the record
+    fetch(`http://127.0.0.1:8000/fourthquarter/${id}/`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.status === 204) {
+          // Deletion in the database was successful, now update the frontend state
+          setGridData((prevData) => prevData.filter((row) => row.id !== id));
+        } else {
+          // Handle errors here
+          console.error("Error deleting the record");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting the record:", error);
+      });
+  };
 
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
@@ -57,11 +81,43 @@ const Table = () => {
     // Fetch data from Django API endpoint based on selected year and quarter
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/forms/?year=${selectedYear}&quarter=${selectedQuarter}`
-        );
-        const data = await response.json();
-        const filteredData = filterDataByQuarter(data);
+        const selectedQuarters =
+          selectedQuarter === "All Quarter"
+            ? ["1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter"]
+            : [selectedQuarter];
+        const allQuarterData = [];
+
+        // Fetch data for each selected quarter
+        for (const quarter of selectedQuarters) {
+          let endpoint;
+
+          // Determine the API endpoint based on the selected quarter
+          switch (quarter) {
+            case "1st Quarter":
+              endpoint = "firstquarter";
+              break;
+            case "2nd Quarter":
+              endpoint = "secondquarter";
+              break;
+            case "3rd Quarter":
+              endpoint = "thirdquarter";
+              break;
+            case "4th Quarter":
+              endpoint = "fourthquarter";
+              break;
+            default:
+              console.error("Invalid quarter:", quarter);
+              continue;
+          }
+
+          const response = await fetch(
+            `http://127.0.0.1:8000/${endpoint}/?year=${selectedYear}`
+          );
+          const data = await response.json();
+          allQuarterData.push(...data);
+        }
+
+        const filteredData = filterDataByQuarter(allQuarterData);
         console.log("Fetched data:", filteredData);
         setGridData(filteredData);
       } catch (error) {
@@ -99,19 +155,6 @@ const Table = () => {
       return "3rd Quarter";
     } else {
       return "4th Quarter";
-    }
-  };
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/forms/?year=${selectedYear}&quarter=${selectedQuarter}`
-      );
-      const data = await response.json();
-      const filteredData = filterDataByQuarter(data, selectedQuarter);
-      console.log("Fetched data:", filteredData);
-      setGridData(filteredData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
     }
   };
 
@@ -196,23 +239,6 @@ const Table = () => {
     </DialogContent>
   </Dialog>;
 
-  // const handleDelete = (id) => {
-  //   fetch(`http://127.0.0.1:8000/forms/${id}/`, {
-  //     method: "DELETE",
-  //   })
-  //     .then((response) => {
-  //       if (response.ok) {
-  //         setGridData((prevData) => prevData.filter((row) => row.id !== id));
-  //         if (selectedPatient && selectedPatient.id === id) {
-  //           setIsProfileOpen(false);
-  //         }
-  //       } else {
-  //         console.error("Error deleting data:", response.statusText);
-  //       }
-  //     })
-  //     .catch((error) => console.error("Error deleting data:", error));
-  // };
-
   const columns = [
     {
       field: "firstName",
@@ -285,32 +311,35 @@ const Table = () => {
       field: "vac",
       headerName: "VAC",
       type: "number", //need to identify if value is text/number
-      flex: 2,
+      flex: 3,
       renderCell: renderWrappedCell,
     },
     {
       field: "purga",
       headerName: "Purga",
       type: "number", //need to identify if value is text/number
-      flex: 2,
+      flex: 3,
       renderCell: renderWrappedCell,
     },
     {
       field: "weightForAge",
       headerName: "Weight For Age",
-      flex: 2,
+      flex: 3,
+      cellClassName: getCellClassNameWFA,
       renderCell: renderWrappedCell,
     },
     {
       field: "lengthForAge",
       headerName: "Length For Age",
-      flex: 2,
+      flex: 3,
+      cellClassName: getCellClassNameLFA,
       renderCell: renderWrappedCell,
     },
     {
       field: "weightForLength",
       headerName: "Weight For Length",
-      flex: 2,
+      flex: 3,
+      cellClassName: getCellClassNameWFL,
       renderCell: renderWrappedCell,
     },
     {
@@ -318,7 +347,7 @@ const Table = () => {
       headerName: "Child Profile",
       flex: 2,
       renderCell: (params) => (
-        <Button
+        <IconButton
           variant="outlined"
           color="secondary" // Set the color of the button (you can use any valid color)
           sx={
@@ -331,27 +360,24 @@ const Table = () => {
             handleProfileButtonClick(params.row);
           }}
         >
-          View
+          <VisibilityIcon />
+        </IconButton>
+      ),
+    },
+    {
+      field: "delete",
+      headerName: "Delete",
+      flex: 2,
+      renderCell: (params) => (
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => handleDeleteRow(params.row.id)}
+        >
+          Delete
         </Button>
       ),
     },
-    // {
-    //   field: "delete",
-    //   headerName: "Delete",
-    //   flex: 1,
-    //   renderCell: (params) => (
-    //     <Button
-    //       variant="contained"
-    //       color="error"
-    //       onClick={(e) => {
-    //         e.stopPropagation();
-    //         handleDelete(params.row.id);
-    //       }}
-    //     >
-    //       Delete
-    //     </Button>
-    //   ),
-    // },
   ];
   return (
     <Box
@@ -361,7 +387,9 @@ const Table = () => {
           border: "none",
         },
         "& .MuiDataGrid-cell": {
-          borderBottom: "none",
+          border: "1px solid",
+          borderColor: colors.blueAccent[700],
+          justifyContent: "center",
         },
         "& .name-column--cell": {
           color: colors.greenAccent[300],

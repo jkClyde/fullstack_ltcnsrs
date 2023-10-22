@@ -1,0 +1,12 @@
+.red-cell {
+  background-color: #ff8279;
+}
+.yellow-cell {
+  background-color: #ddb900;
+}
+.green-cell {
+  background-color: #3ca141;
+}
+.default-cell {
+  background-color: transparent;
+}

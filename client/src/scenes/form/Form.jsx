@@ -18,6 +18,21 @@ import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const getQuarter = () => {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth(); // 0-based index (0 for January, 1 for February, etc.)
+
+  if (currentMonth >= 0 && currentMonth < 3) {
+    return "firstquarter";
+  } else if (currentMonth >= 3 && currentMonth < 6) {
+    return "secondquarter";
+  } else if (currentMonth >= 6 && currentMonth < 9) {
+    return "thirdquarter";
+  } else {
+    return "fourthquarter";
+  }
+};
+
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [selectedDate, setSelectedDate] = useState(null);
@@ -27,7 +42,7 @@ const Form = () => {
   const [selectedDOW, setSelectedDOW] = useState(null);
   const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
   const [isDuplicateModalOpen, setDuplicateModalOpen] = useState(false);
-  const notify = () => toast.success("Data added successfully!");
+  const notify = () => toast.success("Child Data added successfully!");
 
   const handleDateChange = (name, date, dateType) => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
@@ -46,8 +61,10 @@ const Form = () => {
   };
   const [names, setNames] = useState([]);
   const fetchNames = () => {
+    const quarter = getQuarter(); // You need to define or fetch the quarter variable
+    const url = `http://127.0.0.1:8000/${quarter}/`;
     axios
-      .get("http://127.0.0.1:8000/forms/") // Replace with your API endpoint
+      .get(url)
       .then((response) => {
         // Assuming the API response is an array of objects with 'first_name', 'middle_name', and 'last_name' fields
         const retrievedNames = response.data.map((item) => {
@@ -86,14 +103,10 @@ const Form = () => {
     fetchNames();
   }, []);
   const handleChange = (field, value) => {
-    // For other fields, use setFieldValue normally
     setFieldValue(field, value);
-    // }
   };
+
   const handleFormSubmit = (values, { resetForm }, required) => {
-    // Format the birthdate using dayjs
-    // Check if the date field is empty
-    // Check if the birthdate field is empty (required)
     if (!selectedBirthdate && required) {
       alert("Birthdate is required");
       return;
@@ -103,78 +116,93 @@ const Form = () => {
       return;
     }
 
-    // Set the vaccination field to null if selectedVaccinationDate is null, let the database accept null value since its optional
     const vaccinationDate = selectedVaccinationDate
       ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
       : null;
     const purgaDate = selectedPurgaDate
       ? dayjs(selectedPurgaDate).format("YYYY-MM-DD")
       : null;
-    const formattedBirthdate = dayjs(selectedDate).format("YYYY-MM-DD");
 
+    const formattedBirthdate = dayjs(selectedDate).format("YYYY-MM-DD");
     const formattedDow = dayjs(selectedDOW).format("YYYY-MM-DD");
-    // const formattedPurga = dayjs(values.purga).format('YYYY-MM-DD');
-    // const formattedVac = dayjs(values.vac).format('YYYY-MM-DD');
+    const dowMonth = dayjs(selectedDOW).month();
     const confirmed = window.confirm("Are you sure you want to submit?");
 
-    const isDuplicate = names.some(
-      (item) =>
-        item.firstName === values.firstName &&
-        item.middleName === values.middleName &&
-        item.lastName === values.lastName &&
-        item.dow === formattedDow
-    );
-
-    if (isDuplicate) {
-      toast.error(
-        "Duplicate Data Found: There is already a duplicate entry in the table.",
-        {
-          position: toast.POSITION.TOP_CENTER,
-          toastStyle: {
-            top: "50%",
-            transform: "translateY(-50%)",
-            fontSize: "18px",
-            padding: "20px",
-          },
-          style: { fontSize: "18px", padding: "20px" },
-        }
-      );
-
-      return;
+    let quarter;
+    if (dowMonth >= 0 && dowMonth < 3) {
+      quarter = "firstquarter";
+    } else if (dowMonth >= 3 && dowMonth < 6) {
+      quarter = "secondquarter";
+    } else if (dowMonth >= 6 && dowMonth < 9) {
+      quarter = "thirdquarter";
+    } else {
+      quarter = "fourthquarter";
     }
 
-    if (confirmed) {
-      axios
-        .post("http://127.0.0.1:8000/forms/", {
-          ...values,
-          birthdate: formattedBirthdate,
-          dow: formattedDow,
-          purga: purgaDate,
-          vac: vaccinationDate,
-        })
-        .then((response) => {
-          console.log(
-            "Data successfully added to the database:",
-            response.data
+    // Fetch data for the specific quarter
+    axios
+      .get(`http://127.0.0.1:8000/${quarter}/`)
+      .then((response) => {
+        const quarterData = response.data;
+
+        const isDuplicate = quarterData.some(
+          (item) =>
+            item.firstName.toLowerCase() === values.firstName.toLowerCase() &&
+            item.middleName.toLowerCase() === values.middleName.toLowerCase() &&
+            item.lastName.toLowerCase() === values.lastName.toLowerCase() &&
+            item.dow === formattedDow
+        );
+
+        if (isDuplicate) {
+          // Handle duplicate data
+          toast.error(
+            "Duplicate Data Found: There is already a duplicate entry in the table.",
+            {
+              position: toast.POSITION.TOP_CENTER,
+              toastStyle: {
+                top: "50%",
+                transform: "translateY(-50%)",
+                fontSize: "12px",
+                padding: "10px",
+              },
+              style: { fontSize: "16px", padding: "8px" },
+            }
           );
-          // Optionally, you can reset the form after successful submission
-          resetForm();
+          return;
+        }
+        // Proceed to submit the form if not a duplicate
+        if (confirmed) {
+          axios
+            .post(`http://127.0.0.1:8000/${quarter}/`, {
+              ...values,
+              birthdate: formattedBirthdate,
+              dow: formattedDow,
+              purga: purgaDate,
+              vac: vaccinationDate,
+            })
+            .then((response) => {
+              console.log(
+                "Data successfully added to the database:",
+                response.data
+              );
+              resetForm();
 
-          setSelectedBirthdate(null);
-          setSelectedDOW(null);
-          setSelectedPurgaDate(null);
-          setSelectedVaccinationDate(null);
-          setSelectedDate(null);
-          // Show notification
-          notify();
-          // Additional notification for child added
-          toast.success("Child added successfully!");
-        })
-        .catch((error) => {
-          console.error("Error adding data to the database:", error);
-          console.log("Full error response:", error.response);
-        });
-    }
+              setSelectedBirthdate(null);
+              setSelectedDOW(null);
+              setSelectedPurgaDate(null);
+              setSelectedVaccinationDate(null);
+              setSelectedDate(null);
+              notify();
+            })
+            .catch((error) => {
+              console.error("Error adding data to the database:", error);
+              console.log("Full error response:", error.response);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data for the specific quarter:", error);
+      });
   };
   const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
     const confirmed = window.confirm(
@@ -182,10 +210,10 @@ const Form = () => {
     );
     if (confirmed) {
       resetForm();
-      setSelectedDate(null); // Clear the selected date
-      setSelectedBirthdate(null); // Clear the selected birthdate
-      setSelectedVaccinationDate(null); // Clear the selected vaccination date
-      setSelectedDOW(null); // Clear the selected vaccination date
+      setSelectedDate(null);
+      setSelectedBirthdate(null);
+      setSelectedVaccinationDate(null);
+      setSelectedDOW(null);
       setSelectedPurgaDate(null);
 
       // Show success notification
