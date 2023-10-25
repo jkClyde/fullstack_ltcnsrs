@@ -9,6 +9,7 @@ import { getCellClassNameLFA } from "./StatusReference/StatusCellColors/getCellC
 import { getCellClassNameWFL } from "./StatusReference/StatusCellColors/getCellClassNameWFL.js";
 import VisibilityIcon from "@mui/icons-material/Visibility"; // install this if needed
 import IconButton from "@mui/material/IconButton";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import {
   Box,
@@ -52,6 +53,13 @@ const Table = () => {
     ];
   };
   const handleDeleteRow = (id) => {
+    // Ask the user for confirmation before deleting
+    const confirmed = window.confirm("Are you sure you want to delete this row?");
+    
+    if (!confirmed) {
+      // If the user cancels the deletion, do nothing
+      return;
+    }
     // Make an API request to delete the record
     fetch(`http://127.0.0.1:8000/fourthquarter/${id}/`, {
       method: "DELETE",
@@ -184,11 +192,7 @@ const Table = () => {
   const renderWrappedCell = (params) => (
     <Typography variant="body2" sx={{ whiteSpace: "normal" }}>
       {params.colDef?.field === "aim"
-        ? `${calculateAgeInMonths(params.row.birthdate)} ${
-            calculateAgeInMonths(params.row.birthdate) === 1
-              ? "month"
-              : "months"
-          } old`
+        ? `${calculateAgeInMonths(params.row.birthdate)}`
         : params.colDef?.field === "weightForAge"
         ? `${weightForAgeStatus(
             params.row.birthdate,
@@ -242,57 +246,73 @@ const Table = () => {
   const columns = [
     {
       field: "firstName",
-      headerName: "First Name",
+      headerName: "F. Name",
       flex: 2,
       cellClassName: "fname-column--cell",
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "middleName",
-      headerName: "MI",
+      headerName: "M.I.",
       flex: 1,
       cellClassName: "mname-column--cell",
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "lastName",
-      headerName: "Last Name",
+      headerName: "L. Name",
       flex: 2,
       cellClassName: "lname-column--cell",
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "birthdate",
       headerName: "DOB",
       flex: 2,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "dow",
       headerName: "DOW",
       flex: 2,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "aim",
       headerName: "AIM",
       type: "number",
-      flex: 2,
+      flex: 1,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "weight",
-      headerName: "Weight",
+      headerName: "Wt.",
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "height",
-      headerName: "Height",
+      headerName: "Ht.",
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "muac",
@@ -300,12 +320,16 @@ const Table = () => {
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "gender",
       headerName: "Gender",
-      flex: 1,
+      flex: 2,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "vac",
@@ -313,6 +337,8 @@ const Table = () => {
       type: "number", //need to identify if value is text/number
       flex: 3,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "purga",
@@ -320,36 +346,42 @@ const Table = () => {
       type: "number", //need to identify if value is text/number
       flex: 3,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
     },
     {
       field: "weightForAge",
-      headerName: "Weight For Age",
+      headerName: "WFA",
       flex: 3,
       cellClassName: getCellClassNameWFA,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
     },
     {
       field: "lengthForAge",
-      headerName: "Length For Age",
+      headerName: "LFA",
       flex: 3,
       cellClassName: getCellClassNameLFA,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
     },
     {
       field: "weightForLength",
-      headerName: "Weight For Length",
+      headerName: "WFL",
       flex: 3,
       cellClassName: getCellClassNameWFL,
       renderCell: renderWrappedCell,
+      headerAlign: "center",
     },
     {
       field: "profile",
-      headerName: "Child Profile",
+      headerName: "View",
+      headerAlign: "center",
       flex: 2,
       renderCell: (params) => (
         <IconButton
           variant="outlined"
-          color="secondary" // Set the color of the button (you can use any valid color)
+          color={theme.palette.secondary.main} 
           sx={
             {
               // Add additional styling here if needed
@@ -367,15 +399,16 @@ const Table = () => {
     {
       field: "delete",
       headerName: "Delete",
+      headerAlign: "center",
       flex: 2,
       renderCell: (params) => (
-        <Button
+        <IconButton
           variant="outlined"
           color="error"
           onClick={() => handleDeleteRow(params.row.id)}
         >
-          Delete
-        </Button>
+          <DeleteIcon/>
+        </IconButton>
       ),
     },
   ];
@@ -390,6 +423,11 @@ const Table = () => {
           border: "1px solid",
           borderColor: colors.blueAccent[700],
           justifyContent: "center",
+        },
+        "& .centered-cell": {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         },
         "& .name-column--cell": {
           color: colors.greenAccent[300],

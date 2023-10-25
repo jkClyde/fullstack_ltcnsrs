@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 import ethnicityOptions from "../form/ethnicityOptions";
+import { calculateAgeInMonths } from "./../Database/Calculations/calculateAgeInMonths";
+import lengthForAgeStatus from "./../Database/Calculations/lengthForAgeStatus";
+import weightForAgeStatus from "./../Database/Calculations/weightForAgeStatus";
+import weightForLengthStatus from "./../Database/Calculations/weightForLengthStatus";
+import "./../Database/StatusReference/StatusCellColors/statusColors.css"; 
+import { getClassForStatusColorValue } from './getClassForStatusColorValue';
 import {
   Box,
   Typography,
@@ -17,21 +23,15 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { format } from "date-fns";
 
-// Function to calculate age in months
-const calculateAgeInMonths = (birthdate) => {
-  const today = new Date();
-  const birthDate = new Date(birthdate);
-
-  let ageInMonths = (today.getFullYear() - birthDate.getFullYear()) * 12;
-  ageInMonths -= birthDate.getMonth();
-  ageInMonths += today.getMonth();
-
-  return ageInMonths;
-};
 
 const PatientProfile = ({ patient, updatePatientData }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedPatient, setEditedPatient] = useState({ ...patient });
+  const [editedPatient, setEditedPatient] = useState({ 
+    ...patient,
+    weightForAge: weightForAgeStatus(patient.birthdate, patient.weight, patient.gender),
+    lengthForAge: lengthForAgeStatus(patient.birthdate, patient.height, patient.gender),
+    weightForLength: weightForLengthStatus(patient.birthdate, patient.height, patient.weight, patient.gender), 
+  });
   const [selectedYear, setSelectedYear] = useState(2022);
   const [selectedQuarter, setselectedQuarter] = useState("1st Quarter");
   const [selectedView, setSelectedView] = useState("patient"); // Default view
@@ -65,12 +65,23 @@ const PatientProfile = ({ patient, updatePatientData }) => {
   };
 
   useEffect(() => {
-    // Recalculate and update aim when birthdate changes
+    // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
+    const birthdate = editedPatient.birthdate;
+    const aim = calculateAgeInMonths(birthdate);
+    const weightForAge = weightForAgeStatus(birthdate, editedPatient.weight, editedPatient.gender);
+    const lengthForAge = lengthForAgeStatus(birthdate, editedPatient.height, editedPatient.gender);
+    const weightForLength = weightForLengthStatus(birthdate, editedPatient.height, editedPatient.weight, editedPatient.gender);
+  
     setEditedPatient((prevPatient) => ({
       ...prevPatient,
-      aim: calculateAgeInMonths(prevPatient.birthdate),
+      aim: aim,
+      weightForAge: weightForAge,
+      lengthForAge: lengthForAge,
+      weightForLength: weightForLength,
     }));
   }, [editedPatient.birthdate]);
+  
+  
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -102,6 +113,9 @@ const PatientProfile = ({ patient, updatePatientData }) => {
       ...editedPatient,
       birthdate: format(new Date(editedPatient.birthdate), "yyyy-MM-dd"),
       aim: calculateAgeInMonths(editedPatient.birthdate),
+      // weightForAge: editedPatient.weightForAge, // Include the calculated fields
+      // lengthForAge: editedPatient.lengthForAge,
+      // weightForLength: editedPatient.weightForLength,
     };
 
     // Send a PUT request to update the patient data
@@ -161,19 +175,23 @@ const PatientProfile = ({ patient, updatePatientData }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
+  
     // Update the edited patient data
     setEditedPatient((prevPatient) => {
       let updatedPatient;
-
+  
       if (name === "birthdate") {
         const birthdate = format(new Date(value), "yyyy-MM-dd");
         const aim = calculateAgeInMonths(birthdate);
-
         updatedPatient = {
           ...prevPatient,
           [name]: birthdate,
           aim: aim,
+        };
+      } else if (name === "weight" || name === "height") {
+        updatedPatient = {
+          ...prevPatient,
+          [name]: value,
         };
       } else if (name === "dow" || name === "purga" || name === "vac") {
         updatedPatient = {
@@ -186,12 +204,25 @@ const PatientProfile = ({ patient, updatePatientData }) => {
           [name]: value,
         };
       }
-
-      console.log("Updated Patient Data:", updatedPatient);
-
+  
+      // Calculate weightForAge, lengthForAge, and weightForLength based on updated data
+      if (name === "birthdate" || name === "weight" || name === "height" || name === "gender") {
+        const weightForAge = weightForAgeStatus(updatedPatient.birthdate, updatedPatient.weight, updatedPatient.gender);
+        const lengthForAge = lengthForAgeStatus(updatedPatient.birthdate, updatedPatient.height, updatedPatient.gender);
+        const weightForLength = weightForLengthStatus(updatedPatient.birthdate, updatedPatient.height, updatedPatient.weight, updatedPatient.gender);
+  
+        updatedPatient = {
+          ...updatedPatient,
+          weightForAge: weightForAge,
+          lengthForAge: lengthForAge,
+          weightForLength: weightForLength,
+        };
+      }
+  
       return updatedPatient;
     });
   };
+  
 
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
@@ -244,7 +275,7 @@ const PatientProfile = ({ patient, updatePatientData }) => {
   );
 
   const renderTextField = (label, name, value, unit = "") => (
-    <Box mt="16px">
+    <Box mt="10px">
       {console.log("Rendering TextField:", name, value)}
       {/* Add this line for debugging */}
       {isEditing ? (
@@ -275,16 +306,25 @@ const PatientProfile = ({ patient, updatePatientData }) => {
             label={label}
             value={value}
             onChange={handleInputChange}
+            style={{ marginTop: "10px" }}
           />
         )
       ) : (
         <>
-          <Typography variant="h4" style={{ fontWeight: "bold" }}>
-            {label}:
-          </Typography>
-          <Typography variant="body1">
-            {value} {unit}
-          </Typography>
+          <Grid item xs={12}>
+                <Box mb="10px">           
+                  <Box padding="10px" borderRadius="5px" border= "1px solid grey" className={getClassForStatusColorValue(value)}
+>
+                      <Typography variant="h6" style={{ fontWeight: "bold" }}>
+                        {label}   
+                      </Typography>
+                      <Typography variant="body1">
+                        {value} {unit}
+                      </Typography>
+                    </Box>
+                </Box>
+
+          </Grid>
         </>
       )}
     </Box>
@@ -312,12 +352,16 @@ const PatientProfile = ({ patient, updatePatientData }) => {
           </Box>
         ) : (
           // Display gender information when not editing
-          <Box mt="16px">
-            <Typography variant="h4" style={{ fontWeight: "bold" }}>
-              Gender:
-            </Typography>
-            <Typography variant="body1">{editedPatient.gender}</Typography>
-          </Box>
+          <Grid item xs={12}>
+            <Box mt="1px">
+              <Box padding="10px" borderRadius="5px" border= "1px solid grey">
+                <Typography variant="h6" style={{ fontWeight: "bold" }}>
+                  Gender:
+                </Typography>
+                <Typography variant="body1">{editedPatient.gender}</Typography>
+              </Box>
+            </Box>
+          </Grid>
         )}
       </Grid>
 
@@ -325,33 +369,39 @@ const PatientProfile = ({ patient, updatePatientData }) => {
         {renderTextField("Weight", "weight", editedPatient.weight, "kg")}
         {renderTextField("Height", "height", editedPatient.height, "cm")}
         {renderTextField("Date of Birth", "birthdate", editedPatient.birthdate)}
-        {!isEditing &&
-          renderTextField("Age in Months", "aim", editedPatient.aim, "Months")}
+        {renderTextField("DOW", "dow", editedPatient.dow)}
       </Grid>
 
       <Grid item xs={3}>
-        {renderTextField("DOW", "dow", editedPatient.dow)}
+
         {renderTextField("Vaccination", "vac", editedPatient.vac)}
         {renderTextField("Purga", "purga", editedPatient.purga)}
+        {renderTextField("Disability", "disability", editedPatient.disability)}
+
       </Grid>
 
       <Grid item xs={3}>
-        {renderTextField(
+      {!isEditing && renderTextField(
+        "Age in Months", 
+        "aim", 
+        editedPatient.aim,
+         "Months old",
+         )}
+        {!isEditing && renderTextField(
           "Weight For Age",
-          "status",
-          editedPatient.weigthForAge
+          "weightForAge",
+          editedPatient.weightForAge,
         )}
-        {renderTextField(
+        {!isEditing && renderTextField(
           "Length For Age",
-          "status",
-          editedPatient.lengthForAge
+          "lengthForAge",
+          editedPatient.lengthForAge,
         )}
-        {renderTextField(
+        {!isEditing && renderTextField(
           "Weight For Length",
-          "status",
-          editedPatient.weightForLength
+          "weightForLength",
+          editedPatient.weightForLength,
         )}
-        {renderTextField("Disability", "disability", editedPatient.disability)}
       </Grid>
     </Grid>
   );
@@ -470,6 +520,7 @@ const PatientProfile = ({ patient, updatePatientData }) => {
           id="view-select"
           value={selectedView}
           onChange={handleViewChange}
+          sx={{mb:"10px"}}
         >
           <MenuItem value="patient">Child Profile</MenuItem>
           <MenuItem value="parent">Parent Information</MenuItem>
@@ -483,7 +534,7 @@ const PatientProfile = ({ patient, updatePatientData }) => {
             id="year-select"
             value={selectedYear}
             onChange={handleYearChange}
-            sx={{ marginRight: "10px" }}
+            sx={{ marginRight: "10px", mb:"10px" }}
           >
             {Array.from({ length: 5 }, (_, i) => (
               <MenuItem key={i} value={new Date().getFullYear() - i}>
@@ -497,7 +548,7 @@ const PatientProfile = ({ patient, updatePatientData }) => {
             id="quarter-select"
             value={selectedQuarter}
             onChange={(event) => setselectedQuarter(event.target.value)}
-            sx={{ marginLeft: "10px" }}
+            sx={{ marginLeft: "10px", mb:"10px"  }}
           >
             <MenuItem value="1st Quarter">1st Quarter</MenuItem>
             <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
