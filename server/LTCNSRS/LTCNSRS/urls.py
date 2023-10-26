@@ -13,13 +13,4 @@ urlpatterns = [
     path('', include('app_form.urls')),
     path('', include('app_calendar.urls')),
 
-    # Include URL patterns for each quarter
-    # Replace 'app_form.urls' with the actual URL patterns for the first quarter
-    path('firstquarter/', include('app_form.urls')),
-    # Replace 'app_form.urls' with the actual URL patterns for the second quarter
-    path('secondquarter/', include('app_form.urls')),
-    # Replace 'app_form.urls' with the actual URL patterns for the third quarter
-    path('thirdquarter/', include('app_form.urls')),
-    # Replace 'app_form.urls' with the actual URL patterns for the fourth quarter
-    path('fourthquarter/', include('app_form.urls')),
 ]

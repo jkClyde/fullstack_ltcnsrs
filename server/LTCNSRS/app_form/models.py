@@ -78,8 +78,7 @@ barangay_choices = (
 )
 
 
-class firstQuarter(models.Model):
-    # Add an 'id' field as the primary key
+class Child(models.Model):
     id = models.AutoField(primary_key=True)
     firstName = models.CharField(max_length=255)
     middleName = models.CharField(max_length=255)
@@ -106,93 +105,9 @@ class firstQuarter(models.Model):
     vac = models.DateField(null=True, blank=True)
     barangay = models.CharField(
         max_length=200, choices=barangay_choices, default='Not specified')
+    weightForAgeStatus = models.CharField(max_length=255, default='No Info')
+    lengthForAgeStatus = models.CharField(max_length=255, default='No Info')
+    weigthForLengthStatus = models.CharField(max_length=255, default='No Info')
 
-
-class secondQuarter(models.Model):
-    # Add an 'id' field as the primary key
-    id = models.AutoField(primary_key=True)
-    firstName = models.CharField(max_length=255)
-    middleName = models.CharField(max_length=255)
-    lastName = models.CharField(max_length=255)
-    address = models.CharField(max_length=255, default='Not specified')
-    pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
-    gender = models.CharField(
-        max_length=10, choices=gender_choices, default='Not specified')
-    birthdate = models.DateField(null=True, blank=True)
-    aim = models.IntegerField(default=0)
-    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
-    disability = models.CharField(max_length=50, blank=True, default='')
-    parentName = models.CharField(max_length=255, default='Unknown')
-    occupation = models.CharField(max_length=255, default='Unknown')
-    relationship = models.CharField(
-        max_length=200, choices=relationship_choices, default='Not specified')
-    ethnicity = models.CharField(
-        max_length=200, choices=ethnicity_choices, default='Not specified')
-    dow = models.DateField(null=True, blank=True)
-    weight = models.FloatField(max_length=255, default=0)
-    height = models.FloatField(max_length=255, default=0)
-    muac = models.FloatField(max_length=255, default=0)
-    purga = models.DateField(null=True, blank=True)
-    vac = models.DateField(null=True, blank=True)
-    barangay = models.CharField(
-        max_length=200, choices=barangay_choices, default='Not specified')
-
-
-class thirdQuarter(models.Model):
-    # Add an 'id' field as the primary key
-    id = models.AutoField(primary_key=True)
-    firstName = models.CharField(max_length=255)
-    middleName = models.CharField(max_length=255)
-    lastName = models.CharField(max_length=255)
-    address = models.CharField(max_length=255, default='Not specified')
-    pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
-    gender = models.CharField(
-        max_length=10, choices=gender_choices, default='Not specified')
-    birthdate = models.DateField(null=True, blank=True)
-    aim = models.IntegerField(default=0)
-    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
-    disability = models.CharField(max_length=50, blank=True, default='')
-    parentName = models.CharField(max_length=255, default='Unknown')
-    occupation = models.CharField(max_length=255, default='Unknown')
-    relationship = models.CharField(
-        max_length=200, choices=relationship_choices, default='Not specified')
-    ethnicity = models.CharField(
-        max_length=200, choices=ethnicity_choices, default='Not specified')
-    dow = models.DateField(null=True, blank=True)
-    weight = models.FloatField(max_length=255, default=0)
-    height = models.FloatField(max_length=255, default=0)
-    muac = models.FloatField(max_length=255, default=0)
-    purga = models.DateField(null=True, blank=True)
-    vac = models.DateField(null=True, blank=True)
-    barangay = models.CharField(
-        max_length=200, choices=barangay_choices, default='Not specified')
-
-
-class fourthQuarter(models.Model):
-    # Add an 'id' field as the primary key
-    id = models.AutoField(primary_key=True)
-    firstName = models.CharField(max_length=255)
-    middleName = models.CharField(max_length=255)
-    lastName = models.CharField(max_length=255)
-    address = models.CharField(max_length=255, default='Not specified')
-    pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
-    gender = models.CharField(
-        max_length=10, choices=gender_choices, default='Not specified')
-    birthdate = models.DateField(null=True, blank=True)
-    aim = models.IntegerField(default=0)
-    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
-    disability = models.CharField(max_length=50, blank=True, default='')
-    parentName = models.CharField(max_length=255, default='Unknown')
-    occupation = models.CharField(max_length=255, default='Unknown')
-    relationship = models.CharField(
-        max_length=200, choices=relationship_choices, default='Not specified')
-    ethnicity = models.CharField(
-        max_length=200, choices=ethnicity_choices, default='Not specified')
-    dow = models.DateField(null=True, blank=True)
-    weight = models.FloatField(max_length=255, default=0)
-    height = models.FloatField(max_length=255, default=0)
-    muac = models.FloatField(max_length=255, default=0)
-    purga = models.DateField(null=True, blank=True)
-    vac = models.DateField(null=True, blank=True)
-    barangay = models.CharField(
-        max_length=200, choices=barangay_choices, default='Not specified')
+    class Meta:
+        verbose_name = "Child"  # Set a custom name for the model

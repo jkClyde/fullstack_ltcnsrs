@@ -9,7 +9,9 @@ import { getCellClassNameLFA } from "./StatusReference/StatusCellColors/getCellC
 import { getCellClassNameWFL } from "./StatusReference/StatusCellColors/getCellClassNameWFL.js";
 import VisibilityIcon from "@mui/icons-material/Visibility"; // install this if needed
 import IconButton from "@mui/material/IconButton";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
+import { format } from "date-fns";
+import * as XLSX from "xlsx";
 
 import {
   Box,
@@ -41,9 +43,41 @@ const Table = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedQuarter, setSelectedQuarter] = useState("All Quarter");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [rowToDelete, setRowToDelete] = useState(null);
+
+  const handleExportData = async () => {
+    try {
+      // Send a request to the server to generate the XLSX file
+      const response = await fetch(`http://127.0.0.1:8000/children/`, {
+        method: "POST",
+        body: JSON.stringify({ children: gridData }), // Wrap gridData in an object
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        // Get the filename from the response
+        const { filename } = await response.json();
+
+        // Create a download link for the generated file
+        const downloadLink = document.createElement("a");
+        downloadLink.href = `http://127.0.0.1:8000/download/${filename}`;
+        downloadLink.download = filename;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } else {
+        console.error("Error exporting data:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error exporting data:", error);
+    }
+  };
 
   const getQuarterOptions = () => {
-    // Add an "ALL QUARTER" option to the list of quarters
     return [
       "All Quarter",
       "1st Quarter",
@@ -51,31 +85,6 @@ const Table = () => {
       "3rd Quarter",
       "4th Quarter",
     ];
-  };
-  const handleDeleteRow = (id) => {
-    // Ask the user for confirmation before deleting
-    const confirmed = window.confirm("Are you sure you want to delete this row?");
-    
-    if (!confirmed) {
-      // If the user cancels the deletion, do nothing
-      return;
-    }
-    // Make an API request to delete the record
-    fetch(`http://127.0.0.1:8000/fourthquarter/${id}/`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (response.status === 204) {
-          // Deletion in the database was successful, now update the frontend state
-          setGridData((prevData) => prevData.filter((row) => row.id !== id));
-        } else {
-          // Handle errors here
-          console.error("Error deleting the record");
-        }
-      })
-      .catch((error) => {
-        console.error("Error deleting the record:", error);
-      });
   };
 
   const handleYearChange = (event) => {
@@ -85,85 +94,88 @@ const Table = () => {
   const handleQuarterChange = (event) => {
     setSelectedQuarter(event.target.value);
   };
+
+  const getQuarterFromDOW = (dow) => {
+    const dowMonth = new Date(dow).getMonth() + 1; // January is 0
+    if (dowMonth >= 1 && dowMonth <= 3) {
+      return "1st Quarter";
+    } else if (dowMonth >= 4 && dowMonth <= 6) {
+      return "2nd Quarter";
+    } else if (dowMonth >= 7 && dowMonth <= 9) {
+      return "3rd Quarter";
+    } else if (dowMonth >= 10 && dowMonth <= 12) {
+      return "4th Quarter";
+    }
+    return "Unknown Quarter"; // Handle invalid months if necessary
+  };
   useEffect(() => {
-    // Fetch data from Django API endpoint based on selected year and quarter
     const fetchData = async () => {
       try {
-        const selectedQuarters =
-          selectedQuarter === "All Quarter"
-            ? ["1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter"]
-            : [selectedQuarter];
-        const allQuarterData = [];
-
-        // Fetch data for each selected quarter
-        for (const quarter of selectedQuarters) {
-          let endpoint;
-
-          // Determine the API endpoint based on the selected quarter
-          switch (quarter) {
-            case "1st Quarter":
-              endpoint = "firstquarter";
-              break;
-            case "2nd Quarter":
-              endpoint = "secondquarter";
-              break;
-            case "3rd Quarter":
-              endpoint = "thirdquarter";
-              break;
-            case "4th Quarter":
-              endpoint = "fourthquarter";
-              break;
-            default:
-              console.error("Invalid quarter:", quarter);
-              continue;
-          }
-
+        if (selectedQuarter === "All Quarter") {
+          // Fetch all data for the selected year
           const response = await fetch(
-            `http://127.0.0.1:8000/${endpoint}/?year=${selectedYear}`
+            `http://127.0.0.1:8000/children/?year=${selectedYear}`
           );
           const data = await response.json();
-          allQuarterData.push(...data);
+          setGridData(
+            data.filter((patient) =>
+              patient.dow.includes(selectedYear.toString())
+            )
+          );
+        } else {
+          // Fetch data for the selected year and quarter based on DOW
+          const response = await fetch(
+            `http://127.0.0.1:8000/children/?year=${selectedYear}`
+          );
+          const data = await response.json();
+          const filteredData = data.filter((patient) => {
+            return (
+              getQuarterFromDOW(patient.dow) === selectedQuarter &&
+              patient.dow.includes(selectedYear.toString())
+            );
+          });
+          setGridData(filteredData);
         }
-
-        const filteredData = filterDataByQuarter(allQuarterData);
-        console.log("Fetched data:", filteredData);
-        setGridData(filteredData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
   }, [selectedYear, selectedQuarter]);
 
-  const filterDataByQuarter = (data) => {
-    return data.filter((item) => {
-      const itemMonth = new Date(item.dow).getMonth() + 1; // January is 0
-      const itemYear = new Date(item.dow).getFullYear();
-
-      if (selectedQuarter === "All Quarter") {
-        // If "ALL QUARTER" is selected, only filter by year
-        return itemYear.toString() === selectedYear.toString();
-      } else {
-        // If a specific quarter is selected, filter by both year and quarter
-        const selectedPhase = selectedQuarter;
-        return (
-          itemYear.toString() === selectedYear.toString() &&
-          getQuarter(itemMonth) === selectedPhase
-        );
-      }
-    });
-  };
-  const getQuarter = (month) => {
-    if (month >= 1 && month <= 3) {
-      return "1st Quarter";
-    } else if (month >= 4 && month <= 6) {
-      return "2nd Quarter";
-    } else if (month >= 7 && month <= 9) {
-      return "3rd Quarter";
-    } else {
-      return "4th Quarter";
+  const handleDeleteConfirmation = () => {
+    // Send an API request to delete the record from the database
+    // After a successful delete, update the gridData state
+    // and close the confirmation dialog
+    if (rowToDelete) {
+      // Send an API request to delete the patient record
+      // (Replace 'yourApiEndpoint' with your actual API endpoint)
+      fetch(`http://127.0.0.1:8000/children/${rowToDelete.id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.status === 204) {
+            // Deletion successful
+            const updatedGridData = gridData.filter(
+              (row) => row.id !== rowToDelete.id
+            );
+            setGridData(updatedGridData);
+          } else {
+            console.error("Failed to delete the record");
+          }
+        })
+        .catch((error) => {
+          console.error("Error while deleting the record:", error);
+        })
+        .finally(() => {
+          setIsDeleteDialogOpen(false);
+        });
     }
+  };
+  const handleDeleteRow = (id) => {
+    // Show the delete confirmation dialog
+    setRowToDelete(gridData.find((row) => row.id === id));
+    setIsDeleteDialogOpen(true);
   };
 
   const handleRowClick = (params, event) => {
@@ -215,6 +227,7 @@ const Table = () => {
         : params.value}
     </Typography>
   );
+
   const handleProfileButtonClick = (patient) => {
     setSelectedPatient(patient);
     setIsProfileOpen(true);
@@ -381,7 +394,7 @@ const Table = () => {
       renderCell: (params) => (
         <IconButton
           variant="outlined"
-          color={theme.palette.secondary.main} 
+          color={theme.palette.secondary.main}
           sx={
             {
               // Add additional styling here if needed
@@ -407,7 +420,7 @@ const Table = () => {
           color="error"
           onClick={() => handleDeleteRow(params.row.id)}
         >
-          <DeleteIcon/>
+          <DeleteIcon />
         </IconButton>
       ),
     },
@@ -507,8 +520,9 @@ const Table = () => {
             fontSize: "14px",
             fontWeight: "bold",
             padding: "10px 20px",
-            marginRight: "10px", // Add margin to create space
+            marginRight: "10px",
           }}
+          onClick={handleExportData}
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Export Data
@@ -561,6 +575,43 @@ const Table = () => {
               updatePatientData={updatePatientData}
             />
           )}
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isDeleteDialogOpen}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          maxHeight: "100vh",
+        }}
+      >
+        <DialogContent>
+          {/* Delete confirmation dialog */}
+          <Typography variant="h6" gutterBottom>
+            Confirm Deletion
+          </Typography>
+          <Typography variant="body2" gutterBottom>
+            Are you sure you want to delete this record?
+          </Typography>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleDeleteConfirmation}
+            sx={{ marginLeft: 4, marginTop: 2 }}
+          >
+            Delete
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setIsDeleteDialogOpen(false)}
+            sx={{ marginLeft: 2, marginTop: 2 }}
+          >
+            Cancel
+          </Button>
         </DialogContent>
       </Dialog>
     </Box>

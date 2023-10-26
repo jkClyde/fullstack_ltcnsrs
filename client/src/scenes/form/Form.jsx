@@ -23,13 +23,13 @@ const getQuarter = () => {
   const currentMonth = currentDate.getMonth(); // 0-based index (0 for January, 1 for February, etc.)
 
   if (currentMonth >= 0 && currentMonth < 3) {
-    return "firstquarter";
+    return "first-quarter";
   } else if (currentMonth >= 3 && currentMonth < 6) {
-    return "secondquarter";
+    return "second-quarter";
   } else if (currentMonth >= 6 && currentMonth < 9) {
-    return "thirdquarter";
+    return "third-quarter";
   } else {
-    return "fourthquarter";
+    return "fourth-quarter";
   }
 };
 
@@ -62,7 +62,7 @@ const Form = () => {
   const [names, setNames] = useState([]);
   const fetchNames = () => {
     const quarter = getQuarter(); // You need to define or fetch the quarter variable
-    const url = `http://127.0.0.1:8000/${quarter}/`;
+    const url = `http://127.0.0.1:8000/children/`;
     axios
       .get(url)
       .then((response) => {
@@ -105,7 +105,12 @@ const Form = () => {
   const handleChange = (field, value) => {
     setFieldValue(field, value);
   };
-
+  const calculateAgeInMonths = (birthdate, currentDate) => {
+    const birthdateMoment = dayjs(birthdate);
+    const currentMoment = dayjs(currentDate);
+    const months = currentMoment.diff(birthdateMoment, "month", true);
+    return months;
+  };
   const handleFormSubmit = (values, { resetForm }, required) => {
     if (!selectedBirthdate && required) {
       alert("Birthdate is required");
@@ -116,32 +121,33 @@ const Form = () => {
       return;
     }
 
-    const vaccinationDate = selectedVaccinationDate
-      ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
-      : null;
+    // Calculate purgaDate here
     const purgaDate = selectedPurgaDate
       ? dayjs(selectedPurgaDate).format("YYYY-MM-DD")
       : null;
 
+    // Get vaccinationDate from the values object
+    const vaccinationDate = values.vac;
+
+    // The rest of the function remains the same
     const formattedBirthdate = dayjs(selectedDate).format("YYYY-MM-DD");
     const formattedDow = dayjs(selectedDOW).format("YYYY-MM-DD");
     const dowMonth = dayjs(selectedDOW).month();
     const confirmed = window.confirm("Are you sure you want to submit?");
-
     let quarter;
     if (dowMonth >= 0 && dowMonth < 3) {
-      quarter = "firstquarter";
+      quarter = "first-quarter";
     } else if (dowMonth >= 3 && dowMonth < 6) {
-      quarter = "secondquarter";
+      quarter = "second-quarter";
     } else if (dowMonth >= 6 && dowMonth < 9) {
-      quarter = "thirdquarter";
+      quarter = "third-quarter";
     } else {
-      quarter = "fourthquarter";
+      quarter = "fourth-quarter";
     }
 
     // Fetch data for the specific quarter
     axios
-      .get(`http://127.0.0.1:8000/${quarter}/`)
+      .get(`http://127.0.0.1:8000/children/`)
       .then((response) => {
         const quarterData = response.data;
 
@@ -173,7 +179,7 @@ const Form = () => {
         // Proceed to submit the form if not a duplicate
         if (confirmed) {
           axios
-            .post(`http://127.0.0.1:8000/${quarter}/`, {
+            .post(`http://127.0.0.1:8000/children/`, {
               ...values,
               birthdate: formattedBirthdate,
               dow: formattedDow,
@@ -204,6 +210,7 @@ const Form = () => {
         console.error("Error fetching data for the specific quarter:", error);
       });
   };
+
   const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
     const confirmed = window.confirm(
       "Are you sure you want to clear the form?"
