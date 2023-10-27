@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Import React and useState
+import React, { useState , useEffect} from "react"; // Import React and useState
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -21,6 +21,7 @@ import bg from "./../../assets/lt_bg.jpg";
 import { useStateContext } from "../../contexts/ContextProvider"; // Import the useStateContext hook
 import { useNavigate } from "react-router-dom"; // Import useHistory
 
+export var isAdmin = false
 function Copyright(props) {
   return (
     <Typography
@@ -46,6 +47,17 @@ function SignInSide() {
   const { setToken } = useStateContext(); // Access setToken from context
   const navigate = useNavigate(); // Initialize useHistory
   const { setUser } = useStateContext();
+ 
+
+  const { user, token} = useStateContext(); // Access user, token, setToken, and setUser from context
+
+  useEffect(() => {
+    if (token) {
+      setToken(null);
+      setUser({});
+      localStorage.removeItem("ACCESS_TOKEN");
+    }
+  }, [token, setToken, setUser]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -67,7 +79,15 @@ function SignInSide() {
         setToken(response.data.access); // Call setToken with the token value
         setUser(jwt_decode(response.data.access));
         localStorage.setItem("ACCESS_TOKEN", JSON.stringify(response));
+
+
+        const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+
+
+                
         navigate("/dashboard");
+       
+
       } else {
         alert("Something went wrong!");
       }

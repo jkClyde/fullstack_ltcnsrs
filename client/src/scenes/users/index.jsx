@@ -1,20 +1,101 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme, IconButton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockUsers } from "../../data/mockUsers";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import ConfirmationPrompt from "../../components/DeleteConfirm";
 import Header from "../../components/Header";
 
 const Users = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [isPromptOpen, setPromptOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+
+  const handleOpenPrompt = (userId) => {
+    setSelectedUserId(userId);
+    setPromptOpen(true);
+  };
+
+  const handleClosePrompt = () => {
+    setSelectedUserId(null);
+    setPromptOpen(false);
+  };
+
+  const handleDisableUser = async (userId) => {
+    try {
+      const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+      if (!storedToken) {
+        console.error("No token found in local storage.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/users/${userId}/disable/`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${storedToken.data.access}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log(`User with ID ${userId} has been disabled.`);
+        // Update the user's status in the UI or refetch user data.
+      } else {
+        console.error("Failed to disable user.");
+      }
+    } catch (error) {
+      console.error("Error while disabling user:", error);
+    }
+  };
+
+  const handleEnableUser = async (userId) => {
+    try {
+      const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+      if (!storedToken) {
+        console.error("No token found in local storage.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/users/${userId}/enable/`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${storedToken.data.access}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log(`User with ID ${userId} has been enabled.`);
+        // Update the user's status in the UI or refetch user data.
+      } else {
+        console.error("Failed to enable user. Status:", response.status);
+        const data = await response.json();
+        console.error("Error details:", data);
+      }
+    } catch (error) {
+      console.error("Error while enabling user:", error);
+    }
+  };
+
   const columns = [
     {
-      field: "name",
-      headerName: "Name",
+      field: "first_name",
+      headerName: "First Name",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "last_name",
+      headerName: "Last Name",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -24,7 +105,7 @@ const Users = () => {
       flex: 1,
     },
     {
-      field: "phone",
+      field: "phone_number",
       headerName: "Phone Number",
       flex: 1,
     },
@@ -34,35 +115,27 @@ const Users = () => {
       flex: 1,
     },
     {
-      field: "accessLevel",
-      headerName: "Access Level",
+      field: "action",
+      headerName: "Action",
       flex: 1,
-      renderCell: ({ row: { access } }) => {
-        return (
-          <Box
-            width="60%"
-            m="0 auto"
-            p="5px"
-            display="flex"
-            justifyContent="center"
-            backgroundColor={
-              access === "admin"
-                ? colors.greenAccent[600]
-                : access === "manager"
-                ? colors.greenAccent[700]
-                : colors.greenAccent[700]
-            }
-            borderRadius="4px"
+      renderCell: ({ row }) => (
+        <div
+          style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+          onClick={() => {
+            handleOpenPrompt(row.id);
+          }}
+        >
+          <IconButton
+            color={row.is_disabled ? "secondary" : "warning"}
+            aria-label={row.is_disabled ? "enable user" : "disable user"}
           >
-            {access === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {access === "manager" && <SecurityOutlinedIcon />}
-            {access === "user" && <LockOpenOutlinedIcon />}
-            <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
-              {access}
-            </Typography>
-          </Box>
-        );
-      },
+            {row.is_disabled ? <LockOpenOutlinedIcon /> : <LockOutlinedIcon />}
+          </IconButton>
+          <Typography variant="body2">
+            {row.is_disabled ? "Enable" : "Disable"}
+          </Typography>
+        </div>
+      ),
     },
   ];
 
@@ -70,15 +143,34 @@ const Users = () => {
 
   useEffect(() => {
     async function fetchUsers() {
-      const response = await fetch("http://127.0.0.1:8000/auth/users/me/", {
-        headers: {
-          Authorization: "Bearer YOUR_ACCESS_TOKEN",
-        },
-      });
+      const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+      if (!storedToken) {
+        console.error("No token found in local storage.");
+        return;
+      }
 
-      const data = await response.json();
+      try {
+        console.log("Token used for request:", storedToken.access);
+        const response = await fetch("http://127.0.0.1:8000/api/users/", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${storedToken.data.access}`,
+          },
+        });
 
-      setUsers(data);
+        console.log("Fetch response status:", response.status);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Fetched data:", data);
+          setUsers(data);
+          console.log(users);
+        } else {
+          console.error("Failed to fetch users.");
+        }
+      } catch (error) {
+        console.error("Error while fetching users:", error);
+      }
     }
 
     fetchUsers();
@@ -118,6 +210,28 @@ const Users = () => {
       >
         <DataGrid rows={users} columns={columns} />
       </Box>
+      <ConfirmationPrompt
+        open={isPromptOpen}
+        onClose={handleClosePrompt}
+        onConfirm={() => {
+          if (selectedUserId !== null) {
+            const selectedUser = users.find((user) => user.id === selectedUserId);
+            if (selectedUser) {
+              selectedUser.is_disabled
+                ? handleEnableUser(selectedUserId)
+                : handleDisableUser(selectedUserId);
+              handleClosePrompt();
+            }
+          }
+        }}
+        message={
+          selectedUserId !== null
+            ? users.find((user) => user.id === selectedUserId).is_disabled
+              ? "Are you sure you want to enable this user?"
+              : "Are you sure you want to disable this user?"
+            : ""
+        }
+      />
     </Box>
   );
 };

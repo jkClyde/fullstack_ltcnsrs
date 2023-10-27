@@ -199,7 +199,6 @@ export default function SignUp() {
                         }
                       >
                         <MenuItem value="">Select Job Description</MenuItem>
-                        <MenuItem value="administrator">Administrator</MenuItem>
                         <MenuItem value="barangay_health_worker">
                           Barangay Health Worker
                         </MenuItem>

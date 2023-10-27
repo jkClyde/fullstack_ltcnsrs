@@ -10,8 +10,9 @@ const UserProfile = () => {
   const { token } = useStateContext(); // Get the token from your context
 
   const [editedUser, setEditedUser] = useState({});
-  const [user, setUser] = useState({});
 
+
+  const [user, setUser] = useState({});
   useEffect(() => {
     if (token) {
       fetchUserData();
@@ -19,17 +20,19 @@ const UserProfile = () => {
   }, [token]);
 
   const fetchUserData = () => {
+    const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
     // Replace with your actual API endpoint
     fetch('http://127.0.0.1:8000/auth/users/me/', {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${storedToken.data.access}`,
       },
     })
       .then((response) => response.json())
       .then((data) => {
         setEditedUser(data);
         setUser(data);
+       
       })
       .catch((error) => {
         console.error('Error fetching user data:', error);
@@ -126,7 +129,7 @@ const UserProfile = () => {
               />
             </Box>
           </Box>
-          <Box className="mb-4">
+          {/* <Box className="mb-4">
             <Typography color={colors.grey[100]} variant="h6" className="col-span-3 font-bold mb-2">
               Job Title
             </Typography>
@@ -144,7 +147,19 @@ const UserProfile = () => {
                 </option>
               ))}
             </select>
+          </Box> */}
+          <Box className="mb-4">
+            <Typography color={colors.grey[100]} variant="h6" className="mb-1 font-bold">
+              Job Desciption
+            </Typography>
+            <input
+              className="w-full p-2 border rounded-md"
+              type="text"
+              value={user.job_description}
+              onChange={(e) => handleChange('job_description', e.target.value)}
+            />
           </Box>
+
           <Box className="mb-4">
             <Typography color={colors.grey[100]} variant="h6" className="mb-1 font-bold">
               Barangay
@@ -165,6 +180,8 @@ const UserProfile = () => {
               type="email"
               value={user.email}
               onChange={(e) => handleChange('email', e.target.value)}
+              disabled // Add the 'disabled' attribute here
+
             />
           </Box>
           <Box className="mb-4">

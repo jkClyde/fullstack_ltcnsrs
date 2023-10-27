@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -57,6 +59,14 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),  # Set the lifespan to 1 hour
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=20),  # Example for refresh token lifespan
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
+    'SLIDING_TOKEN_REFRESH_DELTA': timedelta(days=30.5),
+    'SLIDING_TOKEN_REFRESH_DELTA_APP': timedelta(days=30),
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -180,6 +190,10 @@ DJOSER = {
     }
 }
 
+AUTHENTICATION_BACKENDS = [
+    'app_accounts.CustomBackend.CustomBackend',  # Replace 'path.to' with the actual import path to your CustomBackend class
+    # Other authentication backends (if any)
+]
 
 
 AUTH_USER_MODEL = 'app_accounts.UserAccount'

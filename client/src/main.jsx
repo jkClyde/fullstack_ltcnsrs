@@ -5,6 +5,8 @@ import App from "./App";
 import { RouterProvider , BrowserRouter } from 'react-router-dom';
 import { ContextProvider } from "./contexts/ContextProvider";
 import MyRoutes from "./Routes";
+import { useStateContext } from "./contexts/ContextProvider";
+
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

@@ -7,6 +7,7 @@ const StateContext = createContext({
   currentUser: null,
   token: null,
   notification: null,
+  is_admin: false,
   setUser: () => {},
   setToken: () => {},
   setNotification: () => {},
@@ -24,6 +25,10 @@ export const ContextProvider = ({ children }) => {
   const [notification, _setNotification] = useState("");
   let [loading, setLoading] = useState(true);
 
+  const [is_admin, setIsAdmin] = useState(false); // Initialize is_admin state
+
+
+
   const setToken = (token) => {
     _setToken(token);
 
@@ -38,6 +43,31 @@ export const ContextProvider = ({ children }) => {
     }
   };
 
+  const fetchUserData = () => {
+    const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+    // Replace with your actual API endpoint
+    fetch('http://127.0.0.1:8000/auth/users/me/', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${storedToken.data.access}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUser(data);
+        setIsAdmin(data.is_admin); // Set is_admin after user state is updated
+        console.log(data.is_admin, "-----aaaaaaaaaaaaaaah")
+      })
+      .catch((error) => {
+        console.error('Error fetching user data:', error);
+      });
+  };
+
+  const [refreshToken, _setRefreshToken] = useState(() => {
+    const storedRefreshToken = localStorage.getItem("REFRESH_TOKEN");
+    return storedRefreshToken ? JSON.parse(storedRefreshToken) : null;
+  });
+
   const setNotification = (message) => {
     _setNotification(message);
 
@@ -45,6 +75,8 @@ export const ContextProvider = ({ children }) => {
       _setNotification("");
     }, 5000);
   };
+
+
 
   const activateUser = async (uid, token) => {
     try {
@@ -77,14 +109,26 @@ export const ContextProvider = ({ children }) => {
     setToken(null); // Clear the token
     setUser({}); // Clear any user-related data (you can customize this as needed)
     // Additional logout logic can go here, such as making an API request to invalidate the token on the server
-  };
+    window.location.reload(); // Refresh the page
+};
+
+
+  
+
 
   useEffect(() => {
     const storedToken = localStorage.getItem("ACCESS_TOKEN");
+    try{
+      fetchUserData();
+    }catch{
+      console.log("ERRRRRRRRRRRRRRRRRRRRRRRRRROR");
+    }
+    
     if (storedToken) {
       console.log("Token retrieved:", JSON.parse(storedToken));
       setToken(JSON.parse(storedToken));
       const storedUser = localStorage.getItem("USER_DATA");
+     
       if (storedUser) {
         console.log("User data retrieved:", JSON.parse(storedUser));
         setUser(JSON.parse(storedUser));
@@ -135,7 +179,8 @@ export const ContextProvider = ({ children }) => {
         setNotification,
         logout,
         fetchEvents,
-        activateUser
+        activateUser,
+        is_admin,
       }}
     >
       {children}

@@ -18,16 +18,19 @@ import Users from "./scenes/users";
 import PatientProfile from './scenes/patient_profile/index'
 import VerificationNotice from "./components/registration/verificationNotice";
 import Verify from "./components/registration/verify";
+import UserLayout from "./components/UserView";
 
 import { useStateContext } from "./contexts/ContextProvider";
 
 
-const MyRoutes = createBrowserRouter([
- 
 
+
+
+const MyRoutes = createBrowserRouter([
   {
     path: '/',
-    element: <DefaltLayout/>,
+    element: <DefaltLayout /> ,
+
     children: [
       {
         path: '/',
@@ -77,8 +80,15 @@ const MyRoutes = createBrowserRouter([
         path: '/profile2',
         element: <PatientProfile/>
       },
+      {
+        path: '/ul',
+        element: <UserLayout/>
+      },
     ]
   },
+  
+  
+ 
   
   {
     path: '/',

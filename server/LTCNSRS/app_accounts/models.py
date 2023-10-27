@@ -13,9 +13,12 @@ class UserAccountManager(BaseUserManager):
         user.save()
 
         return user
+
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_admin', True)  # Add this line to set is_admin to True
+
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -33,6 +36,10 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     job_description = models.CharField(max_length=255, default='')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
+    is_disabled = models.BooleanField(default=False)
+
 
     objects = UserAccountManager()
 
@@ -44,6 +51,6 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.first_name
-    
+
     def __str__(self):
         return self.email

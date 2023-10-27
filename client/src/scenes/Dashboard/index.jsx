@@ -1,5 +1,5 @@
 import { Box, Button,Select, MenuItem, IconButton, Typography, useTheme } from "@mui/material";
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { tokens } from "../../theme";
 import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
@@ -13,11 +13,16 @@ import GeographyChart from "../../components/GeographyChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
-
 import EventsList from './../../components/Upcoming Events';
+import { useStateContext } from "../../contexts/ContextProvider";
+import Axios from "axios"; // Import Axios
+
+
 
 
 const Dashboard = () => {
+  const { token } = useStateContext(); // Get the token from your context
+  const [user, setUser] = useState({});
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -58,6 +63,18 @@ const Dashboard = () => {
   const handleCategoryChange = (event) => {
       setSelectedCategory(event.target.value);
   };
+
+
+
+
+
+
+ 
+
+ 
+ 
+
+
 
   return (
     <Box m="20px">
