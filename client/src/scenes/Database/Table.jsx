@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import PatientProfile from "./../patient_page/index";
+import ChildProfile from "../Child_Profile/index";
 import lengthForAgeStatus from "./Calculations/lengthForAgeStatus";
 import weightForAgeStatus from "./Calculations/weightForAgeStatus";
 import weightForLengthStatus from "./Calculations/weightForLengthStatus";
@@ -37,7 +37,7 @@ const Table = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [gridData, setGridData] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedChild, setselectedChild] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedQuarter, setSelectedQuarter] = useState("All Quarter");
@@ -172,7 +172,7 @@ const Table = () => {
 
     if (isButtonClick) {
       // Click occurred on the button, show the profile
-      setSelectedPatient(params.row);
+      setselectedChild(params.row);
       setIsProfileOpen(true);
     }
   };
@@ -181,10 +181,10 @@ const Table = () => {
     setIsProfileOpen(false); // Close the profile dialog
   };
 
-  const updatePatientData = (updatedPatient) => {
+  const updateChildData = (updatedChild) => {
     setGridData((prevData) =>
       prevData.map((row) =>
-        row.id === updatedPatient.id ? updatedPatient : row
+        row.id === updatedChild.id ? updatedChild : row
       )
     );
   };
@@ -215,8 +215,8 @@ const Table = () => {
         : params.value}
     </Typography>
   );
-  const handleProfileButtonClick = (patient) => {
-    setSelectedPatient(patient);
+  const handleProfileButtonClick = (child) => {
+    setselectedChild(child);
     setIsProfileOpen(true);
   };
 
@@ -227,17 +227,17 @@ const Table = () => {
     fullWidth
   >
     <DialogContent>
-      {/* Display the patient profile */}
-      {selectedPatient && (
-        <PatientProfile
-          patient={{
-            ...selectedPatient,
-            aim: calculateAgeInMonths(selectedPatient.birthdate),
-            weightForAge: selectedPatient.weightForAge,
-            lengthForAge: selectedPatient.lengthForAge,
-            weightForLength: selectedPatient.weightForLength,
+      {/* Display the child profile */}
+      {selectedChild && (
+        <ChildProfile
+          child={{
+            ...selectedChild,
+            aim: calculateAgeInMonths(selectedChild.birthdate),
+            weightForAge: selectedChild.weightForAge,
+            lengthForAge: selectedChild.lengthForAge,
+            weightForLength: selectedChild.weightForLength,
           }}
-          updatePatientData={updatePatientData}
+          updateChildData={updateChildData}
         />
       )}
     </DialogContent>
@@ -551,14 +551,14 @@ const Table = () => {
         fullWidth
       >
         <DialogContent>
-          {/* Display the patient profile */}
-          {selectedPatient && (
-            <PatientProfile
-              patient={{
-                ...selectedPatient,
-                aim: calculateAgeInMonths(selectedPatient.birthdate),
+          {/* Display the child profile */}
+          {selectedChild && (
+            <ChildProfile
+              child={{
+                ...selectedChild,
+                aim: calculateAgeInMonths(selectedChild.birthdate),
               }}
-              updatePatientData={updatePatientData}
+              updateChildData={updateChildData}
             />
           )}
         </DialogContent>
