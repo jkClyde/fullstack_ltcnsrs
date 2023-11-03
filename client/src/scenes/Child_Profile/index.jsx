@@ -9,6 +9,7 @@ import { getClassForStatusColorValue } from './getClassForStatusColorValue';
 // import ChildInfo from "./ChildInfo";
 import {
   Box,
+  useTheme,
   Typography,
   Divider,
   Button,
@@ -17,15 +18,24 @@ import {
   MenuItem,
   Snackbar,
   OutlinedInput,
+  Tabs,
+  Tab,
+  FormControl,
+  InputLabel,
+  TextField,
 } from "@mui/material";
+import { tokens } from "../../theme";
 import MuiAlert from "@mui/material/Alert";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { format } from "date-fns";
+import {ChildCareOutlined, MedicationLiquidOutlined, EscalatorWarningOutlined, ModeEditOutline} from '@mui/icons-material';  
 
 
 const ChildProfile = ({ child, updateChildData }) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [isEditing, setIsEditing] = useState(false);
   const [editedChild, setEditedChild] = useState({ 
     ...child,
@@ -229,8 +239,8 @@ const ChildProfile = ({ child, updateChildData }) => {
     setSelectedYear(event.target.value);
   };
 
-  const handleViewChange = (event) => {
-    setSelectedView(event.target.value);
+  const handleViewChange = (event, newValue) => {
+    setSelectedView(newValue);
 
     // Update selectedYear and selectedQuarter based on the conditions
     if (event.target.value === "child") {
@@ -273,10 +283,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       {console.log("Rendering TextField:", name, value)}
       {/* Add this line for debugging */}
       {isEditing ? (
-        name === "birthdate" ||
-        name === "dow" ||
-        name === "vac" ||
-        name === "purga" ? (
+        name === "birthdate" || name === "dow" || name === "vac" || name === "purga" ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={label}
@@ -294,13 +301,13 @@ const ChildProfile = ({ child, updateChildData }) => {
             />
           </LocalizationProvider>
         ) : (
-          <OutlinedInput
+          <TextField
             fullWidth
+            variant="outlined"
             name={name}
             label={label}
             value={value}
             onChange={handleInputChange}
-            style={{ marginTop: "10px" }}
           />
         )
       ) : (
@@ -309,10 +316,10 @@ const ChildProfile = ({ child, updateChildData }) => {
                 <Box mb="10px">           
                   <Box padding="10px" borderRadius="5px" border= "1px solid grey" className={getClassForStatusColorValue(value)}
 >
-                      <Typography variant="h6" style={{ fontWeight: "bold" }}>
+                      <Typography variant="h6" >
                         {label}   
                       </Typography>
-                      <Typography variant="body1">
+                      <Typography variant="body1" style={{ fontWeight: "bold" }}>
                         {value} {unit}
                       </Typography>
                     </Box>
@@ -325,80 +332,71 @@ const ChildProfile = ({ child, updateChildData }) => {
   );
 
   const renderChildProfile = () => (
-    <Grid container spacing={2}>
-      <Grid item xs={3}>
+    <Grid container columnSpacing={2}>
+      <Grid item xs={4}>
       {renderTextField("First Name", "firstName", editedChild.firstName)}
-      </Grid>
-      <Grid item xs={3}>
-      {renderTextField(
-        "Middle Initial",
-        "middleName",
-        editedChild.middleName
-      )}      
-      </Grid>
-      <Grid item xs={3}>
-      {renderTextField("Last Name", "lastName", editedChild.lastName)}
-      </Grid>
-      <Grid item xs={3}>
-        {isEditing ? (
+      
+      {isEditing ? (
           // Render the gender field only when editing
-          <Box mt="16px">
-            <Select
-              fullWidth
-              id="gender-select"
-              name="gender"
-              label="Gender"
-              value={editedChild.gender}
-              onChange={handleInputChange}
-              variant="outlined"
-            >
-              <MenuItem value="Male">Male</MenuItem>
-              <MenuItem value="Female">Female</MenuItem>
-            </Select>
+          <Box mt="10px">
+            <FormControl fullWidth>
+              <InputLabel id="gender-select-label">Gender</InputLabel>
+              <Select
+                labelId="gender-select-label"
+                label="Gender"
+                id="gender-select"
+                name="gender"
+                value={editedChild.gender}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
         ) : (
           // Display gender information when not editing
           <Grid item xs={12}>
-            <Box mt="10px">
+            <Box>
               <Box padding="10px" borderRadius="5px" border= "1px solid grey">
-                <Typography variant="h6" style={{ fontWeight: "bold" }}>
+                <Typography variant="h6" >
                   Gender:
                 </Typography>
-                <Typography variant="body1">{editedChild.gender}</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>{editedChild.gender}</Typography>
               </Box>
             </Box>
           </Grid>
         )}
       </Grid>
-      <Grid item xs={3}>
-        {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
-        
+      <Grid item xs={4}>
+      {renderTextField(
+        "Middle Initial",
+        "middleName",
+        editedChild.middleName
+      )}
+      {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}      
       </Grid>
-      <Grid item xs={3}>
-      {!isEditing && renderTextField(
-        "Age in Months", 
-        "aim", 
-        editedChild.aim,
-         "Months old",
-         )}
+      <Grid item xs={4}>
+      {renderTextField("Last Name", "lastName", editedChild.lastName)}
+      {!isEditing && renderTextField("Age in Months", "aim", editedChild.aim,"Months old",)}
       </Grid>
     </Grid>
   );
 
   const renderHealthInfo = () => (
     <Grid container spacing={2}>
-      <Grid item xs={3}>
+      <Grid item xs={4}>
         {renderTextField("Weight", "weight", editedChild.weight, "kg")}
         {renderTextField("Height", "height", editedChild.height, "cm")}
-        {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
-      </Grid>
-  
-      <Grid item xs={3}>
-        {renderTextField("Vaccination", "vac", editedChild.vac)}
-        {renderTextField("Purga", "purga", editedChild.purga)}
         {renderTextField("Disability", "disability", editedChild.disability)}
       </Grid>
   
+      <Grid item xs={4}>
+        {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
+        {renderTextField("Vaccination", "vac", editedChild.vac)}
+        {renderTextField("Purga", "purga", editedChild.purga)}
+      </Grid>
+      <Divider orientation="vertical" variant="middle" flexItem style={{margin:"0px 20px 0px 40px"}}/>
       <Grid item xs={3}>
         {!isEditing && renderTextField(
           "Weight For Age",
@@ -427,28 +425,34 @@ const ChildProfile = ({ child, updateChildData }) => {
         {/* Replace the "Parent-Child Relation" TextField with a Select */}
         {isEditing ? (
           <Box mt="16px">
-            <Select
-              fullWidth
-              id="relationship"
-              name="relationship"
-              label="relationship"
-              value={editedChild.relationship}
-              onChange={handleInputChange}
-              variant="outlined"
-            >
-              <MenuItem value="Father">Father</MenuItem>
-              <MenuItem value="Mother">Mother</MenuItem>
-              <MenuItem value="Guardian">Guardian</MenuItem>
-            </Select>
+            <FormControl fullWidth variant="outlined">
+            <InputLabel id="relationship-select-label">Relationship</InputLabel>
+              <Select
+                fullWidth
+                id="relationship"
+                name="relationship"
+                label="Relationship"
+                labelId="relationship-select-label"
+                value={editedChild.relationship}
+                onChange={handleInputChange}
+                variant="outlined"
+              >
+                <MenuItem value="Father">Father</MenuItem>
+                <MenuItem value="Mother">Mother</MenuItem>
+                <MenuItem value="Guardian">Guardian</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
         ) : (
-          <Box mt="16px">
-            <Typography variant="h4" style={{ fontWeight: "bold" }}>
-              Parent-Child Relation:
-            </Typography>
-            <Typography variant="body1">
-              {editedChild.relationship}
-            </Typography>
+          <Box>
+            <Box padding="10px" borderRadius="5px" border= "1px solid grey">
+              <Typography variant="h6" >
+                Relationship
+              </Typography>
+              <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                {editedChild.relationship}
+              </Typography>
+            </Box>
           </Box>
         )}
       </Grid>
@@ -456,28 +460,34 @@ const ChildProfile = ({ child, updateChildData }) => {
       <Grid item xs={4}>
         {renderTextField("Address", "address", editedChild.address)}
         {isEditing ? (
-          // Render the gender field only when editing
+          // Render the field only when editing
           <Box mt="16px">
-            <Select
-              fullWidth
-              id="pt"
-              name="pt"
-              label="pt"
-              value={editedChild.pt}
-              onChange={handleInputChange}
-              variant="outlined"
-            >
-              <MenuItem value="Permanent">Permanent</MenuItem>
-              <MenuItem value="Temporary">Temporary</MenuItem>
-            </Select>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel id="pt-select-label">Permanent/Transient</InputLabel>
+              <Select
+                fullWidth
+                id="pt"
+                name="pt"
+                labelId="pt-select-label"
+                label="Permanent/Transient"
+                value={editedChild.pt}
+                onChange={handleInputChange}
+                variant="outlined"
+              >
+                <MenuItem value="Permanent">Permanent</MenuItem>
+                <MenuItem value="Temporary">Temporary</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
         ) : (
-          // Display gender information when not editing
-          <Box mt="16px">
-            <Typography variant="h4" style={{ fontWeight: "bold" }}>
-              Perma/Transient:
-            </Typography>
-            <Typography variant="body1">{editedChild.pt}</Typography>
+          // Display information when not editing
+          <Box>
+            <Box padding="10px" borderRadius="5px" border= "1px solid grey">
+              <Typography variant="h6" >
+                Permanent/Transient
+              </Typography>
+              <Typography variant="body1" style={{ fontWeight: "bold" }}>{editedChild.pt}</Typography>
+            </Box>
           </Box>
         )}
       </Grid>
@@ -509,11 +519,13 @@ const ChildProfile = ({ child, updateChildData }) => {
           </Box>
         ) : (
           // Display ethnicity information when not editing
-          <Box mt="16px">
-            <Typography variant="h4" style={{ fontWeight: "bold" }}>
-              Parent's Ethnicity:
-            </Typography>
-            <Typography variant="body1">{editedChild.ethnicity}</Typography>
+          <Box>
+            <Box padding="10px" borderRadius="5px" border= "1px solid grey">
+              <Typography variant="h6">
+                Ethnicity:
+              </Typography>
+              <Typography variant="body1" style={{ fontWeight: "bold" }}>{editedChild.ethnicity}</Typography>
+            </Box>
           </Box>
         )}
       </Grid>
@@ -522,79 +534,94 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   return (
     <Box p="20px">
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        flexDirection="row"
-        marginBottom="5px"
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      flexDirection="row"
+      marginBottom="5px"
+    >
+      <Tabs
+
+        value={selectedView}
+        onChange={handleViewChange}
+        variant="fullWidth"
+        sx={{mb:"10px"}}
       >
+        <Tab icon={<ChildCareOutlined />} label="Profile" value="child" 
+        sx={ (theme) => ({
+          backgroundColor: selectedView === "child" 
+            ? theme.palette.mode === "light"
+              ? colors.blueAccent[700] : colors.blueAccent[700]
+              :undefined, 
+          borderRadius: "20px 20px 0 0",
+            })}/>
+        <Tab icon={<MedicationLiquidOutlined />} label="Health" value="health" 
+        sx={ (theme) => ({
+          backgroundColor: selectedView === "health" 
+            ? theme.palette.mode === "light"
+              ? colors.blueAccent[700] : colors.blueAccent[700]
+              :undefined, 
+          borderRadius: "20px 20px 0 0",
+            })}/>
+        <Tab icon={<EscalatorWarningOutlined />} label="Parent" value="parent" 
+        sx={ (theme) => ({
+          backgroundColor: selectedView === "parent" 
+            ? theme.palette.mode === "light"
+              ? colors.blueAccent[700] : colors.blueAccent[700]
+              :undefined, 
+          borderRadius: "20px 20px 0 0",
+            })}/>
+      </Tabs>
+      
+      {selectedView === "health" ?
+      <Box>
         <Select
-          labelId="view-select-label"
-          id="view-select"
-          value={selectedView}
-          onChange={handleViewChange}
-          sx={{mb:"10px"}}
+          labelId="year-select-label"
+          id="year-select"
+          value={selectedYear}
+          onChange={handleYearChange}
+          sx={{ marginRight: "10px", mb:"10px"}}
         >
-          <MenuItem value="child">Child Profile</MenuItem>
-          <MenuItem value="parent">Parent Information</MenuItem>
-          <MenuItem value="health">Health Info</MenuItem>
+          {Array.from({ length: 5 }, (_, i) => (
+            <MenuItem key={i} value={new Date().getFullYear() - i} >
+              {new Date().getFullYear() - i}
+            </MenuItem>
+          ))}
         </Select>
-        <Typography variant="h3" gutterBottom>
-          {selectedView === "child"
-            ? "Child Profile"
-            : selectedView === "parent"
-            ? "Parent Information"
-            : "Health Info"}
-        </Typography>
 
-        <Box>
-          <Select
-            labelId="year-select-label"
-            id="year-select"
-            value={selectedYear}
-            onChange={handleYearChange}
-            sx={{ marginRight: "10px", mb:"10px" }}
-          >
-            {Array.from({ length: 5 }, (_, i) => (
-              <MenuItem key={i} value={new Date().getFullYear() - i}>
-                {new Date().getFullYear() - i}
-              </MenuItem>
-            ))}
-          </Select>
+        <Select
+          labelId="quarter-select-label"
+          id="quarter-select"
+          value={selectedQuarter}
+          onChange={(event) => setselectedQuarter(event.target.value)}
+          sx={{ marginLeft: "10px", mb:"10px" }}
+        >
+          <MenuItem value="1st Quarter">1st Quarter</MenuItem>
+          <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
+          <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
+          <MenuItem value="4th Quarter">4th Quarter</MenuItem>
+        </Select>
+      </Box>:""}
+    </Box>
+    
 
-          <Select
-            labelId="quarter-select-label"
-            id="quarter-select"
-            value={selectedQuarter}
-            onChange={(event) => setselectedQuarter(event.target.value)}
-            sx={{ marginLeft: "10px", mb:"10px"  }}
-          >
-            <MenuItem value="1st Quarter">1st Quarter</MenuItem>
-            <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
-            <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
-            <MenuItem value="4th Quarter">4th Quarter</MenuItem>
-          </Select>
-        </Box>
-      </Box>
-      <Divider />
-
-      {selectedView === "child"
-        ? renderChildProfile()
-        : selectedView === "parent"
-        ? renderParentInformation()
-        : renderHealthInfo()
-      }
+    {selectedView === "child"
+      ? renderChildProfile()
+      : selectedView === "parent"
+      ? renderParentInformation()
+      : renderHealthInfo()
+    }
 
 
       {isEditing ? (
-        <Box mt="16px">
-          <Button variant="contained" color="primary" onClick={handleSaveClick}>
+        <Box mt="16px" sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button variant="contained" color="success" onClick={handleSaveClick}>
             Save
           </Button>
           <Button
-            variant="outlined"
-            color="secondary"
+            variant="contained"
+            color="error"
             onClick={handleCancelClick}
             sx={{ marginLeft: "10px" }}
           >
@@ -602,8 +629,9 @@ const ChildProfile = ({ child, updateChildData }) => {
           </Button>
         </Box>
       ) : (
-        <Box mt="16px">
-          <Button variant="outlined" onClick={handleEditClick}>
+        <Box mt="16px" sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button variant="contained" color="info" onClick={handleEditClick}>
+            <ModeEditOutline sx={{paddingRight:"5px"}}/>
             Edit
           </Button>
         </Box>
