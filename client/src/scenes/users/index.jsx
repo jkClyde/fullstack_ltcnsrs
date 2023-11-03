@@ -7,12 +7,17 @@ import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import ConfirmationPrompt from "../../components/DeleteConfirm";
 import Header from "../../components/Header";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const Users = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isPromptOpen, setPromptOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [refresher, setRefresher] = useState(1);
+
 
   const handleOpenPrompt = (userId) => {
     setSelectedUserId(userId);
@@ -45,7 +50,11 @@ const Users = () => {
 
       if (response.ok) {
         console.log(`User with ID ${userId} has been disabled.`);
+        toast.warning("Account has been DEACTIVATED!"); // Show a success toast
+
         // Update the user's status in the UI or refetch user data.
+        setRefresher(refresher + 1);
+
       } else {
         console.error("Failed to disable user.");
       }
@@ -76,6 +85,9 @@ const Users = () => {
       if (response.ok) {
         console.log(`User with ID ${userId} has been enabled.`);
         // Update the user's status in the UI or refetch user data.
+        toast.warning("Account has been ACTIVATED!"); // Show a success toast
+
+        setRefresher(refresher + 1);
       } else {
         console.error("Failed to enable user. Status:", response.status);
         const data = await response.json();
@@ -106,13 +118,33 @@ const Users = () => {
     },
     {
       field: "phone_number",
-      headerName: "Phone Number",
+      headerName: "Phone No.",
       flex: 1,
     },
     {
       field: "email",
       headerName: "Email",
       flex: 1,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      
+      renderCell: ({ row }) => (
+        <div
+          style={{ display: "flex", alignItems: "center" }}
+        >
+           <Typography
+              variant="body2"
+              style={{
+                color: row.is_disabled ? colors.redAccent[300] : colors.greenAccent[300], // Set the text color based on the condition
+              }}
+            >
+            {row.is_disabled ? "Disabled" : "Active"}
+          </Typography>
+          
+        </div>
+      ),
     },
     {
       field: "action",
@@ -132,7 +164,7 @@ const Users = () => {
             {row.is_disabled ? <LockOpenOutlinedIcon /> : <LockOutlinedIcon />}
           </IconButton>
           <Typography variant="body2">
-            {row.is_disabled ? "Enable" : "Disable"}
+            {row.is_disabled ? "Re-Activate" : "Deactivate "}
           </Typography>
         </div>
       ),
@@ -174,7 +206,7 @@ const Users = () => {
     }
 
     fetchUsers();
-  }, []);
+  }, [refresher]);
 
   return (
     <Box m="20px">
@@ -192,6 +224,7 @@ const Users = () => {
           "& .name-column--cell": {
             color: colors.greenAccent[300],
           },
+          
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: colors.blueAccent[700],
             borderBottom: "none",
@@ -232,6 +265,7 @@ const Users = () => {
             : ""
         }
       />
+       <ToastContainer position="top-right" autoClose={3000} />
     </Box>
   );
 };

@@ -61,10 +61,6 @@ REST_FRAMEWORK = {
 }
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),  # Set the lifespan to 1 hour
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=20),  # Example for refresh token lifespan
-    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
-    'SLIDING_TOKEN_REFRESH_DELTA': timedelta(days=30.5),
-    'SLIDING_TOKEN_REFRESH_DELTA_APP': timedelta(days=30),
 }
 
 MIDDLEWARE = [

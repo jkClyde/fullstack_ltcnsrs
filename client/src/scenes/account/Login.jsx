@@ -9,19 +9,16 @@ import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 import Axios from "axios"; // Import Axios
 import jwt_decode from "jwt-decode";
-
 import lt_logo from "./../../assets/lt_logo.ico";
-import bg from "./../../assets/lt_bg.jpg";
 import { useStateContext } from "../../contexts/ContextProvider"; // Import the useStateContext hook
 import { useNavigate } from "react-router-dom"; // Import useHistory
+import jwtDecode from 'jwt-decode';
 
-export var isAdmin = false
 function Copyright(props) {
   return (
     <Typography
@@ -40,16 +37,17 @@ function Copyright(props) {
   );
 }
 
+
 function SignInSide() {
+
   const [email, setEmail] = useState(""); // Define email state
   const [password, setPassword] = useState(""); // Define password state
   const [wrongCredentials, setWrongcredentials] = useState(false);
   const { setToken } = useStateContext(); // Access setToken from context
   const navigate = useNavigate(); // Initialize useHistory
   const { setUser } = useStateContext();
- 
-
   const { user, token} = useStateContext(); // Access user, token, setToken, and setUser from context
+  
 
   useEffect(() => {
     if (token) {
@@ -57,7 +55,8 @@ function SignInSide() {
       setUser({});
       localStorage.removeItem("ACCESS_TOKEN");
     }
-  }, [token, setToken, setUser]);
+  }, []);
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -67,41 +66,33 @@ function SignInSide() {
         email: email,
         password: password,
       };
-      // Send a POST request to your backend API
-      const response = await Axios.post(
-        "http://127.0.0.1:8000/auth/jwt/create/",
+      // Send a POST request to your backend API to log in
+      const loginResponse = await Axios.post(
+        "http://127.0.0.1:8000/token/",
         payload
       );
+  
+      // Handle the login response from the backend
+      if (loginResponse.status === 200) {
+        setToken(loginResponse.data.access);
+        setUser(jwt_decode(loginResponse.data.access));
+        localStorage.setItem("ACCESS_TOKEN", JSON.stringify(loginResponse));
+        
+        navigate("/dashboard")
+        window.location.reload(); 
 
-      // Handle the response from the backend
-      console.log("Login successful:", response.data);
-      if (response.status == 200) {
-        setToken(response.data.access); // Call setToken with the token value
-        setUser(jwt_decode(response.data.access));
-        localStorage.setItem("ACCESS_TOKEN", JSON.stringify(response));
-
-
-        const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-
-
-                
-        navigate("/dashboard");
-       
-
+    
       } else {
         alert("Something went wrong!");
       }
-
-      // You can also redirect the user to another page or perform other actions here
     } catch (error) {
-      // Handle login error, e.g., show an error message to the user
-      console.error("Login faileeeeed:", error);
+      console.error("Login failed:", error);
       setWrongcredentials(true);
     }
   };
+  
 
   const defaultTheme = createTheme();
-
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid
@@ -116,21 +107,6 @@ function SignInSide() {
         }}
       >
         <CssBaseline />
-        {/* <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage: `url(${bg})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-          className='fadeInDown'
-        /> */}
         <Grid
           item
           xs={12}
@@ -173,8 +149,8 @@ function SignInSide() {
                 name="email"
                 autoComplete="email"
                 autoFocus
-                value={email} // Add value prop to bind to the state
-                onChange={(e) => setEmail(e.target.value)} // Add onChange handler to update state
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
               />
               <TextField
                 margin="normal"
@@ -194,10 +170,10 @@ function SignInSide() {
                 </Typography>
               )}
 
-              {/* <FormControlLabel
+              <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
-              /> */}
+              />
               <Link to="/" style={{ textDecoration: "none" }}>
                 <Button
                   type="submit"

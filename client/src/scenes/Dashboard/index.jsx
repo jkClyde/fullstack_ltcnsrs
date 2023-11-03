@@ -15,7 +15,10 @@ import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
 import EventsList from './../../components/Upcoming Events';
 import { useStateContext } from "../../contexts/ContextProvider";
-import Axios from "axios"; // Import Axios
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import jwtDecode from 'jwt-decode';
+
 
 
 
@@ -65,8 +68,9 @@ const Dashboard = () => {
   };
 
 
-
-
+  
+  
+ 
 
 
  
@@ -77,6 +81,7 @@ const Dashboard = () => {
 
 
   return (
+    
     <Box m="20px">
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -257,6 +262,7 @@ const Dashboard = () => {
           </Box>
         </Box>
       </Box>
+      <ToastContainer position="top-right" autoClose={3000} />
     </Box>
   );
 };

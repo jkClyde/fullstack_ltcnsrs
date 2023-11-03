@@ -1,23 +1,233 @@
- {
-      field: 'action',
-      headerName: 'Action',
-      flex: 1,
-      renderCell: ({ row }) => (
-        <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-          {row.is_disabled ? (
-            <>
-              <IconButton color="secondary" aria-label="enable user" onClick={() => handleEnableUser(row.id)}>
-                <LockOpenOutlinedIcon />
-              </IconButton>
-              <Typography variant="body2">Enable</Typography>
-            </>
-          ) : (
-            <>
-              <IconButton color="warning" aria-label="disable user" onClick={() => handleDisableUser(row.id)}>
-                <LockOutlinedIcon />
-              </IconButton>
-              <Typography variant="body2">Disable</Typography>
-            </>
-          )}
-        </div>
-      ),
+import {createBrowserRouter, Navigate} from "react-router-dom";
+
+import GuestLayout from './components/GuestLayout';
+import Login from "./scenes/account/Login";
+import Signup from "./scenes/account/Signup";
+
+import DefaltLayout from './components/DefaultLayout';
+import Dashboard from "./scenes/Dashboard";
+import Table from "./scenes/Database/Table";
+import Form from "./scenes/form/Form";
+import Calendar from "./scenes/calendar/Calendar";
+import Geography from "./scenes/Charts/Geography";
+import BarChart from "./scenes/charts/BarChart/index";
+import Pie from "./scenes/Charts/PieChart";
+import Line from "./scenes/charts/Line/index";
+import UserProfile from "./scenes/profile";
+import Users from "./scenes/users";
+import PatientProfile from './scenes/patient_profile/index'
+import VerificationNotice from "./components/registration/verificationNotice";
+import Verify from "./components/registration/verify";
+import UserLayout from "./components/UserView";
+
+import { useStateContext } from "./contexts/ContextProvider";
+localStorage.setItem("ACCESS_TOKEN", JSON.stringify(loginResponse));
+const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+const decodedToken = jwtDecode(storedToken.data.access);
+
+
+const isAdmin = false;
+
+const admin_route = [
+      {
+        path: '/',
+        element: <Navigate to='/dashboard'/>
+      },
+      {
+        path: '/dashboard',
+        element:<Dashboard />
+      },
+      {
+        path: '/database',
+        element: <Table/>
+      },
+      {
+        path: '/form',
+        element: <Form/>
+      },
+      {
+        path: '/calendar',
+        element: <Calendar/>
+      },
+      {
+        path: '/bar',
+        element: <BarChart/>
+      },
+      {
+        path: '/pie',
+        element: <Pie/>
+      },
+      {
+        path: '/line',
+        element: <Line/>
+      },
+      {
+        path: '/geography',
+        element: <Geography/>
+      },
+      {
+        path: '/profile',
+        element: <UserProfile/>
+      },
+      {
+        path: '/users',
+        element: <Users/>
+      },
+      {
+        path: '/profile2',
+        element: <PatientProfile/>
+      },
+      {
+        path: '/ul',
+        element: <UserLayout/>
+      },
+]
+
+const user_route = [
+      {
+        path: '/',
+        element: <Navigate to='/dashboard'/>
+      },
+      {
+        path: '/dashboard',
+        element:<Dashboard />
+      },
+      {
+        path: '/database',
+        element: <Table/>
+      },
+      {
+        path: '/form',
+        element: <Form/>
+      },
+      {
+        path: '/calendar',
+        element: <Calendar/>
+      },
+      {
+        path: '/bar',
+        element: <BarChart/>
+      },
+      {
+        path: '/pie',
+        element: <Pie/>
+      },
+      {
+        path: '/line',
+        element: <Line/>
+      },
+      {
+        path: '/geography',
+        element: <Geography/>
+      },
+      {
+        path: '/profile',
+        element: <UserProfile/>
+      },
+      {
+        path: '/users',
+        element: <Users/>
+      },
+      {
+        path: '/profile2',
+        element: <PatientProfile/>
+      },
+      {
+        path: '/ul',
+        element: <UserLayout/>
+      },
+]
+
+
+
+
+const MyRoutes = createBrowserRouter([
+  {
+    path: '/',
+    element: <DefaltLayout /> ,
+
+    children: [
+      {
+        path: '/',
+        element: <Navigate to='/dashboard'/>
+      },
+      {
+        path: '/dashboard',
+        element:<Dashboard />
+      },
+      {
+        path: '/database',
+        element: <Table/>
+      },
+      {
+        path: '/form',
+        element: <Form/>
+      },
+      {
+        path: '/calendar',
+        element: <Calendar/>
+      },
+      {
+        path: '/bar',
+        element: <BarChart/>
+      },
+      {
+        path: '/pie',
+        element: <Pie/>
+      },
+      {
+        path: '/line',
+        element: <Line/>
+      },
+      {
+        path: '/geography',
+        element: <Geography/>
+      },
+      {
+        path: '/profile',
+        element: <UserProfile/>
+      },
+      {
+        path: '/users',
+        element: <Users/>
+      },
+      {
+        path: '/profile2',
+        element: <PatientProfile/>
+      },
+      {
+        path: '/ul',
+        element: <UserLayout/>
+      },
+    ]
+  },
+  
+  
+  
+  
+  {
+    path: '/',
+    element: <GuestLayout/>,
+    children: [
+      {
+        path: '/login',
+        element: <Login/>
+      },
+      {
+        path:'/signup',
+        element: <Signup/>
+      },
+      {
+        path:'/notice',
+        element: <VerificationNotice/>
+      },
+      {
+        path:'/activate/:uid/:token',
+        element: <Verify/>
+      }
+      
+    ]
+  },
+])
+
+export default MyRoutes;

@@ -1,5 +1,5 @@
 import {createBrowserRouter, Navigate} from "react-router-dom";
-
+import React, { useState , useEffect} from "react"; // Import React and useState
 import GuestLayout from './components/GuestLayout';
 import Login from "./scenes/account/Login";
 import Signup from "./scenes/account/Signup";
@@ -19,19 +19,27 @@ import PatientProfile from './scenes/patient_profile/index'
 import VerificationNotice from "./components/registration/verificationNotice";
 import Verify from "./components/registration/verify";
 import UserLayout from "./components/UserView";
+import UserDrawer from "./scenes/global/UserDrawer";
 
 import { useStateContext } from "./contexts/ContextProvider";
+import jwtDecode from 'jwt-decode';
 
 
 
+let isAdmin = false;
+
+const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+if(storedToken){
+  const decodedToken = jwtDecode(storedToken.data.access);
+  if(decodedToken.is_admin){
+      isAdmin = true;
+  }
+}
 
 
-const MyRoutes = createBrowserRouter([
-  {
-    path: '/',
-    element: <DefaltLayout /> ,
+ 
 
-    children: [
+const admin_route = [
       {
         path: '/',
         element: <Navigate to='/dashboard'/>
@@ -84,12 +92,59 @@ const MyRoutes = createBrowserRouter([
         path: '/ul',
         element: <UserLayout/>
       },
+]
+
+const user_route = [
+      {
+        path: '/',
+        element: <Navigate to='/dashboard'/>
+      },
+      {
+        path: '/dashboard',
+        element:<Dashboard />
+      },
+      {
+        path: '/form',
+        element: <Form/>
+      },
+      {
+        path: '/calendar',
+        element: <Calendar/>
+      },
+      {
+        path: '/bar',
+        element: <BarChart/>
+      },
+      {
+        path: '/pie',
+        element: <Pie/>
+      },
+      {
+        path: '/line',
+        element: <Line/>
+      },
+      {
+        path: '/geography',
+        element: <Geography/>
+      },
+      {
+        path: '/profile',
+        element: <UserProfile/>
+      },
+]
+
+
+
+
+const MyRoutes = createBrowserRouter([
+  {
+    path: '/',
+    element: isAdmin ? <DefaltLayout /> : <UserLayout />,
+    children: [
+      ...(isAdmin ? admin_route : user_route),
     ]
   },
-  
-  
- 
-  
+
   {
     path: '/',
     element: <GuestLayout/>,

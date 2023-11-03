@@ -25,6 +25,8 @@ export const ContextProvider = ({ children }) => {
   const [notification, _setNotification] = useState("");
   let [loading, setLoading] = useState(true);
 
+  const [refresher, setRefresher] = useState(1);
+
   const [is_admin, setIsAdmin] = useState(false); // Initialize is_admin state
 
 
@@ -105,11 +107,13 @@ export const ContextProvider = ({ children }) => {
 
 
   
+
+  
   const logout = () => {
+    localStorage.removeItem("ACCESS_TOKEN")
     setToken(null); // Clear the token
-    setUser({}); // Clear any user-related data (you can customize this as needed)
-    // Additional logout logic can go here, such as making an API request to invalidate the token on the server
-    window.location.reload(); // Refresh the page
+    setRefresher(refresher + 1);
+    
 };
 
 

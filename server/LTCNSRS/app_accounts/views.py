@@ -4,11 +4,18 @@ from django.views import View
 import requests
 from rest_framework import permissions
 from .serializers import UserCreateSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from rest_framework import generics
 from .models import UserAccount
 
+
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.tokens import Token
+
+
 
 
 
@@ -69,3 +76,24 @@ class EnableUserView(generics.UpdateAPIView):
         user.disabled_at = None
         user.save()
         return Response(data={'message': 'User has been enabled'}, status=status.HTTP_200_OK)
+    
+
+def create_jwt_token(user):
+    token = Token()
+    token['is_admin'] = user.is_admin  # Include is_admin in the payload
+    return str(token)
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user: UserAccount):
+        token = super().get_token(user)
+
+        token['email'] = user.email
+        token['user_id'] = user.id
+        token['full_name'] = user.first_name + " " + user.last_name
+        token['is_admin'] = user.is_admin
+        return token
+    
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom'
 
 import Topbar from "./../scenes/global/Topbar"
 import Drawer from "./../scenes/global/Drawer";
+import UserDrawer from "../scenes/global/UserDrawer";
 
 import { CssBaseline, ThemeProvider, Box } from "@mui/material";
 import { ColorModeContext, useMode } from "./../theme";
@@ -24,6 +25,7 @@ function UserLayout() {
        <ThemeProvider theme={theme}>
           <CssBaseline />
             <section className="flex app overflow-hidden">
+                <UserDrawer isSidebar={isSidebar} />
                 <div className="content">
                      <Topbar setIsSidebar={setIsSidebar}  />
                 <div className=" h-screen    overflow-scroll ">
