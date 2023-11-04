@@ -193,51 +193,19 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="First Name"
+                label="Full Name"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.firstName}
-                name="firstName"
-                error={!!touched.firstName && !!errors.firstName}
-                helperText={touched.firstName && errors.firstName}
+                value={values.fullName}
+                name="fullName"
+                error={!!touched.fullName && !!errors.fullName}
+                helperText={touched.fullName && errors.fullName}
                 // Add any other props that your TextInput component requires
                 // For example, you might need to pass classes like this:
                 className="textInput"
                 sx={{ gridColumn: "span 1" }}
               />
-              <TextInput
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Middle Name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.middleName}
-                name="middleName"
-                error={!!touched.middleName && !!errors.middleName}
-                helperText={touched.middleName && errors.middleName}
-                // Add any other props that your TextInput component requires
-                // For example, you might need to pass classes like this:
-                className="textInput"
-                sx={{ gridColumn: "span 1" }}
-              />
-
-              <TextInput
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Last Name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.lastName}
-                name="lastName"
-                error={!!touched.lastName && !!errors.lastName}
-                helperText={touched.lastName && errors.lastName}
-                // Add any other props that your TextInput component requires
-                // For example, you might need to pass classes like this:
-                className="textInput"
-                sx={{ gridColumn: "span 1" }}
-              />
+             
               <DateInput
                 label="Birthdate"
                 name="birthdate"
@@ -511,23 +479,9 @@ const phoneRegExp =
   /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
 const checkoutSchema = yup.object().shape({
-  firstName: yup
+  fullName: yup
     .string()
     .required("Required")
-    .matches(
-      /^[A-Za-z\s]{2,16}$/,
-      "Should contain only 2-16 letters (no special characters)"
-    ),
-  middleName: yup
-    .string()
-    .required("required")
-    .matches(
-      /^[A-Za-z\s]{1,16}$/,
-      "Should contain only 1-16 letters (no special characters)"
-    ),
-  lastName: yup
-    .string()
-    .required("required")
     .matches(
       /^[A-Za-z\s]{2,16}$/,
       "Should contain only 2-16 letters (no special characters)"
@@ -571,9 +525,7 @@ const checkoutSchema = yup.object().shape({
 });
 
 const initialValues = {
-  firstName: "",
-  middleName: "",
-  lastName: "",
+  fullName: "",
   gender: "", // Add the "gender" field with an initial empty value
   //     birthdate: null,
   address: "",
