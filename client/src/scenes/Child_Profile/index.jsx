@@ -64,6 +64,19 @@ const ChildProfile = ({ child, updateChildData }) => {
   const [selectedView, setSelectedView] = useState("child"); // Default view
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [gridData, setGridData] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(0);
+
+  const birthYear = editedChild.birthdate
+    ? new Date(editedChild.birthdate).getFullYear()
+    : new Date().getFullYear();
+  const startYear = birthYear;
+  const endYear = birthYear + 5;
+
+  // Generate an array of years within the range
+  const yearRange = Array.from(
+    { length: endYear - startYear + 1 },
+    (_, i) => startYear + i
+  );
 
   useEffect(() => {
     // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
@@ -112,9 +125,7 @@ const ChildProfile = ({ child, updateChildData }) => {
         if (rowData.id === child.id) {
           return {
             ...rowData,
-            firstName: editedChild.firstName,
-            middleName: editedChild.middleName,
-            lastName: editedChild.lastName,
+            fullName: editedChild.fullName,
             address: editedChild.address,
             pt: editedChild.pt,
             gender: editedChild.gender,
@@ -124,7 +135,6 @@ const ChildProfile = ({ child, updateChildData }) => {
             occupation: editedChild.occupation,
             relationship: editedChild.relationship,
             ethnicity: editedChild.ethnicity,
-            dow: editedChild.dow,
             barangay: editedChild.barangay,
           };
         }
@@ -135,9 +145,7 @@ const ChildProfile = ({ child, updateChildData }) => {
     // Now, send a PUT request to update the primary child data
     const updatedPrimaryChildData = {
       id: child.id,
-      firstName: editedChild.firstName,
-      middleName: editedChild.middleName,
-      lastName: editedChild.lastName,
+      fullName: editedChild.fullName,
       address: editedChild.address,
       pt: editedChild.pt,
       gender: editedChild.gender,
@@ -147,7 +155,6 @@ const ChildProfile = ({ child, updateChildData }) => {
       occupation: editedChild.occupation,
       relationship: editedChild.relationship,
       ethnicity: editedChild.ethnicity,
-      dow: editedChild.dow,
       barangay: editedChild.barangay,
     };
 
@@ -640,10 +647,11 @@ const ChildProfile = ({ child, updateChildData }) => {
               id="year-select"
               onChange={handleYearChange}
               sx={{ marginRight: "10px", mb: "10px" }}
+              value={selectedYear}
             >
-              {Array.from({ length: 5 }, (_, i) => (
-                <MenuItem key={i} value={new Date().getFullYear() - i}>
-                  {new Date().getFullYear() - i}
+              {yearRange.map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
                 </MenuItem>
               ))}
             </Select>

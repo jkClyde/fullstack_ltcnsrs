@@ -78,9 +78,7 @@ barangay_choices = (
 )
 
 class PrimaryChild(models.Model):
-    firstName = models.CharField(max_length=255)
-    middleName = models.CharField(max_length=255)
-    lastName = models.CharField(max_length=255)
+    fullName = models.CharField(max_length=255)
     address = models.CharField(max_length=255, default='Not specified')
     pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
     gender = models.CharField(
@@ -93,11 +91,12 @@ class PrimaryChild(models.Model):
         max_length=200, choices=relationship_choices, default='Not specified')
     ethnicity = models.CharField(
         max_length=200, choices=ethnicity_choices, default='Not specified')
-    dow = models.DateField(null=True, blank=True)
+   
     barangay = models.CharField(
         max_length=200, choices=barangay_choices, default='Not specified')
 
 class ChildHealthInfo(models.Model):
+    dow = models.DateField(null=True, blank=True)
     weight = models.FloatField(default=0)
     height = models.FloatField(default=0)
     muac = models.FloatField(default=0)
@@ -106,3 +105,4 @@ class ChildHealthInfo(models.Model):
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
     disability = models.CharField(max_length=50, blank=True, default='')
     child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
+    
