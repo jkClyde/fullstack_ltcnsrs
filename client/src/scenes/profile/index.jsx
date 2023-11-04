@@ -3,8 +3,6 @@ import profileImage from '../../assets/nurse_1.jpg';
 import { tokens } from '../../theme';
 import { useStateContext } from '../../contexts/ContextProvider';
 import { Box, Typography, useTheme, Input, Select, MenuItem, Button } from '@mui/material';
-import MenuSelect from "./../form/formComponents/MenuSelect";
-
 
 const UserProfile = () => {
   const theme = useTheme();
@@ -84,16 +82,16 @@ const UserProfile = () => {
           </Typography>
          
           <Typography color={colors.grey[100]} sx={{ marginBottom: 1 }} className="mb-1">
-            <strong>Job Title:</strong> <span>{user.job_description}</span>
+            Job Title: <strong><span>{user.job_description}</span></strong>
           </Typography>
           <Typography color={colors.grey[100]} sx={{ marginBottom: 1 }} className="mb-1">
-            <strong>Address:</strong> <span>{user.barangay}</span>
+            Address: <strong><span>{user.barangay}</span></strong>
           </Typography>
           <Typography color={colors.grey[100]} sx={{ marginBottom: 1 }} className="mb-1">
-            <strong>Email:</strong> <span>{user.email}</span>
+            Email: <strong><span>{user.email}</span></strong>
           </Typography>
           <Typography color={colors.grey[100]} sx={{ marginBottom: 1 }} className="mb-1">
-            <strong>Phone Number:</strong> <span>{user.phone_number}</span>
+            Phone Number: <strong><span>{user.phone_number}</span></strong>
           </Typography>
         </Box>
 
@@ -130,28 +128,8 @@ const UserProfile = () => {
                 onChange={(e) => handleChange('lastName', e.target.value)}
               />
             </Box>
-          </Box>
-          {/* <Box className="mb-4">
-            <Typography color={colors.grey[100]} variant="h6" className="col-span-3 font-bold mb-2">
-              Job Title
-            </Typography>
-            <select
-              className="w-full p-2 border rounded-md"
-              value={user.job_description}
-              onChange={(e) => handleChange('jobTitle', e.target.value)}
-            >
-              <option value="" disabled>
-                Select a job title
-              </option>
-              {jobTitles.map((title) => (
-                <option key={title} value={title}>
-                  {title}
-                </option>
-              ))}
-            </select>
-          </Box> */}
-          <Box className="mb-4">
-             <Typography color={colors.grey[100]} variant="h6" className="mb-1 font-bold">
+            <Box className="mb-4">
+            <Typography color={colors.grey[100]} variant="h6" className="mb-1 font-bold">
               Job Desciption
             </Typography>
             <input
@@ -159,10 +137,8 @@ const UserProfile = () => {
               type="text"
               value={user.job_description}
               onChange={(e) => handleChange('job_description', e.target.value)}
-            /> 
-            
+            />
           </Box>
-
           <Box className="mb-4">
             <Typography color={colors.grey[100]} variant="h6" className="mb-1 font-bold">
               Barangay
@@ -184,7 +160,7 @@ const UserProfile = () => {
               value={user.email}
               onChange={(e) => handleChange('email', e.target.value)}
               disabled // Add the 'disabled' attribute here
-
+              style={{backgroundColor: "#fff"}}
             />
           </Box>
           <Box className="mb-4">
@@ -198,6 +174,30 @@ const UserProfile = () => {
               onChange={(e) => handleChange('phoneNumber', e.target.value)}
             />
           </Box>
+          </Box>
+          {/* <Box className="mb-4">
+            <Typography color={colors.grey[100]} variant="h6" className="col-span-3 font-bold mb-2">
+              Job Title
+            </Typography>
+            <select
+              className="w-full p-2 border rounded-md"
+              value={user.job_description}
+              onChange={(e) => handleChange('jobTitle', e.target.value)}
+            >
+              <option value="" disabled>
+                Select a job title
+              </option>
+              {jobTitles.map((title) => (
+                <option key={title} value={title}>
+                  {title}
+                </option>
+              ))}
+            </select>
+          </Box> */}
+          
+
+          
+          
 
           <Button
             sx={{

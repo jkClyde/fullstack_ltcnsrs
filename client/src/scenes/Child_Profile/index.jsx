@@ -291,12 +291,10 @@ const ChildProfile = ({ child, updateChildData }) => {
 
     // Update selectedYear and selectedQuarter based on the conditions
     if (event.target.value === "child") {
-      // Find the child with the same first name, middle name, last name, and dow
+      // Find the child with the same full name and dow
       const matchingchild = gridData.find(
         (item) =>
-          item.firstName === editedChild.firstName &&
-          item.middleName === editedChild.middleName &&
-          item.lastName === editedChild.lastName &&
+          item.fullName === editedChild.fullName &&
           item.dow === editedChild.dow
       );
 
@@ -370,7 +368,7 @@ const ChildProfile = ({ child, updateChildData }) => {
   const renderChildProfile = () => (
     <Grid container columnSpacing={2}>
       <Grid item xs={4}>
-        {renderTextField("First Name", "firstName", editedChild.firstName)}
+        {renderTextField("First Name", "fullName", editedChild.fullName)}
 
         {isEditing ? (
           // Render the gender field only when editing
@@ -405,15 +403,9 @@ const ChildProfile = ({ child, updateChildData }) => {
         )}
       </Grid>
       <Grid item xs={4}>
-        {renderTextField(
-          "Middle Initial",
-          "middleName",
-          editedChild.middleName
-        )}
         {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
       </Grid>
       <Grid item xs={4}>
-        {renderTextField("Last Name", "lastName", editedChild.lastName)}
         {!isEditing &&
           renderTextField(
             "Age in Months",
