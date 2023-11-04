@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 housing_CHOICES = (
     ('Permanent', 'Permanent'),
@@ -96,48 +97,35 @@ class PrimaryChild(models.Model):
     barangay = models.CharField(
         max_length=200, choices=barangay_choices, default='Not specified')
     
+class ChildHealthInfo(models.Model):
+    childHealth_id = models.AutoField(primary_key=True)
+    dow = models.DateField(null=True, blank=True)
+    weight = models.FloatField(default=0)
+    height = models.FloatField(default=0)
+    muac = models.FloatField(default=0)
+    purga = models.DateField(null=True, blank=True)
+    vac = models.DateField(null=True, blank=True)
+    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
+    disability = models.CharField(max_length=50, blank=True, default='')
+    child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
+    quarter = models.CharField(max_length=20, default='firstquarter')
+    year = models.IntegerField(null=True, blank=True)  # Add a year field
 
-class firstQuarter(models.Model):
-    dow = models.DateField(null=True, blank=True)
-    weight = models.FloatField(default=0)
-    height = models.FloatField(default=0)
-    muac = models.FloatField(default=0)
-    purga = models.DateField(null=True, blank=True)
-    vac = models.DateField(null=True, blank=True)
-    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
-    disability = models.CharField(max_length=50, blank=True, default='')
-    child_id = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
+    def save(self, *args, **kwargs):
+        # Calculate the quarter based on the dow field
+        if self.dow:
+            if self.dow.month in [1, 2, 3]:
+                self.quarter = 'firstquarter'
+            elif self.dow.month in [4, 5, 6]:
+                self.quarter = 'secondquarter'
+            elif self.dow.month in [7, 8, 9]:
+                self.quarter = 'thirdquarter'
+            elif self.dow.month in [10, 11, 12]:
+                self.quarter = 'fourthquarter'
+            
+            # Calculate the year based on the birthdate of the child
+            if self.child.birthdate:
+                birth_year = self.child.birthdate.year
+                self.year = birth_year
 
-class secondQuarter(models.Model):
-    dow = models.DateField(null=True, blank=True)
-    weight = models.FloatField(default=0)
-    height = models.FloatField(default=0)
-    muac = models.FloatField(default=0)
-    purga = models.DateField(null=True, blank=True)
-    vac = models.DateField(null=True, blank=True)
-    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
-    disability = models.CharField(max_length=50, blank=True, default='')
-    child_id = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
-    
-class thirdQuarter(models.Model):
-    dow = models.DateField(null=True, blank=True)
-    weight = models.FloatField(default=0)
-    height = models.FloatField(default=0)
-    muac = models.FloatField(default=0)
-    purga = models.DateField(null=True, blank=True)
-    vac = models.DateField(null=True, blank=True)
-    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
-    disability = models.CharField(max_length=50, blank=True, default='')
-    child_id = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
-
-class fourthQuarter(models.Model):
-    dow = models.DateField(null=True, blank=True)
-    weight = models.FloatField(default=0)
-    height = models.FloatField(default=0)
-    muac = models.FloatField(default=0)
-    purga = models.DateField(null=True, blank=True)
-    vac = models.DateField(null=True, blank=True)
-    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
-    disability = models.CharField(max_length=50, blank=True, default='')
-    child_id = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
-    
+        super(ChildHealthInfo, self).save(*args, **kwargs)

@@ -82,6 +82,9 @@ const Table = () => {
       }
       const primaryChildData = await primaryChildResponse.json();
 
+      // Log the primaryChildData response to inspect its structure
+      console.log("Primary Child Data Response:", primaryChildData);
+
       // Fetch data from the childhealthinfo endpoint
       const childHealthInfoResponse = await fetch(
         "http://127.0.0.1:8000/childhealthinfo/"
@@ -95,11 +98,14 @@ const Table = () => {
       }
       const childHealthInfoData = await childHealthInfoResponse.json();
 
+      // Log the childHealthInfoData response to inspect its structure
+      console.log("Child Health Info Data Response:", childHealthInfoData);
+
       // Merge the data based on a common foreign key (e.g., 'child' field)
       const mergedData = mergeData(primaryChildData, childHealthInfoData);
-
+      console.log("Fetched data:", mergedData);
       setGridData(mergedData);
-      console.log("Fetched data:", mergedData); // Log the fetched data
+      // Log the merged data
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -119,8 +125,6 @@ const Table = () => {
       return {
         id: primaryChild.id,
         fullName: primaryChild.fullName,
-        // middleName: primaryChild.middleName,
-        // lastName: primaryChild.lastName,
         birthdate: primaryChild.birthdate,
         address: primaryChild.address,
         pt: primaryChild.pt,
@@ -130,17 +134,17 @@ const Table = () => {
         occupation: primaryChild.occupation,
         relationship: primaryChild.relationship,
         ethnicity: primaryChild.ethnicity,
-        dow: primaryChild.dow,
         barangay: primaryChild.barangay,
-        id: matchingChildHealthInfo.id,
-        child: matchingChildHealthInfo.child,
-        weight: matchingChildHealthInfo.weight,
-        height: matchingChildHealthInfo.height,
-        muac: matchingChildHealthInfo.muac,
-        purga: matchingChildHealthInfo.purga,
-        vac: matchingChildHealthInfo.vac,
-        bpe: matchingChildHealthInfo.bpe,
-        disability: matchingChildHealthInfo.disability,
+        dow: matchingChildHealthInfo ? matchingChildHealthInfo.dow : "N/A",
+        weight: matchingChildHealthInfo ? matchingChildHealthInfo.weight : 0,
+        height: matchingChildHealthInfo ? matchingChildHealthInfo.height : 0,
+        muac: matchingChildHealthInfo ? matchingChildHealthInfo.muac : 0,
+        purga: matchingChildHealthInfo ? matchingChildHealthInfo.purga : "N/A",
+        vac: matchingChildHealthInfo ? matchingChildHealthInfo.vac : "N/A",
+        bpe: matchingChildHealthInfo ? matchingChildHealthInfo.bpe : "N/A",
+        disability: matchingChildHealthInfo
+          ? matchingChildHealthInfo.disability
+          : "N/A",
         childHealthInfo: matchingChildHealthInfo,
       };
     });

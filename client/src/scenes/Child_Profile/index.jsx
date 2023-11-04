@@ -42,6 +42,8 @@ const ChildProfile = ({ child, updateChildData }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isEditing, setIsEditing] = useState(false);
+  const initialQuarter = "";
+
   const [editedChild, setEditedChild] = useState({
     ...child,
     weightForAge: weightForAgeStatus(
@@ -64,7 +66,9 @@ const ChildProfile = ({ child, updateChildData }) => {
   const [selectedView, setSelectedView] = useState("child"); // Default view
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [gridData, setGridData] = useState([]);
-  const [selectedYear, setSelectedYear] = useState(0);
+  const [selectedQuarter, setselectedQuarter] = useState(initialQuarter);
+  const [initialYear, setInitialYear] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(initialYear);
 
   const birthYear = editedChild.birthdate
     ? new Date(editedChild.birthdate).getFullYear()
@@ -77,6 +81,16 @@ const ChildProfile = ({ child, updateChildData }) => {
     { length: endYear - startYear + 1 },
     (_, i) => startYear + i
   );
+  function mapQuarterToDisplayValue(quarter) {
+    const quartersMap = {
+      firstquarter: "1st Quarter",
+      secondquarter: "2nd Quarter",
+      thirdquarter: "3rd Quarter",
+      fourthquarter: "4th Quarter",
+    };
+
+    return quartersMap[quarter] || quarter; // If not found, return the original value
+  }
 
   useEffect(() => {
     // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
@@ -106,7 +120,38 @@ const ChildProfile = ({ child, updateChildData }) => {
       lengthForAge: lengthForAge,
       weightForLength: weightForLength,
     }));
-  }, [editedChild.birthdate]);
+    const birthYear = editedChild.birthdate
+      ? new Date(editedChild.birthdate).getFullYear()
+      : new Date().getFullYear();
+    const startYear = birthYear;
+    const endYear = birthYear + 5;
+
+    // Generate an array of years within the range
+    const yearRange = Array.from(
+      { length: endYear - startYear + 1 },
+      (_, i) => startYear + i
+    );
+
+    // Set the initial year
+    setInitialYear(birthYear);
+    setSelectedYear(birthYear);
+
+    axios
+      .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
+      .then((childHealthInfoResponse) => {
+        const childHealthInfo = childHealthInfoResponse.data[0]; // Assuming only one record is returned
+        if (childHealthInfo) {
+          // Set the initial quarter and convert the initial quarter value
+          setselectedQuarter(mapQuarterToDisplayValue(childHealthInfo.quarter));
+        }
+      })
+      .catch((childHealthInfoError) => {
+        console.error(
+          "Error fetching ChildHealthInfo data:",
+          childHealthInfoError
+        );
+      });
+  }, [editedChild.birthdate, child.id]);
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -119,7 +164,7 @@ const ChildProfile = ({ child, updateChildData }) => {
     setIsEditing(true);
   };
   const handleSaveClick = () => {
-    // Update the table data in gridData with the updated information immediately
+    // Update the table data immediately with the updated information
     setGridData((prevGridData) => {
       return prevGridData.map((rowData) => {
         if (rowData.id === child.id) {
@@ -144,7 +189,6 @@ const ChildProfile = ({ child, updateChildData }) => {
 
     // Now, send a PUT request to update the primary child data
     const updatedPrimaryChildData = {
-      id: child.id,
       fullName: editedChild.fullName,
       address: editedChild.address,
       pt: editedChild.pt,
@@ -164,60 +208,68 @@ const ChildProfile = ({ child, updateChildData }) => {
         updatedPrimaryChildData
       )
       .then((primaryChildResponse) => {
-        // Handle the success of updating primarychild data here
         console.log("Primarychild data updated:", primaryChildResponse.data);
-        setIsEditing(false); // Set editing mode to false
+
+        // Now, fetch the related ChildHealthInfo record based on the foreign key
+        axios
+          .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
+          .then((childHealthInfoResponse) => {
+            const childHealthInfo = childHealthInfoResponse.data[0]; // Assuming only one record is returned
+            if (childHealthInfo) {
+              // Update the ChildHealthInfo record based on your needs
+              const updatedChildData = {
+                weight: editedChild.weight,
+                height: editedChild.height,
+                disability: editedChild.disability,
+                dow: editedChild.dow,
+                vac: editedChild.vac,
+                purga: editedChild.purga,
+                weightForAge: editedChild.weightForAge,
+                lengthForAge: editedChild.lengthForAge,
+                weightForLength: editedChild.weightForLength,
+                child: child.id,
+              };
+
+              axios
+                .put(
+                  `http://127.0.0.1:8000/childhealthinfo/${child.id}/`,
+                  updatedChildData
+                )
+                .then((response) => {
+                  console.log("Childhealthinfo data updated:", response.data);
+                })
+                .catch((error) => {
+                  console.error("Error updating childhealthinfo data:", error);
+                });
+            }
+          })
+          .catch((childHealthInfoError) => {
+            console.error(
+              "Error fetching ChildHealthInfo data:",
+              childHealthInfoError
+            );
+          });
+
+        setIsEditing(false);
 
         // Refresh the page immediately
         // window.location.reload();
 
-        // Show the snackbar after the page has been refreshed
         setIsSnackbarOpen(true);
       })
       .catch((primaryChildError) => {
         console.error("Error updating primarychild data:", primaryChildError);
-        // Handle errors if the request to update primarychild data fails
-      });
-
-    // Finally, send a PUT request to update childhealthinfo data
-    const updatedChildData = {
-      child: child.id,
-      weight: editedChild.weight,
-      height: editedChild.height,
-      disability: editedChild.disability,
-      dow: editedChild.dow,
-      vac: editedChild.vac,
-      purga: editedChild.purga,
-      weightForAge: editedChild.weightForAge,
-      lengthForAge: editedChild.lengthForAge,
-      weightForLength: editedChild.weightForLength,
-    };
-
-    axios
-      .put(
-        `http://127.0.0.1:8000/childhealthinfo/${child?.id}/`,
-        updatedChildData
-      )
-      .then((response) => {
-        // Handle the success of updating childhealthinfo data here
-        console.log("Childhealthinfo data updated:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error updating childhealthinfo data:", error);
-        // Handle errors if the request to update childhealthinfo data fails
       });
   };
 
   const handleCancelClick = () => {
     setIsEditing(false);
-    // Reset the edited data to the original child data.
     setEditedChild({ ...child });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Update the edited child data
     setEditedChild((prevChild) => {
       let updatedChild;
 
@@ -281,9 +333,61 @@ const ChildProfile = ({ child, updateChildData }) => {
       return updatedChild;
     });
   };
+  const handleQuarterChange = (event) => {
+    const newQuarter = event.target.value;
+    console.log("Quarter changed"); // Add this line
+    setselectedQuarter(newQuarter);
+
+    console.log("gridData:", gridData);
+    const matchingChild = gridData.find(
+      (item) =>
+        item.fullName === editedChild.fullName && item.dow === editedChild.dow
+    );
+
+    console.log("Matching Child:", matchingChild);
+
+    if (matchingChild) {
+      axios
+        .get(
+          `http://127.0.0.1:8000/childhealthinfo/?child=${matchingChild.id}&quarter=${newQuarter}`
+        )
+        .then((childHealthInfoResponse) => {
+          console.log("API Response:", childHealthInfoResponse.data);
+
+          const childHealthInfo = childHealthInfoResponse.data[0];
+          console.log("Child Health Info:", childHealthInfo);
+
+          if (childHealthInfo) {
+            // Data is found, update the editedChild with the health information
+            setEditedChild((prevChild) => ({
+              ...prevChild,
+              weight: childHealthInfo.weight,
+              height: childHealthInfo.height,
+              disability: childHealthInfo.disability,
+              dow: childHealthInfo.dow,
+              vac: childHealthInfo.vac,
+              purga: childHealthInfo.purga,
+            }));
+          } else {
+            // No data found for the selected quarter
+            console.log(`No data found in ${newQuarter}`);
+          }
+        })
+        .catch((childHealthInfoError) => {
+          console.error(
+            "Error fetching ChildHealthInfo data:",
+            childHealthInfoError
+          );
+        });
+    }
+  };
 
   const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
+    const selectedYear = event.target.value;
+    setSelectedYear(selectedYear);
+
+    // Set the initial value of the quarter dropdown to "1st Quarter" when the year changes
+    setselectedQuarter("1st Quarter");
   };
 
   const handleViewChange = (event, newValue) => {
@@ -294,8 +398,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       // Find the child with the same full name and dow
       const matchingchild = gridData.find(
         (item) =>
-          item.fullName === editedChild.fullName &&
-          item.dow === editedChild.dow
+          item.fullName === editedChild.fullName && item.dow === editedChild.dow
       );
 
       // Update selectedYear and selectedQuarter based on the found child
@@ -639,7 +742,7 @@ const ChildProfile = ({ child, updateChildData }) => {
               id="year-select"
               onChange={handleYearChange}
               sx={{ marginRight: "10px", mb: "10px" }}
-              value={selectedYear}
+              value={selectedYear || initialYear}
             >
               {yearRange.map((year) => (
                 <MenuItem key={year} value={year}>
@@ -651,8 +754,9 @@ const ChildProfile = ({ child, updateChildData }) => {
             <Select
               labelId="quarter-select-label"
               id="quarter-select"
-              onChange={(event) => setselectedQuarter(event.target.value)}
+              onChange={handleQuarterChange}
               sx={{ marginLeft: "10px", mb: "10px" }}
+              value={selectedQuarter || initialQuarter}
             >
               <MenuItem value="1st Quarter">1st Quarter</MenuItem>
               <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>

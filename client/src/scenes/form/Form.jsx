@@ -123,11 +123,11 @@ const Form = () => {
         // Update the quarterData object to include the child_id
         const updatedQuarterData = {
           ...quarterData,
-          child_id: childId,
+          child: childId,
         };
 
         // Make an API call to save data in the appropriate quarter table
-        return fetch(`http://127.0.0.1:8000/${quarter}quarter/`, {
+        return fetch(`http://127.0.0.1:8000/childhealthinfo/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -464,7 +464,6 @@ const Form = () => {
                 sx={{ gridColumn: "span 1" }}
                 selectedDate={selectedDate} // Pass the selectedDate prop here
               />
-              
             </Box>
 
             {/* Buttons  */}
