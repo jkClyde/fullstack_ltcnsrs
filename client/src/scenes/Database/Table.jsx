@@ -7,9 +7,9 @@ import { calculateAgeInMonths } from "./Calculations/calculateAgeInMonths";
 import { getCellClassNameWFA } from "./StatusReference/StatusCellColors/getCellClassNameWFA.js";
 import { getCellClassNameLFA } from "./StatusReference/StatusCellColors/getCellClassNameLFA.js";
 import { getCellClassNameWFL } from "./StatusReference/StatusCellColors/getCellClassNameWFL.js";
-import VisibilityIcon from "@mui/icons-material/Visibility"; // install this if needed
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
   Box,
@@ -18,14 +18,14 @@ import {
   Button,
   Dialog,
   DialogContent,
-  Select, // Add this import statement
-  MenuItem, // Add this import statement
+  Select,
+  MenuItem,
 } from "@mui/material";
 import {
   DownloadOutlined as DownloadOutlinedIcon,
   Search,
   SearchOffOutlined,
-} from "@mui/icons-material"; // Import DownloadOutlinedIcon from @mui/icons-material
+} from "@mui/icons-material";
 import { tokens } from "../../theme";
 import {
   DataGrid,
@@ -39,29 +39,19 @@ const Table = () => {
   const [gridData, setGridData] = useState([]);
   const [selectedChild, setselectedChild] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedQuarter, setSelectedQuarter] = useState("All Quarter");
 
-  const getQuarterOptions = () => {
-    // Add an "ALL QUARTER" option to the list of quarters
-    return [
-      "All Quarter",
-      "1st Quarter",
-      "2nd Quarter",
-      "3rd Quarter",
-      "4th Quarter",
-    ];
-  };
   const handleDeleteRow = (id) => {
     // Ask the user for confirmation before deleting
-    const confirmed = window.confirm("Are you sure you want to delete this row?");
-    
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this row?"
+    );
+
     if (!confirmed) {
       // If the user cancels the deletion, do nothing
       return;
     }
     // Make an API request to delete the record
-    fetch(`http://127.0.0.1:8000/fourthquarter/${id}/`, {
+    fetch(`http://127.0.0.1:8000/primarychild/${id}/`, {
       method: "DELETE",
     })
       .then((response) => {
@@ -77,115 +67,101 @@ const Table = () => {
         console.error("Error deleting the record:", error);
       });
   };
-
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-    // Add logic to handle the change, if needed
-  };
-  const handleQuarterChange = (event) => {
-    setSelectedQuarter(event.target.value);
-  };
-  useEffect(() => {
-    // Fetch data from Django API endpoint based on selected year and quarter
-    const fetchData = async () => {
-      try {
-        const selectedQuarters =
-          selectedQuarter === "All Quarter"
-            ? ["1st Quarter", "2nd Quarter", "3rd Quarter", "4th Quarter"]
-            : [selectedQuarter];
-        const allQuarterData = [];
-
-        // Fetch data for each selected quarter
-        for (const quarter of selectedQuarters) {
-          let endpoint;
-
-          // Determine the API endpoint based on the selected quarter
-          switch (quarter) {
-            case "1st Quarter":
-              endpoint = "firstquarter";
-              break;
-            case "2nd Quarter":
-              endpoint = "secondquarter";
-              break;
-            case "3rd Quarter":
-              endpoint = "thirdquarter";
-              break;
-            case "4th Quarter":
-              endpoint = "fourthquarter";
-              break;
-            default:
-              console.error("Invalid quarter:", quarter);
-              continue;
-          }
-
-          const response = await fetch(
-            `http://127.0.0.1:8000/${endpoint}/?year=${selectedYear}`
-          );
-          const data = await response.json();
-          allQuarterData.push(...data);
-        }
-
-        const filteredData = filterDataByQuarter(allQuarterData);
-        console.log("Fetched data:", filteredData);
-        setGridData(filteredData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, [selectedYear, selectedQuarter]);
-
-  const filterDataByQuarter = (data) => {
-    return data.filter((item) => {
-      const itemMonth = new Date(item.dow).getMonth() + 1; // January is 0
-      const itemYear = new Date(item.dow).getFullYear();
-
-      if (selectedQuarter === "All Quarter") {
-        // If "ALL QUARTER" is selected, only filter by year
-        return itemYear.toString() === selectedYear.toString();
-      } else {
-        // If a specific quarter is selected, filter by both year and quarter
-        const selectedPhase = selectedQuarter;
-        return (
-          itemYear.toString() === selectedYear.toString() &&
-          getQuarter(itemMonth) === selectedPhase
+  const fetchData = async () => {
+    try {
+      // Fetch data from the primarychild endpoint
+      const primaryChildResponse = await fetch(
+        "http://127.0.0.1:8000/primarychild/"
+      );
+      if (!primaryChildResponse.ok) {
+        console.error(
+          "Error fetching primarychild data:",
+          primaryChildResponse.statusText
         );
+        return;
       }
-    });
-  };
-  const getQuarter = (month) => {
-    if (month >= 1 && month <= 3) {
-      return "1st Quarter";
-    } else if (month >= 4 && month <= 6) {
-      return "2nd Quarter";
-    } else if (month >= 7 && month <= 9) {
-      return "3rd Quarter";
-    } else {
-      return "4th Quarter";
+      const primaryChildData = await primaryChildResponse.json();
+
+      // Fetch data from the childhealthinfo endpoint
+      const childHealthInfoResponse = await fetch(
+        "http://127.0.0.1:8000/childhealthinfo/"
+      );
+      if (!childHealthInfoResponse.ok) {
+        console.error(
+          "Error fetching childhealthinfo data:",
+          childHealthInfoResponse.statusText
+        );
+        return;
+      }
+      const childHealthInfoData = await childHealthInfoResponse.json();
+
+      // Merge the data based on a common foreign key (e.g., 'child' field)
+      const mergedData = mergeData(primaryChildData, childHealthInfoData);
+
+      setGridData(mergedData);
+      console.log("Fetched data:", mergedData); // Log the fetched data
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   };
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const mergeData = (primaryChildData, childHealthInfoData) => {
+    return primaryChildData.map((primaryChild) => {
+      // Find the corresponding childHealthInfo by matching 'id' with 'child' field
+      const matchingChildHealthInfo = childHealthInfoData.find(
+        (childHealthInfo) => childHealthInfo.child === primaryChild.id
+      );
+
+      return {
+        id: primaryChild.id,
+        firstName: primaryChild.firstName,
+        middleName: primaryChild.middleName,
+        lastName: primaryChild.lastName,
+        birthdate: primaryChild.birthdate,
+        address: primaryChild.address,
+        pt: primaryChild.pt,
+        gender: primaryChild.gender,
+        aim: primaryChild.aim,
+        parentName: primaryChild.parentName,
+        occupation: primaryChild.occupation,
+        relationship: primaryChild.relationship,
+        ethnicity: primaryChild.ethnicity,
+        dow: primaryChild.dow,
+        barangay: primaryChild.barangay,
+        id: matchingChildHealthInfo.id,
+        child: matchingChildHealthInfo.child,
+        weight: matchingChildHealthInfo.weight,
+        height: matchingChildHealthInfo.height,
+        muac: matchingChildHealthInfo.muac,
+        purga: matchingChildHealthInfo.purga,
+        vac: matchingChildHealthInfo.vac,
+        bpe: matchingChildHealthInfo.bpe,
+        disability: matchingChildHealthInfo.disability,
+        childHealthInfo: matchingChildHealthInfo,
+      };
+    });
+  };
+
   const handleRowClick = (params, event) => {
-    // Check if the click occurred on the profile button
     const isButtonClick = event.target.tagName === "BUTTON";
 
     if (isButtonClick) {
-      // Click occurred on the button, show the profile
       setselectedChild(params.row);
       setIsProfileOpen(true);
     }
   };
 
   const handleCloseProfile = () => {
-    setIsProfileOpen(false); // Close the profile dialog
+    setIsProfileOpen(false);
   };
 
   const updateChildData = (updatedChild) => {
     setGridData((prevData) =>
-      prevData.map((row) =>
-        row.id === updatedChild.id ? updatedChild : row
-      )
+      prevData.map((row) => (row.id === updatedChild.id ? updatedChild : row))
     );
   };
 
@@ -219,30 +195,6 @@ const Table = () => {
     setselectedChild(child);
     setIsProfileOpen(true);
   };
-
-  <Dialog
-    open={isProfileOpen}
-    onClose={handleCloseProfile}
-    maxWidth="md"
-    fullWidth
-  >
-    <DialogContent>
-      {/* Display the child profile */}
-      {selectedChild && (
-        <ChildProfile
-          child={{
-            ...selectedChild,
-            aim: calculateAgeInMonths(selectedChild.birthdate),
-            weightForAge: selectedChild.weightForAge,
-            lengthForAge: selectedChild.lengthForAge,
-            weightForLength: selectedChild.weightForLength,
-          }}
-          updateChildData={updateChildData}
-        />
-      )}
-    </DialogContent>
-  </Dialog>;
-
   const columns = [
     {
       field: "firstName",
@@ -381,7 +333,7 @@ const Table = () => {
       renderCell: (params) => (
         <IconButton
           variant="outlined"
-          color={theme.palette.secondary.main} 
+          color={theme.palette.secondary.main}
           sx={
             {
               // Add additional styling here if needed
@@ -407,7 +359,7 @@ const Table = () => {
           color="error"
           onClick={() => handleDeleteRow(params.row.id)}
         >
-          <DeleteIcon/>
+          <DeleteIcon />
         </IconButton>
       ),
     },
@@ -455,37 +407,6 @@ const Table = () => {
         alignItems="center"
         p="10px"
       >
-        {/* Year and Quarter Selects */}
-        <Box display="flex" alignItems="center">
-          <Select
-            labelId="year-select-label"
-            id="year-select"
-            value={selectedYear}
-            onChange={handleYearChange}
-            sx={{ marginRight: "10px" }}
-          >
-            {Array.from({ length: 5 }, (_, i) => (
-              <MenuItem key={i} value={new Date().getFullYear() - i}>
-                {new Date().getFullYear() - i}
-              </MenuItem>
-            ))}
-          </Select>
-
-          <Select
-            labelId="quarter-select-label"
-            id="quarter-select"
-            value={selectedQuarter}
-            onChange={handleQuarterChange}
-            sx={{ marginRight: "10px" }}
-          >
-            {getQuarterOptions().map((quarter) => (
-              <MenuItem key={quarter} value={quarter}>
-                {quarter}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
-
         <Button
           sx={{
             backgroundColor: colors.blueAccent[700],
@@ -493,7 +414,7 @@ const Table = () => {
             fontSize: "14px",
             fontWeight: "bold",
             padding: "10px 20px",
-            marginRight: "10px", // Add margin to create space
+            marginRight: "10px",
           }}
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
@@ -507,7 +428,7 @@ const Table = () => {
             fontSize: "14px",
             fontWeight: "bold",
             padding: "10px 20px",
-            marginRight: "10px", // Add margin to create space
+            marginRight: "10px",
           }}
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
@@ -516,16 +437,7 @@ const Table = () => {
       </Box>
 
       {/* Data Grid */}
-      <Box
-        m="10px 0 0 0"
-        height="75vh"
-        minHeight="50vh"
-        sx={
-          {
-            // Styles for the data grid
-          }
-        }
-      >
+      <Box m="10px 0 0 0" height="75vh" minHeight="50vh" sx={{}}>
         <Box height="100%" overflow="auto">
           <DataGrid
             rows={gridData}
@@ -551,7 +463,6 @@ const Table = () => {
         fullWidth
       >
         <DialogContent>
-          {/* Display the child profile */}
           {selectedChild && (
             <ChildProfile
               child={{

@@ -22,17 +22,6 @@ urlpatterns = [
 
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
 
-
-    # Include URL patterns for each quarter
-    # Replace 'app_form.urls' with the actual URL patterns for the first quarter
-    path('firstquarter/', include('app_form.urls')),
-    # Replace 'app_form.urls' with the actual URL patterns for the second quarter
-    path('secondquarter/', include('app_form.urls')),
-    # Replace 'app_form.urls' with the actual URL patterns for the third quarter
-    path('thirdquarter/', include('app_form.urls')),
-    # Replace 'app_form.urls' with the actual URL patterns for the fourth quarter
-    path('fourthquarter/', include('app_form.urls')),
-
     path('api/users/', UserListView.as_view(), name='user-list'),
 
 ]
