@@ -193,7 +193,7 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Full Name"
+                label="Full Name (Surname, Firstname)"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.fullName}
@@ -248,6 +248,16 @@ const Form = () => {
                 error={!!touched.address && !!errors.address}
                 helperText={touched.address && errors.address}
                 className="textInput"
+                sx={{ gridColumn: "span 1" }}
+              />
+              <MenuInput
+                label="Barangay"
+                name="barangay"
+                value={values.barangay}
+                onChange={(name, value) => setFieldValue(name, value)}
+                error={!!touched.barangay && !!errors.barangay}
+                helperText={touched.barangay && errors.barangay}
+                options={barangayOptions}
                 sx={{ gridColumn: "span 1" }}
               />
               <MenuSelect
@@ -438,16 +448,7 @@ const Form = () => {
                 sx={{ gridColumn: "span 1" }}
                 selectedDate={selectedDate} // Pass the selectedDate prop here
               />
-              <MenuInput
-                label="Barangay"
-                name="barangay"
-                value={values.barangay}
-                onChange={(name, value) => setFieldValue(name, value)}
-                error={!!touched.barangay && !!errors.barangay}
-                helperText={touched.barangay && errors.barangay}
-                options={barangayOptions}
-                sx={{ gridColumn: "span 1" }}
-              />
+              
             </Box>
 
             {/* Buttons  */}
@@ -483,8 +484,8 @@ const checkoutSchema = yup.object().shape({
     .string()
     .required("Required")
     .matches(
-      /^[A-Za-z\s]{2,16}$/,
-      "Should contain only 2-16 letters (no special characters)"
+      /^[A-Za-z\s]{2,16},[A-Za-z\s]{2,16}$/, // Add a comma between two name parts
+      "Should be in the format 'Last Name, First Name'"
     ),
   gender: yup.string().required("Gender is required"),
   relationship: yup.string().required("Relationship is required"),
