@@ -78,6 +78,7 @@ barangay_choices = (
 )
 
 class PrimaryChild(models.Model):
+    id = models.AutoField(primary_key=True)
     fullName = models.CharField(max_length=255)
     address = models.CharField(max_length=255, default='Not specified')
     pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
@@ -94,8 +95,9 @@ class PrimaryChild(models.Model):
    
     barangay = models.CharField(
         max_length=200, choices=barangay_choices, default='Not specified')
+    
 
-class ChildHealthInfo(models.Model):
+class firstQuarter(models.Model):
     dow = models.DateField(null=True, blank=True)
     weight = models.FloatField(default=0)
     height = models.FloatField(default=0)
@@ -104,5 +106,38 @@ class ChildHealthInfo(models.Model):
     vac = models.DateField(null=True, blank=True)
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
     disability = models.CharField(max_length=50, blank=True, default='')
-    child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
+    child_id = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
+
+class secondQuarter(models.Model):
+    dow = models.DateField(null=True, blank=True)
+    weight = models.FloatField(default=0)
+    height = models.FloatField(default=0)
+    muac = models.FloatField(default=0)
+    purga = models.DateField(null=True, blank=True)
+    vac = models.DateField(null=True, blank=True)
+    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
+    disability = models.CharField(max_length=50, blank=True, default='')
+    child_id = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
+    
+class thirdQuarter(models.Model):
+    dow = models.DateField(null=True, blank=True)
+    weight = models.FloatField(default=0)
+    height = models.FloatField(default=0)
+    muac = models.FloatField(default=0)
+    purga = models.DateField(null=True, blank=True)
+    vac = models.DateField(null=True, blank=True)
+    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
+    disability = models.CharField(max_length=50, blank=True, default='')
+    child_id = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
+
+class fourthQuarter(models.Model):
+    dow = models.DateField(null=True, blank=True)
+    weight = models.FloatField(default=0)
+    height = models.FloatField(default=0)
+    muac = models.FloatField(default=0)
+    purga = models.DateField(null=True, blank=True)
+    vac = models.DateField(null=True, blank=True)
+    bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
+    disability = models.CharField(max_length=50, blank=True, default='')
+    child_id = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
     

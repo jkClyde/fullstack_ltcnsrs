@@ -13,7 +13,6 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
-import axios from "axios"; // Import Axios
 import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,10 +22,8 @@ const Form = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedBirthdate, setSelectedBirthdate] = useState(null);
   const [selectedVaccinationDate, setSelectedVaccinationDate] = useState(null);
-  const [selectedCurrentDate, setSelectedCurrentDate] = useState(null);
   const [selectedDOW, setSelectedDOW] = useState(null);
   const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
-  const [isDuplicateModalOpen, setDuplicateModalOpen] = useState(false);
   const notify = () => toast.success("Child Data added successfully!");
 
   const handleDateChange = (name, date, dateType) => {
@@ -45,97 +42,116 @@ const Form = () => {
     setSelectedDate(formattedDate);
   };
 
-  const handleFormSubmit = (values, { resetForm }, required) => {
-    if (!selectedBirthdate && required) {
-      alert("Birthdate is required");
+  const handleFormSubmit = (values, { resetForm }) => {
+    if (!selectedBirthdate || !selectedDOW) {
+      alert("Birthdate and Date of Weighing are required");
       return;
     }
-    if (!selectedDOW && required) {
-      alert("Date of Weighing is required");
-      return;
-    }
-
-    const vaccinationDate = selectedVaccinationDate
-      ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
+    const formattedBirthdate = dayjs(selectedBirthdate).format("YYYY-MM-DD");
+    const formattedDOW = selectedDOW
+      ? dayjs(selectedDOW).format("YYYY-MM-DD")
       : null;
-    const purgaDate = selectedPurgaDate
+    const formattedPurgaDate = selectedPurgaDate
       ? dayjs(selectedPurgaDate).format("YYYY-MM-DD")
       : null;
+    const formattedVaccinationDate = selectedVaccinationDate
+      ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
+      : null;
 
-    const formattedBirthdate = dayjs(selectedDate).format("YYYY-MM-DD");
-    const formattedDow = dayjs(selectedDOW).format("YYYY-MM-DD");
-    const dowMonth = dayjs(selectedDOW).month();
-    const confirmed = window.confirm("Are you sure you want to submit?");
+    // Convert selectedDOW to a Date object
+    const dowDate = new Date(selectedDOW);
 
+    // Determine the quarter based on the selectedDOW
     let quarter;
-    if (dowMonth >= 0 && dowMonth < 3) {
-      quarter = "firstquarter";
-    } else if (dowMonth >= 3 && dowMonth < 6) {
-      quarter = "secondquarter";
-    } else if (dowMonth >= 6 && dowMonth < 9) {
-      quarter = "thirdquarter";
+
+    if (dowDate.getMonth() >= 0 && dowDate.getMonth() <= 2) {
+      // First quarter (January to March)
+      quarter = "first";
+    } else if (dowDate.getMonth() >= 3 && dowDate.getMonth() <= 5) {
+      // Second quarter (April to June)
+      quarter = "second";
+    } else if (dowDate.getMonth() >= 6 && dowDate.getMonth() <= 8) {
+      // Third quarter (July to September)
+      quarter = "third";
     } else {
-      quarter = "fourthquarter";
+      // Fourth quarter (October to December)
+      quarter = "fourth";
     }
 
-    // First, save data to PrimaryChild model
-    axios
-      .post(`http://127.0.0.1:8000/primarychild/`, {
-        ...values,
-        birthdate: formattedBirthdate,
-        dow: formattedDow,
-        purga: purgaDate,
-        vac: vaccinationDate,
+    // Create a data object to send to your Django backend for saving in the appropriate quarter table
+    const quarterData = {
+      dow: formattedDOW,
+      weight: values.weight,
+      height: values.height,
+      muac: values.muac,
+      purga: formattedPurgaDate,
+      vac: formattedVaccinationDate,
+      bpe: values.bpe,
+      disability: values.disability,
+    };
+
+    // Create a data object for saving in the PrimaryChild table
+    const primaryChildData = {
+      fullName: values.fullName,
+      address: values.address,
+      pt: values.pt,
+      gender: values.gender,
+      birthdate: formattedBirthdate,
+      parentName: values.parentName,
+      occupation: values.occupation,
+      relationship: values.relationship,
+      ethnicity: values.ethnicity,
+      barangay: values.barangay,
+    };
+
+    // Make an API call to your Django backend to save data in the PrimaryChild table
+    fetch("http://127.0.0.1:8000/primarychild/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(primaryChildData),
+    })
+      .then((response) => response.json()) // Parse the response to get the new PrimaryChild instance
+      .then((primaryChildResponse) => {
+        if (!primaryChildResponse.id) {
+          throw new Error("Failed to save primary child data.");
+        }
+
+        const childId = primaryChildResponse.id; // Get the generated child_id
+
+        // Update the quarterData object to include the child_id
+        const updatedQuarterData = {
+          ...quarterData,
+          child_id: childId,
+        };
+
+        // Make an API call to save data in the appropriate quarter table
+        return fetch(`http://127.0.0.1:8000/${quarter}quarter/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedQuarterData),
+        });
       })
       .then((response) => {
-        // Check if the response indicates success
-        if (response.status === 201) {
-          // Proceed to save data to ChildHealthInfo model
-          const primaryChildId = response.data.id;
-          axios
-            .post(`http://127.0.0.1:8000/childhealthinfo/`, {
-              dow: formattedDow,
-              weight: values.weight,
-              height: values.height,
-              muac: values.muac,
-              purga: purgaDate,
-              vac: vaccinationDate,
-              bpe: values.bpe,
-              disability: values.disability,
-              child: primaryChildId, // Link the child health info to the primary child
-            })
-            .then((childHealthResponse) => {
-              if (childHealthResponse.status === 201) {
-                console.log("Data successfully added to both models");
-                resetForm();
-                setSelectedBirthdate(null);
-                setSelectedDOW(null);
-                setSelectedPurgaDate(null);
-                setSelectedVaccinationDate(null);
-                setSelectedDate(null);
-                notify();
-              } else {
-                console.error("Error saving data to ChildHealthInfo model");
-                console.log(
-                  "Full error response:",
-                  childHealthResponse.response
-                );
-              }
-            })
-            .catch((error) => {
-              console.error(
-                "Error saving data to ChildHealthInfo model:",
-                error
-              );
-              console.log("Full error response:", error.response);
-            });
+        if (response.ok) {
+          // Both primary child and quarter data saved successfully
+          notify();
+          resetForm();
+          setSelectedBirthdate(null);
+          setSelectedDOW(null);
+          setSelectedVaccinationDate(null);
+          setSelectedPurgaDate(null);
+          setSelectedDate(null);
         } else {
-          console.error("Error saving data to PrimaryChild model");
-          console.log("Full error response:", response.response);
+          alert("Failed to save quarter data.");
         }
       })
       .catch((error) => {
-        console.error("Error saving data to PrimaryChild model:", error);
+        console.error("Error while making the API call:", error);
+        alert("An error occurred. Please try again later.");
       });
   };
 
@@ -205,7 +221,7 @@ const Form = () => {
                 className="textInput"
                 sx={{ gridColumn: "span 1" }}
               />
-             
+
               <DateInput
                 label="Birthdate"
                 name="birthdate"
