@@ -3,6 +3,8 @@ import profileImage from '../../assets/nurse_1.jpg';
 import { tokens } from '../../theme';
 import { useStateContext } from '../../contexts/ContextProvider';
 import { Box, Typography, useTheme, Input, Select, MenuItem, Button } from '@mui/material';
+import MenuSelect from "./../form/formComponents/MenuSelect";
+
 
 const UserProfile = () => {
   const theme = useTheme();
@@ -149,7 +151,7 @@ const UserProfile = () => {
             </select>
           </Box> */}
           <Box className="mb-4">
-            <Typography color={colors.grey[100]} variant="h6" className="mb-1 font-bold">
+             <Typography color={colors.grey[100]} variant="h6" className="mb-1 font-bold">
               Job Desciption
             </Typography>
             <input
@@ -157,7 +159,8 @@ const UserProfile = () => {
               type="text"
               value={user.job_description}
               onChange={(e) => handleChange('job_description', e.target.value)}
-            />
+            /> 
+            
           </Box>
 
           <Box className="mb-4">
