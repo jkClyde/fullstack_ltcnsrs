@@ -1,22 +1,10 @@
 from django.urls import path
-from .views import FirstQuarterListView, SecondQuarterListView, ThirdQuarterListView, FourthQuarterListView
+from .views import PrimaryChildListView, PrimaryChildDetailView, ChildHealthInfoListView, ChildHealthInfoDetailView
 
 urlpatterns = [
-    path('firstquarter/', FirstQuarterListView.as_view(), name='firstquarter-list'),
-    path('firstquarter/<int:pk>/', FirstQuarterListView.as_view(),
-         name='firstquarter-detail'),
+    path('primarychild/', PrimaryChildListView.as_view(), name='primarychild-list'),
+    path('primarychild/<int:pk>/', PrimaryChildDetailView.as_view(), name='primarychild-detail'),
 
-    path('secondquarter/', SecondQuarterListView.as_view(),
-         name='secondquarter-list'),
-    path('secondquarter/<int:pk>/', SecondQuarterListView.as_view(),
-         name='secondquarter-detail'),
-
-    path('thirdquarter/', ThirdQuarterListView.as_view(), name='thirdquarter-list'),
-    path('thirdquarter/<int:pk>/', ThirdQuarterListView.as_view(),
-         name='thirdquarter-detail'),
-
-    path('fourthquarter/', FourthQuarterListView.as_view(),
-         name='fourthquarter-list'),
-    path('fourthquarter/<int:pk>/', FourthQuarterListView.as_view(),
-         name='fourthquarter-detail'),
+    path('childhealthinfo/', ChildHealthInfoListView.as_view(), name='childhealthinfo-list'),
+    path('childhealthinfo/<int:pk>/', ChildHealthInfoDetailView.as_view(), name='childhealthinfo-detail'),
 ]

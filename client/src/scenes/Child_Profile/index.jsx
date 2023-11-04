@@ -4,8 +4,8 @@ import { calculateAgeInMonths } from "../Database/Calculations/calculateAgeInMon
 import lengthForAgeStatus from "../Database/Calculations/lengthForAgeStatus";
 import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
 import weightForLengthStatus from "../Database/Calculations/weightForLengthStatus";
-import "./../Database/StatusReference/StatusCellColors/statusColors.css"; 
-import { getClassForStatusColorValue } from './getClassForStatusColorValue';
+import "./../Database/StatusReference/StatusCellColors/statusColors.css";
+import { getClassForStatusColorValue } from "./getClassForStatusColorValue";
 // import ChildInfo from "./ChildInfo";
 import {
   Box,
@@ -30,59 +30,62 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { format } from "date-fns";
-import {ChildCareOutlined, MedicationLiquidOutlined, EscalatorWarningOutlined, ModeEditOutline} from '@mui/icons-material';  
-
+import {
+  ChildCareOutlined,
+  MedicationLiquidOutlined,
+  EscalatorWarningOutlined,
+  ModeEditOutline,
+} from "@mui/icons-material";
+import axios from "axios"; // Import Axios
 
 const ChildProfile = ({ child, updateChildData }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedChild, setEditedChild] = useState({ 
+  const [editedChild, setEditedChild] = useState({
     ...child,
-    weightForAge: weightForAgeStatus(child.birthdate, child.weight, child.gender),
-    lengthForAge: lengthForAgeStatus(child.birthdate, child.height, child.gender),
-    weightForLength: weightForLengthStatus(child.birthdate, child.height, child.weight, child.gender), 
+    weightForAge: weightForAgeStatus(
+      child.birthdate,
+      child.weight,
+      child.gender
+    ),
+    lengthForAge: lengthForAgeStatus(
+      child.birthdate,
+      child.height,
+      child.gender
+    ),
+    weightForLength: weightForLengthStatus(
+      child.birthdate,
+      child.height,
+      child.weight,
+      child.gender
+    ),
   });
-  const [selectedYear, setSelectedYear] = useState(2022);
-  const [selectedQuarter, setselectedQuarter] = useState("1st Quarter");
   const [selectedView, setSelectedView] = useState("child"); // Default view
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [gridData, setGridData] = useState([]);
-
-  const fetchData = (childId, updatedChild) => {
-    // Construct the API endpoint to fetch the data of the selected child
-    const quarterEndpoint = calculateQuarter(editedChild.dow);
-    const endpoint = `http://127.0.0.1:8000/${quarterEndpoint}`; // Replace 'childs' with your actual endpoint
-
-    // Make a GET request to fetch the data
-    fetch(endpoint)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          console.error("Error fetching data:", response.statusText);
-          throw new Error("Error fetching data");
-        }
-      })
-      .then((data) => {
-        // Update your table data with the fetched data
-        setGridData(data);
-        if (updatedChild) {
-          // Update the updated child data
-          setEditedChild(updatedChild);
-        }
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  };
 
   useEffect(() => {
     // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
     const birthdate = editedChild.birthdate;
     const aim = calculateAgeInMonths(birthdate);
-    const weightForAge = weightForAgeStatus(birthdate, editedChild.weight, editedChild.gender);
-    const lengthForAge = lengthForAgeStatus(birthdate, editedChild.height, editedChild.gender);
-    const weightForLength = weightForLengthStatus(birthdate, editedChild.height, editedChild.weight, editedChild.gender);
-  
+    const weightForAge = weightForAgeStatus(
+      birthdate,
+      editedChild.weight,
+      editedChild.gender
+    );
+    const lengthForAge = lengthForAgeStatus(
+      birthdate,
+      editedChild.height,
+      editedChild.gender
+    );
+    const weightForLength = weightForLengthStatus(
+      birthdate,
+      editedChild.height,
+      editedChild.weight,
+      editedChild.gender
+    );
+
     setEditedChild((prevChild) => ({
       ...prevChild,
       aim: aim,
@@ -91,8 +94,6 @@ const ChildProfile = ({ child, updateChildData }) => {
       weightForLength: weightForLength,
     }));
   }, [editedChild.birthdate]);
-  
-  
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -101,81 +102,103 @@ const ChildProfile = ({ child, updateChildData }) => {
     setIsSnackbarOpen(false);
   };
 
-  const onUpdateSuccess = (updatedData) => {
-    setEditedChild(updatedData);
-    setIsSnackbarOpen(true);
-  };
-
   const handleEditClick = () => {
     setIsEditing(true);
   };
-
   const handleSaveClick = () => {
-    setIsEditing(false);
-    const quarterEndpoint = calculateQuarter(editedChild.dow);
+    // Update the table data in gridData with the updated information immediately
+    setGridData((prevGridData) => {
+      return prevGridData.map((rowData) => {
+        if (rowData.id === child.id) {
+          return {
+            ...rowData,
+            firstName: editedChild.firstName,
+            middleName: editedChild.middleName,
+            lastName: editedChild.lastName,
+            address: editedChild.address,
+            pt: editedChild.pt,
+            gender: editedChild.gender,
+            birthdate: editedChild.birthdate,
+            aim: editedChild.aim,
+            parentName: editedChild.parentName,
+            occupation: editedChild.occupation,
+            relationship: editedChild.relationship,
+            ethnicity: editedChild.ethnicity,
+            dow: editedChild.dow,
+            barangay: editedChild.barangay,
+          };
+        }
+        return rowData;
+      });
+    });
 
-    if (quarterEndpoint === "Unknown Quarter") {
-      console.error("Could not determine the quarter endpoint.");
-      return;
-    }
-
-    // Prepare the data to be sent to the backend
-    const updatedChildData = {
-      ...editedChild,
-      birthdate: format(new Date(editedChild.birthdate), "yyyy-MM-dd"),
-      aim: calculateAgeInMonths(editedChild.birthdate),
-      // weightForAge: editedChild.weightForAge, // Include the calculated fields
-      // lengthForAge: editedChild.lengthForAge,
-      // weightForLength: editedChild.weightForLength,
+    // Now, send a PUT request to update the primary child data
+    const updatedPrimaryChildData = {
+      id: child.id,
+      firstName: editedChild.firstName,
+      middleName: editedChild.middleName,
+      lastName: editedChild.lastName,
+      address: editedChild.address,
+      pt: editedChild.pt,
+      gender: editedChild.gender,
+      birthdate: editedChild.birthdate,
+      aim: editedChild.aim,
+      parentName: editedChild.parentName,
+      occupation: editedChild.occupation,
+      relationship: editedChild.relationship,
+      ethnicity: editedChild.ethnicity,
+      dow: editedChild.dow,
+      barangay: editedChild.barangay,
     };
 
-    // Send a PUT request to update the child data
-    fetch(`http://127.0.0.1:8000/${quarterEndpoint}/${editedChild.id}/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedChildData),
-    })
+    axios
+      .put(
+        `http://127.0.0.1:8000/primarychild/${child.id}/`,
+        updatedPrimaryChildData
+      )
+      .then((primaryChildResponse) => {
+        // Handle the success of updating primarychild data here
+        console.log("Primarychild data updated:", primaryChildResponse.data);
+        setIsEditing(false); // Set editing mode to false
+
+        // Refresh the page immediately
+        // window.location.reload();
+
+        // Show the snackbar after the page has been refreshed
+        setIsSnackbarOpen(true);
+      })
+      .catch((primaryChildError) => {
+        console.error("Error updating primarychild data:", primaryChildError);
+        // Handle errors if the request to update primarychild data fails
+      });
+
+    // Finally, send a PUT request to update childhealthinfo data
+    const updatedChildData = {
+      child: child.id,
+      weight: editedChild.weight,
+      height: editedChild.height,
+      disability: editedChild.disability,
+      dow: editedChild.dow,
+      vac: editedChild.vac,
+      purga: editedChild.purga,
+      weightForAge: editedChild.weightForAge,
+      lengthForAge: editedChild.lengthForAge,
+      weightForLength: editedChild.weightForLength,
+    };
+
+    axios
+      .put(
+        `http://127.0.0.1:8000/childhealthinfo/${child?.id}/`,
+        updatedChildData
+      )
       .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          console.error("Error updating data:", response.statusText);
-          throw new Error("Error updating data");
-        }
+        // Handle the success of updating childhealthinfo data here
+        console.log("Childhealthinfo data updated:", response.data);
       })
-      .then((updatedData) => {
-        console.log("Updated data from API:", updatedData);
-        onUpdateSuccess(updatedData);
-
-        // Fetch the updated data of the selected child immediately
-        fetchData(editedChild.id, updatedData); // Pass the child ID and updated child data
-
-        updateChildData(updatedData);
-      })
-      .catch((error) => console.error("Error updating data:", error));
-  };
-
-  const calculateQuarter = (dow) => {
-    if (!dow) {
-      return "Unknown Quarter";
-    }
-
-    const dateOfWeighing = new Date(dow);
-    const month = dateOfWeighing.getMonth() + 1;
-
-    if (month >= 1 && month <= 3) {
-      return "firstquarter";
-    } else if (month >= 4 && month <= 6) {
-      return "secondquarter";
-    } else if (month >= 7 && month <= 9) {
-      return "thirdquarter";
-    } else if (month >= 10 && month <= 12) {
-      return "fourthquarter";
-    } else {
-      return "Unknown Quarter";
-    }
+      .catch((error) => {
+        console.error("Error updating childhealthinfo data:", error);
+        // Handle errors if the request to update childhealthinfo data fails
+      });
   };
 
   const handleCancelClick = () => {
@@ -186,11 +209,11 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     // Update the edited child data
     setEditedChild((prevChild) => {
       let updatedChild;
-  
+
       if (name === "birthdate") {
         const birthdate = format(new Date(value), "yyyy-MM-dd");
         const aim = calculateAgeInMonths(birthdate);
@@ -215,13 +238,31 @@ const ChildProfile = ({ child, updateChildData }) => {
           [name]: value,
         };
       }
-  
+
       // Calculate weightForAge, lengthForAge, and weightForLength based on updated data
-      if (name === "birthdate" || name === "weight" || name === "height" || name === "gender") {
-        const weightForAge = weightForAgeStatus(updatedChild.birthdate, updatedChild.weight, updatedChild.gender);
-        const lengthForAge = lengthForAgeStatus(updatedChild.birthdate, updatedChild.height, updatedChild.gender);
-        const weightForLength = weightForLengthStatus(updatedChild.birthdate, updatedChild.height, updatedChild.weight, updatedChild.gender);
-  
+      if (
+        name === "birthdate" ||
+        name === "weight" ||
+        name === "height" ||
+        name === "gender"
+      ) {
+        const weightForAge = weightForAgeStatus(
+          updatedChild.birthdate,
+          updatedChild.weight,
+          updatedChild.gender
+        );
+        const lengthForAge = lengthForAgeStatus(
+          updatedChild.birthdate,
+          updatedChild.height,
+          updatedChild.gender
+        );
+        const weightForLength = weightForLengthStatus(
+          updatedChild.birthdate,
+          updatedChild.height,
+          updatedChild.weight,
+          updatedChild.gender
+        );
+
         updatedChild = {
           ...updatedChild,
           weightForAge: weightForAge,
@@ -229,11 +270,10 @@ const ChildProfile = ({ child, updateChildData }) => {
           weightForLength: weightForLength,
         };
       }
-  
+
       return updatedChild;
     });
   };
-  
 
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
@@ -261,29 +301,15 @@ const ChildProfile = ({ child, updateChildData }) => {
     }
   };
 
-  const renderFullName = () => (
-    <Box mt="16px">
-      <Typography variant="h4" style={{ fontWeight: "bold" }}>
-        Full Name:
-      </Typography>
-      <Typography variant="body1">
-        {editedChild.firstName} {editedChild.middleName}{" "}
-        {editedChild.lastName}
-      </Typography>
-    </Box>
-  );
-
-  // const renderNameFields = () => (
-  //   <>
-      
-  // );
-
   const renderTextField = (label, name, value, unit = "") => (
     <Box mt="10px">
       {console.log("Rendering TextField:", name, value)}
       {/* Add this line for debugging */}
       {isEditing ? (
-        name === "birthdate" || name === "dow" || name === "vac" || name === "purga" ? (
+        name === "birthdate" ||
+        name === "dow" ||
+        name === "vac" ||
+        name === "purga" ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={label}
@@ -306,25 +332,28 @@ const ChildProfile = ({ child, updateChildData }) => {
             variant="outlined"
             name={name}
             label={label}
-            value={value}
+            value={value || ""} // Handle undefined or empty values
             onChange={handleInputChange}
           />
         )
       ) : (
+        // Show the updated value from editedChild when not editing
         <>
           <Grid item xs={12}>
-                <Box mb="10px">           
-                  <Box padding="10px" borderRadius="5px" border= "1px solid grey" className={getClassForStatusColorValue(value)}
->
-                      <Typography variant="h6" >
-                        {label}   
-                      </Typography>
-                      <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                        {value} {unit}
-                      </Typography>
-                    </Box>
-                </Box>
-
+            <Box mb="10px">
+              <Box
+                padding="10px"
+                borderRadius="5px"
+                border="1px solid grey"
+                className={getClassForStatusColorValue(value)}
+              >
+                <Typography variant="h6">{label}</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild[name] !== undefined ? editedChild[name] : "N/A"}{" "}
+                  {unit}
+                </Typography>
+              </Box>
+            </Box>
           </Grid>
         </>
       )}
@@ -334,9 +363,9 @@ const ChildProfile = ({ child, updateChildData }) => {
   const renderChildProfile = () => (
     <Grid container columnSpacing={2}>
       <Grid item xs={4}>
-      {renderTextField("First Name", "firstName", editedChild.firstName)}
-      
-      {isEditing ? (
+        {renderTextField("First Name", "firstName", editedChild.firstName)}
+
+        {isEditing ? (
           // Render the gender field only when editing
           <Box mt="10px">
             <FormControl fullWidth>
@@ -358,27 +387,33 @@ const ChildProfile = ({ child, updateChildData }) => {
           // Display gender information when not editing
           <Grid item xs={12}>
             <Box>
-              <Box padding="10px" borderRadius="5px" border= "1px solid grey">
-                <Typography variant="h6" >
-                  Gender:
+              <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                <Typography variant="h6">Gender:</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild.gender}
                 </Typography>
-                <Typography variant="body1" style={{ fontWeight: "bold" }}>{editedChild.gender}</Typography>
               </Box>
             </Box>
           </Grid>
         )}
       </Grid>
       <Grid item xs={4}>
-      {renderTextField(
-        "Middle Initial",
-        "middleName",
-        editedChild.middleName
-      )}
-      {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}      
+        {renderTextField(
+          "Middle Initial",
+          "middleName",
+          editedChild.middleName
+        )}
+        {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
       </Grid>
       <Grid item xs={4}>
-      {renderTextField("Last Name", "lastName", editedChild.lastName)}
-      {!isEditing && renderTextField("Age in Months", "aim", editedChild.aim,"Months old",)}
+        {renderTextField("Last Name", "lastName", editedChild.lastName)}
+        {!isEditing &&
+          renderTextField(
+            "Age in Months",
+            "aim",
+            editedChild.aim,
+            "Months old"
+          )}
       </Grid>
     </Grid>
   );
@@ -390,33 +425,40 @@ const ChildProfile = ({ child, updateChildData }) => {
         {renderTextField("Height", "height", editedChild.height, "cm")}
         {renderTextField("Disability", "disability", editedChild.disability)}
       </Grid>
-  
+
       <Grid item xs={4}>
         {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
         {renderTextField("Vaccination", "vac", editedChild.vac)}
         {renderTextField("Purga", "purga", editedChild.purga)}
       </Grid>
-      <Divider orientation="vertical" variant="middle" flexItem style={{margin:"0px 20px 0px 40px"}}/>
+      <Divider
+        orientation="vertical"
+        variant="middle"
+        flexItem
+        style={{ margin: "0px 20px 0px 40px" }}
+      />
       <Grid item xs={3}>
-        {!isEditing && renderTextField(
-          "Weight For Age",
-          "weightForAge",
-          editedChild.weightForAge,
-        )}
-        {!isEditing && renderTextField(
-          "Length For Age",
-          "lengthForAge",
-          editedChild.lengthForAge,
-        )}
-        {!isEditing && renderTextField(
-          "Weight For Length",
-          "weightForLength",
-          editedChild.weightForLength,
-        )}
+        {!isEditing &&
+          renderTextField(
+            "Weight For Age",
+            "weightForAge",
+            editedChild.weightForAge
+          )}
+        {!isEditing &&
+          renderTextField(
+            "Length For Age",
+            "lengthForAge",
+            editedChild.lengthForAge
+          )}
+        {!isEditing &&
+          renderTextField(
+            "Weight For Length",
+            "weightForLength",
+            editedChild.weightForLength
+          )}
       </Grid>
     </Grid>
   );
-  
 
   const renderParentInformation = () => (
     <Grid container spacing={2}>
@@ -426,7 +468,9 @@ const ChildProfile = ({ child, updateChildData }) => {
         {isEditing ? (
           <Box mt="16px">
             <FormControl fullWidth variant="outlined">
-            <InputLabel id="relationship-select-label">Relationship</InputLabel>
+              <InputLabel id="relationship-select-label">
+                Relationship
+              </InputLabel>
               <Select
                 fullWidth
                 id="relationship"
@@ -445,10 +489,8 @@ const ChildProfile = ({ child, updateChildData }) => {
           </Box>
         ) : (
           <Box>
-            <Box padding="10px" borderRadius="5px" border= "1px solid grey">
-              <Typography variant="h6" >
-                Relationship
-              </Typography>
+            <Box padding="10px" borderRadius="5px" border="1px solid grey">
+              <Typography variant="h6">Relationship</Typography>
               <Typography variant="body1" style={{ fontWeight: "bold" }}>
                 {editedChild.relationship}
               </Typography>
@@ -482,11 +524,11 @@ const ChildProfile = ({ child, updateChildData }) => {
         ) : (
           // Display information when not editing
           <Box>
-            <Box padding="10px" borderRadius="5px" border= "1px solid grey">
-              <Typography variant="h6" >
-                Permanent/Transient
+            <Box padding="10px" borderRadius="5px" border="1px solid grey">
+              <Typography variant="h6">Permanent/Transient</Typography>
+              <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                {editedChild.pt}
               </Typography>
-              <Typography variant="body1" style={{ fontWeight: "bold" }}>{editedChild.pt}</Typography>
             </Box>
           </Box>
         )}
@@ -520,11 +562,11 @@ const ChildProfile = ({ child, updateChildData }) => {
         ) : (
           // Display ethnicity information when not editing
           <Box>
-            <Box padding="10px" borderRadius="5px" border= "1px solid grey">
-              <Typography variant="h6">
-                Ethnicity:
+            <Box padding="10px" borderRadius="5px" border="1px solid grey">
+              <Typography variant="h6">Ethnicity:</Typography>
+              <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                {editedChild.ethnicity}
               </Typography>
-              <Typography variant="body1" style={{ fontWeight: "bold" }}>{editedChild.ethnicity}</Typography>
             </Box>
           </Box>
         )}
@@ -534,88 +576,103 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   return (
     <Box p="20px">
-    <Box
-      display="flex"
-      justifyContent="space-between"
-      alignItems="center"
-      flexDirection="row"
-      marginBottom="5px"
-    >
-      <Tabs
-
-        value={selectedView}
-        onChange={handleViewChange}
-        variant="fullWidth"
-        sx={{mb:"10px"}}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        flexDirection="row"
+        marginBottom="5px"
       >
-        <Tab icon={<ChildCareOutlined />} label="Profile" value="child" 
-        sx={ (theme) => ({
-          backgroundColor: selectedView === "child" 
-            ? theme.palette.mode === "light"
-              ? colors.blueAccent[700] : colors.blueAccent[700]
-              :undefined, 
-          borderRadius: "20px 20px 0 0",
-            })}/>
-        <Tab icon={<MedicationLiquidOutlined />} label="Health" value="health" 
-        sx={ (theme) => ({
-          backgroundColor: selectedView === "health" 
-            ? theme.palette.mode === "light"
-              ? colors.blueAccent[700] : colors.blueAccent[700]
-              :undefined, 
-          borderRadius: "20px 20px 0 0",
-            })}/>
-        <Tab icon={<EscalatorWarningOutlined />} label="Parent" value="parent" 
-        sx={ (theme) => ({
-          backgroundColor: selectedView === "parent" 
-            ? theme.palette.mode === "light"
-              ? colors.blueAccent[700] : colors.blueAccent[700]
-              :undefined, 
-          borderRadius: "20px 20px 0 0",
-            })}/>
-      </Tabs>
-      
-      {selectedView === "health" ?
-      <Box>
-        <Select
-          labelId="year-select-label"
-          id="year-select"
-          value={selectedYear}
-          onChange={handleYearChange}
-          sx={{ marginRight: "10px", mb:"10px"}}
+        <Tabs
+          value={selectedView}
+          onChange={handleViewChange}
+          variant="fullWidth"
+          sx={{ mb: "10px" }}
         >
-          {Array.from({ length: 5 }, (_, i) => (
-            <MenuItem key={i} value={new Date().getFullYear() - i} >
-              {new Date().getFullYear() - i}
-            </MenuItem>
-          ))}
-        </Select>
+          <Tab
+            icon={<ChildCareOutlined />}
+            label="Profile"
+            value="child"
+            sx={(theme) => ({
+              backgroundColor:
+                selectedView === "child"
+                  ? theme.palette.mode === "light"
+                    ? colors.blueAccent[700]
+                    : colors.blueAccent[700]
+                  : undefined,
+              borderRadius: "20px 20px 0 0",
+            })}
+          />
+          <Tab
+            icon={<MedicationLiquidOutlined />}
+            label="Health"
+            value="health"
+            sx={(theme) => ({
+              backgroundColor:
+                selectedView === "health"
+                  ? theme.palette.mode === "light"
+                    ? colors.blueAccent[700]
+                    : colors.blueAccent[700]
+                  : undefined,
+              borderRadius: "20px 20px 0 0",
+            })}
+          />
+          <Tab
+            icon={<EscalatorWarningOutlined />}
+            label="Parent"
+            value="parent"
+            sx={(theme) => ({
+              backgroundColor:
+                selectedView === "parent"
+                  ? theme.palette.mode === "light"
+                    ? colors.blueAccent[700]
+                    : colors.blueAccent[700]
+                  : undefined,
+              borderRadius: "20px 20px 0 0",
+            })}
+          />
+        </Tabs>
 
-        <Select
-          labelId="quarter-select-label"
-          id="quarter-select"
-          value={selectedQuarter}
-          onChange={(event) => setselectedQuarter(event.target.value)}
-          sx={{ marginLeft: "10px", mb:"10px" }}
-        >
-          <MenuItem value="1st Quarter">1st Quarter</MenuItem>
-          <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
-          <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
-          <MenuItem value="4th Quarter">4th Quarter</MenuItem>
-        </Select>
-      </Box>:""}
-    </Box>
-    
+        {selectedView === "health" ? (
+          <Box>
+            <Select
+              labelId="year-select-label"
+              id="year-select"
+              onChange={handleYearChange}
+              sx={{ marginRight: "10px", mb: "10px" }}
+            >
+              {Array.from({ length: 5 }, (_, i) => (
+                <MenuItem key={i} value={new Date().getFullYear() - i}>
+                  {new Date().getFullYear() - i}
+                </MenuItem>
+              ))}
+            </Select>
 
-    {selectedView === "child"
-      ? renderChildProfile()
-      : selectedView === "parent"
-      ? renderParentInformation()
-      : renderHealthInfo()
-    }
+            <Select
+              labelId="quarter-select-label"
+              id="quarter-select"
+              onChange={(event) => setselectedQuarter(event.target.value)}
+              sx={{ marginLeft: "10px", mb: "10px" }}
+            >
+              <MenuItem value="1st Quarter">1st Quarter</MenuItem>
+              <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
+              <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
+              <MenuItem value="4th Quarter">4th Quarter</MenuItem>
+            </Select>
+          </Box>
+        ) : (
+          ""
+        )}
+      </Box>
 
+      {selectedView === "child"
+        ? renderChildProfile()
+        : selectedView === "parent"
+        ? renderParentInformation()
+        : renderHealthInfo()}
 
       {isEditing ? (
-        <Box mt="16px" sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Box mt="16px" sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Button variant="contained" color="success" onClick={handleSaveClick}>
             Save
           </Button>
@@ -629,9 +686,9 @@ const ChildProfile = ({ child, updateChildData }) => {
           </Button>
         </Box>
       ) : (
-        <Box mt="16px" sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Box mt="16px" sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Button variant="contained" color="info" onClick={handleEditClick}>
-            <ModeEditOutline sx={{paddingRight:"5px"}}/>
+            <ModeEditOutline sx={{ paddingRight: "5px" }} />
             Edit
           </Button>
         </Box>

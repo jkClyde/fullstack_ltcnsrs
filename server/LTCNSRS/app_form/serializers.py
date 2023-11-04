@@ -1,14 +1,12 @@
 from rest_framework import serializers
-from .models import Child, QuarterData
+from .models import PrimaryChild, ChildHealthInfo
 
-
-class ChildSerializer(serializers.ModelSerializer):
+class PrimaryChildSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Child
+        model = PrimaryChild
         fields = '__all__'
 
-
-class QuarterDataSerializer(serializers.ModelSerializer):
+class ChildHealthInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = QuarterData
+        model = ChildHealthInfo
         fields = '__all__'

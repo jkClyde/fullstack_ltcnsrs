@@ -18,21 +18,6 @@ import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const getQuarter = () => {
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth(); // 0-based index (0 for January, 1 for February, etc.)
-
-  if (currentMonth >= 0 && currentMonth < 3) {
-    return "firstquarter";
-  } else if (currentMonth >= 3 && currentMonth < 6) {
-    return "secondquarter";
-  } else if (currentMonth >= 6 && currentMonth < 9) {
-    return "thirdquarter";
-  } else {
-    return "fourthquarter";
-  }
-};
-
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [selectedDate, setSelectedDate] = useState(null);
@@ -58,52 +43,6 @@ const Form = () => {
       setSelectedCurrentDate(formattedDate);
     }
     setSelectedDate(formattedDate);
-  };
-  const [names, setNames] = useState([]);
-  const fetchNames = () => {
-    const quarter = getQuarter(); // You need to define or fetch the quarter variable
-    const url = `http://127.0.0.1:8000/${quarter}/`;
-    axios
-      .get(url)
-      .then((response) => {
-        // Assuming the API response is an array of objects with 'first_name', 'middle_name', and 'last_name' fields
-        const retrievedNames = response.data.map((item) => {
-          return {
-            firstName: item.firstName,
-            middleName: item.middleName,
-            lastName: item.lastName,
-            address: item.address,
-            pt: item.pt,
-            gender: item.gender,
-            birthdate: item.birthdate,
-            bpe: item.bpe,
-            disability: item.disability,
-            parentName: item.parentName,
-            relationship: item.relationship,
-            occupation: item.occupation,
-            ethnicity: item.ethnicity,
-            dow: item.dow,
-            weight: item.weight,
-            height: item.height,
-            muac: item.muac,
-            purga: item.purga,
-            vac: item.vac,
-            current_date: item.current_date,
-            barangay: item.barangay,
-          };
-        });
-        setNames(retrievedNames);
-      })
-      .catch((error) => {
-        console.error("Error fetching names data:", error);
-      });
-  };
-
-  useEffect(() => {
-    fetchNames();
-  }, []);
-  const handleChange = (field, value) => {
-    setFieldValue(field, value);
   };
 
   const handleFormSubmit = (values, { resetForm }, required) => {
@@ -139,71 +78,67 @@ const Form = () => {
       quarter = "fourthquarter";
     }
 
-    // Fetch data for the specific quarter
+    // First, save data to PrimaryChild model
     axios
-      .get(`http://127.0.0.1:8000/${quarter}/`)
+      .post(`http://127.0.0.1:8000/primarychild/`, {
+        ...values,
+        birthdate: formattedBirthdate,
+        dow: formattedDow,
+        purga: purgaDate,
+        vac: vaccinationDate,
+      })
       .then((response) => {
-        const quarterData = response.data;
-
-        const isDuplicate = quarterData.some(
-          (item) =>
-            item.firstName.toLowerCase() === values.firstName.toLowerCase() &&
-            item.middleName.toLowerCase() === values.middleName.toLowerCase() &&
-            item.lastName.toLowerCase() === values.lastName.toLowerCase() &&
-            item.dow === formattedDow
-        );
-
-        if (isDuplicate) {
-          // Handle duplicate data
-          toast.error(
-            "Duplicate Data Found: There is already a duplicate entry in the table.",
-            {
-              position: toast.POSITION.TOP_CENTER,
-              toastStyle: {
-                top: "50%",
-                transform: "translateY(-50%)",
-                fontSize: "12px",
-                padding: "10px",
-              },
-              style: { fontSize: "16px", padding: "8px" },
-            }
-          );
-          return;
-        }
-        // Proceed to submit the form if not a duplicate
-        if (confirmed) {
+        // Check if the response indicates success
+        if (response.status === 201) {
+          // Proceed to save data to ChildHealthInfo model
+          const primaryChildId = response.data.id;
           axios
-            .post(`http://127.0.0.1:8000/${quarter}/`, {
-              ...values,
-              birthdate: formattedBirthdate,
+            .post(`http://127.0.0.1:8000/childhealthinfo/`, {
               dow: formattedDow,
+              weight: values.weight,
+              height: values.height,
+              muac: values.muac,
               purga: purgaDate,
               vac: vaccinationDate,
+              bpe: values.bpe,
+              disability: values.disability,
+              child: primaryChildId, // Link the child health info to the primary child
             })
-            .then((response) => {
-              console.log(
-                "Data successfully added to the database:",
-                response.data
-              );
-              resetForm();
-
-              setSelectedBirthdate(null);
-              setSelectedDOW(null);
-              setSelectedPurgaDate(null);
-              setSelectedVaccinationDate(null);
-              setSelectedDate(null);
-              notify();
+            .then((childHealthResponse) => {
+              if (childHealthResponse.status === 201) {
+                console.log("Data successfully added to both models");
+                resetForm();
+                setSelectedBirthdate(null);
+                setSelectedDOW(null);
+                setSelectedPurgaDate(null);
+                setSelectedVaccinationDate(null);
+                setSelectedDate(null);
+                notify();
+              } else {
+                console.error("Error saving data to ChildHealthInfo model");
+                console.log(
+                  "Full error response:",
+                  childHealthResponse.response
+                );
+              }
             })
             .catch((error) => {
-              console.error("Error adding data to the database:", error);
+              console.error(
+                "Error saving data to ChildHealthInfo model:",
+                error
+              );
               console.log("Full error response:", error.response);
             });
+        } else {
+          console.error("Error saving data to PrimaryChild model");
+          console.log("Full error response:", response.response);
         }
       })
       .catch((error) => {
-        console.error("Error fetching data for the specific quarter:", error);
+        console.error("Error saving data to PrimaryChild model:", error);
       });
   };
+
   const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
     const confirmed = window.confirm(
       "Are you sure you want to clear the form?"
