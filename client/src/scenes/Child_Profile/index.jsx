@@ -84,7 +84,6 @@ const ChildProfile = ({ child, updateChildData }) => {
   useEffect(() => {
     // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
     const birthdate = editedChild.birthdate;
-    console.log("Edited Child Birthdate:", birthdate);
     const aim = calculateAgeInMonths(birthdate);
     const weightForAge = weightForAgeStatus(
       birthdate,
@@ -116,33 +115,21 @@ const ChildProfile = ({ child, updateChildData }) => {
     const startYear = birthYear;
     const endYear = birthYear + 5;
 
-    // Generate an array of years within the range
     const yearRange = Array.from(
       { length: endYear - startYear + 1 },
       (_, i) => startYear + i
     );
 
-    // Set the initial year
     setInitialYear(birthYear);
     setSelectedYear(birthYear);
-
-    console.log("Child ID in useEffect:", child.id);
 
     axios
       .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
       .then((response) => {
-        console.log("Fetched ChildHealthInfo Data:", response.data);
-
-        // Find the child health info record that matches the selected child
         const childHealthInfo = response.data.find(
           (info) => info.child === child.id
         );
-
         if (childHealthInfo) {
-          console.log("ChildHealthInfo Quarter:", childHealthInfo.quarter);
-          console.log("Weight in API Response:", childHealthInfo.weight);
-
-          // Set the quarter when childHealthInfo exists
           setSelectedQuarter(childHealthInfo.quarter);
         }
       })
@@ -333,7 +320,138 @@ const ChildProfile = ({ child, updateChildData }) => {
   };
 
   const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
+    const newYear = event.target.value;
+    setSelectedYear(newYear); // Update the selectedYear state
+
+    // Get the current selected quarter
+    const newQuarter = selectedQuarter;
+
+    // Make an Axios request to check if data exists for the selected quarter and year
+    axios
+      .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
+      .then((response) => {
+        // Filter the data based on both quarter and year
+        const childHealthInfo = response.data.find(
+          (info) =>
+            info.quarter === newQuarter &&
+            info.year === newYear &&
+            info.child === child.id
+        );
+
+        if (childHealthInfo) {
+          // Data with the same child ID, selected quarter, and year exists
+          console.log(
+            "Data found for the selected quarter and year:",
+            childHealthInfo
+          );
+          setDataExists(true); // Set dataExists to true
+          // Populate the health-related fields in the editedChild state with data
+          setEditedChild((prevChild) => ({
+            ...prevChild,
+            weight: childHealthInfo.weight || "",
+            height: childHealthInfo.height || "",
+            disability: childHealthInfo.disability || "",
+            dow: childHealthInfo.dow || "",
+            vac: childHealthInfo.vac || "",
+            purga: childHealthInfo.purga || "",
+            weightForAge: childHealthInfo.weightForAge || "",
+            lengthForAge: childHealthInfo.lengthForAge || "",
+            weightForLength: childHealthInfo.weightForLength || "",
+          }));
+        } else {
+          // No data found for the selected quarter and year
+          console.log(
+            "No data found for the selected quarter and year",
+            newQuarter,
+            newYear
+          );
+          setDataExists(false); // Set dataExists to false
+          // Clear the health-related fields in the editedChild state
+          setEditedChild((prevChild) => ({
+            ...prevChild,
+            weight: "N/A",
+            height: "N/A",
+            disability: "N/A",
+            dow: "N/A",
+            vac: "N/A",
+            purga: "N/A",
+            weightForAge: "N/A",
+            lengthForAge: "N/A",
+            weightForLength: "N/A",
+          }));
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking data:", error);
+      });
+  };
+
+  const [dataExists, setDataExists] = useState(false);
+  const handleQuarterChange = (event) => {
+    const newQuarter = event.target.value;
+    setSelectedQuarter(newQuarter); // Update the selectedQuarter state
+
+    // When the quarter changes, also get the selected year
+    const newYear = selectedYear;
+
+    // Use both the new quarter and the selected year
+    axios
+      .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
+      .then((response) => {
+        // Filter the data based on both quarter and year
+        const childHealthInfo = response.data.find(
+          (info) =>
+            info.quarter === newQuarter &&
+            info.year === newYear &&
+            info.child === child.id
+        );
+
+        if (childHealthInfo) {
+          // Data with the same child ID, selected quarter, and year exists
+          console.log(
+            "Data found for the selected quarter and year:",
+            childHealthInfo
+          );
+          setDataExists(true); // Set dataExists to true
+          // Populate the health-related fields in the editedChild state with data
+          setEditedChild((prevChild) => ({
+            ...prevChild,
+            weight: childHealthInfo.weight || "",
+            height: childHealthInfo.height || "",
+            disability: childHealthInfo.disability || "",
+            dow: childHealthInfo.dow || "",
+            vac: childHealthInfo.vac || "",
+            purga: childHealthInfo.purga || "",
+            weightForAge: childHealthInfo.weightForAge || "",
+            lengthForAge: childHealthInfo.lengthForAge || "",
+            weightForLength: childHealthInfo.weightForLength || "",
+          }));
+        } else {
+          // No data found for the selected quarter and year
+          console.log(
+            "No data found for the selected quarter and year",
+            newQuarter,
+            newYear
+          );
+          setDataExists(false); // Set dataExists to false
+          // Clear the health-related fields in the editedChild state
+          setEditedChild((prevChild) => ({
+            ...prevChild,
+            weight: "N/A",
+            height: "N/A",
+            disability: "N/A",
+            dow: "N/A",
+            vac: "N/A",
+            purga: "N/A",
+            weightForAge: "N/A",
+            lengthForAge: "N/A",
+            weightForLength: "N/A",
+          }));
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking data:", error);
+      });
   };
 
   const handleViewChange = (event, newValue) => {
@@ -354,7 +472,6 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   const renderTextField = (label, name, value, unit = "") => (
     <Box mt="10px">
-      {console.log("Rendering TextField:", name, value)}
       {/* Add this line for debugging */}
       {isEditing ? (
         name === "birthdate" ||
@@ -699,9 +816,7 @@ const ChildProfile = ({ child, updateChildData }) => {
               id="quarter-select"
               sx={{ marginLeft: "10px", mb: "10px" }}
               value={selectedQuarter} // Use the selectedQuarter state as the value
-              onChange={(event) => {
-                setSelectedQuarter(event.target.value); // Handle changes
-              }}
+              onChange={handleQuarterChange}
             >
               <MenuItem value="1st Quarter">1st Quarter</MenuItem>
               <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
@@ -722,9 +837,14 @@ const ChildProfile = ({ child, updateChildData }) => {
 
       {isEditing ? (
         <Box mt="16px" sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button variant="contained" color="success" onClick={handleSaveClick}>
-            Save
+          <Button
+            variant="contained"
+            color={dataExists ? "success" : "primary"}
+            onClick={handleSaveClick}
+          >
+            {dataExists ? "Save" : "Create"}
           </Button>
+
           <Button
             variant="contained"
             color="error"

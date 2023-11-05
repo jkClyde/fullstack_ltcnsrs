@@ -99,11 +99,9 @@ const Table = () => {
       const childHealthInfoData = await childHealthInfoResponse.json();
 
       // Log the childHealthInfoData response to inspect its structure
-      console.log("Child Health Info Data Response:", childHealthInfoData);
 
       // Merge the data based on a common foreign key (e.g., 'child' field)
       const mergedData = mergeData(primaryChildData, childHealthInfoData);
-      console.log("Fetched data:", mergedData);
       setGridData(mergedData);
       // Log the merged data
     } catch (error) {
