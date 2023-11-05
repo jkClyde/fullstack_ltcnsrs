@@ -108,20 +108,20 @@ class ChildHealthInfo(models.Model):
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
     disability = models.CharField(max_length=50, blank=True, default='')
     child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
-    quarter = models.CharField(max_length=20, default='firstquarter')
+    quarter = models.CharField(max_length=20, default='1st Quarter')
     year = models.IntegerField(null=True, blank=True)  # Add a year field
 
     def save(self, *args, **kwargs):
         # Calculate the quarter based on the dow field
         if self.dow:
             if self.dow.month in [1, 2, 3]:
-                self.quarter = 'firstquarter'
+                self.quarter = '1st Quarter'
             elif self.dow.month in [4, 5, 6]:
-                self.quarter = 'secondquarter'
+                self.quarter = '2nd Quarter'
             elif self.dow.month in [7, 8, 9]:
-                self.quarter = 'thirdquarter'
+                self.quarter = '3rd Quarter'
             elif self.dow.month in [10, 11, 12]:
-                self.quarter = 'fourthquarter'
+                self.quarter = '4th Quarter'
             
             # Calculate the year based on the birthdate of the child
             if self.child.birthdate:

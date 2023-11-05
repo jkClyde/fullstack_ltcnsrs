@@ -42,7 +42,6 @@ const ChildProfile = ({ child, updateChildData }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isEditing, setIsEditing] = useState(false);
-  const initialQuarter = "";
 
   const [editedChild, setEditedChild] = useState({
     ...child,
@@ -62,13 +61,14 @@ const ChildProfile = ({ child, updateChildData }) => {
       child.weight,
       child.gender
     ),
+    quarter: "",
   });
   const [selectedView, setSelectedView] = useState("child"); // Default view
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [gridData, setGridData] = useState([]);
-  const [selectedQuarter, setselectedQuarter] = useState(initialQuarter);
   const [initialYear, setInitialYear] = useState(null);
   const [selectedYear, setSelectedYear] = useState(initialYear);
+  const [selectedQuarter, setSelectedQuarter] = useState("");
 
   const birthYear = editedChild.birthdate
     ? new Date(editedChild.birthdate).getFullYear()
@@ -81,20 +81,10 @@ const ChildProfile = ({ child, updateChildData }) => {
     { length: endYear - startYear + 1 },
     (_, i) => startYear + i
   );
-  function mapQuarterToDisplayValue(quarter) {
-    const quartersMap = {
-      firstquarter: "1st Quarter",
-      secondquarter: "2nd Quarter",
-      thirdquarter: "3rd Quarter",
-      fourthquarter: "4th Quarter",
-    };
-
-    return quartersMap[quarter] || quarter; // If not found, return the original value
-  }
-
   useEffect(() => {
     // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
     const birthdate = editedChild.birthdate;
+    console.log("Edited Child Birthdate:", birthdate);
     const aim = calculateAgeInMonths(birthdate);
     const weightForAge = weightForAgeStatus(
       birthdate,
@@ -136,20 +126,28 @@ const ChildProfile = ({ child, updateChildData }) => {
     setInitialYear(birthYear);
     setSelectedYear(birthYear);
 
+    console.log("Child ID in useEffect:", child.id);
+
     axios
       .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
-      .then((childHealthInfoResponse) => {
-        const childHealthInfo = childHealthInfoResponse.data[0]; // Assuming only one record is returned
+      .then((response) => {
+        console.log("Fetched ChildHealthInfo Data:", response.data);
+
+        // Find the child health info record that matches the selected child
+        const childHealthInfo = response.data.find(
+          (info) => info.child === child.id
+        );
+
         if (childHealthInfo) {
-          // Set the initial quarter and convert the initial quarter value
-          setselectedQuarter(mapQuarterToDisplayValue(childHealthInfo.quarter));
+          console.log("ChildHealthInfo Quarter:", childHealthInfo.quarter);
+          console.log("Weight in API Response:", childHealthInfo.weight);
+
+          // Set the quarter when childHealthInfo exists
+          setSelectedQuarter(childHealthInfo.quarter);
         }
       })
-      .catch((childHealthInfoError) => {
-        console.error(
-          "Error fetching ChildHealthInfo data:",
-          childHealthInfoError
-        );
+      .catch((error) => {
+        console.error("Error fetching ChildHealthInfo record:", error);
       });
   }, [editedChild.birthdate, child.id]);
 
@@ -333,78 +331,23 @@ const ChildProfile = ({ child, updateChildData }) => {
       return updatedChild;
     });
   };
-  const handleQuarterChange = (event) => {
-    const newQuarter = event.target.value;
-    console.log("Quarter changed"); // Add this line
-    setselectedQuarter(newQuarter);
-
-    console.log("gridData:", gridData);
-    const matchingChild = gridData.find(
-      (item) =>
-        item.fullName === editedChild.fullName && item.dow === editedChild.dow
-    );
-
-    console.log("Matching Child:", matchingChild);
-
-    if (matchingChild) {
-      axios
-        .get(
-          `http://127.0.0.1:8000/childhealthinfo/?child=${matchingChild.id}&quarter=${newQuarter}`
-        )
-        .then((childHealthInfoResponse) => {
-          console.log("API Response:", childHealthInfoResponse.data);
-
-          const childHealthInfo = childHealthInfoResponse.data[0];
-          console.log("Child Health Info:", childHealthInfo);
-
-          if (childHealthInfo) {
-            // Data is found, update the editedChild with the health information
-            setEditedChild((prevChild) => ({
-              ...prevChild,
-              weight: childHealthInfo.weight,
-              height: childHealthInfo.height,
-              disability: childHealthInfo.disability,
-              dow: childHealthInfo.dow,
-              vac: childHealthInfo.vac,
-              purga: childHealthInfo.purga,
-            }));
-          } else {
-            // No data found for the selected quarter
-            console.log(`No data found in ${newQuarter}`);
-          }
-        })
-        .catch((childHealthInfoError) => {
-          console.error(
-            "Error fetching ChildHealthInfo data:",
-            childHealthInfoError
-          );
-        });
-    }
-  };
 
   const handleYearChange = (event) => {
-    const selectedYear = event.target.value;
-    setSelectedYear(selectedYear);
-
-    // Set the initial value of the quarter dropdown to "1st Quarter" when the year changes
-    setselectedQuarter("1st Quarter");
+    setSelectedYear(event.target.value);
   };
 
   const handleViewChange = (event, newValue) => {
     setSelectedView(newValue);
 
-    // Update selectedYear and selectedQuarter based on the conditions
     if (event.target.value === "child") {
-      // Find the child with the same full name and dow
-      const matchingchild = gridData.find(
+      const matchingChild = gridData.find(
         (item) =>
           item.fullName === editedChild.fullName && item.dow === editedChild.dow
       );
 
-      // Update selectedYear and selectedQuarter based on the found child
-      if (matchingchild) {
-        setSelectedYear(matchingchild.year);
-        setselectedQuarter(matchingchild.quarter);
+      if (matchingChild) {
+        setSelectedYear(matchingChild.year);
+        setSelectedQuarter(matchingChild.quarter); // Set the selectedQuarter based on the found ChildHealthInfo record
       }
     }
   };
@@ -754,9 +697,11 @@ const ChildProfile = ({ child, updateChildData }) => {
             <Select
               labelId="quarter-select-label"
               id="quarter-select"
-              onChange={handleQuarterChange}
               sx={{ marginLeft: "10px", mb: "10px" }}
-              value={selectedQuarter || initialQuarter}
+              value={selectedQuarter} // Use the selectedQuarter state as the value
+              onChange={(event) => {
+                setSelectedQuarter(event.target.value); // Handle changes
+              }}
             >
               <MenuItem value="1st Quarter">1st Quarter</MenuItem>
               <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
