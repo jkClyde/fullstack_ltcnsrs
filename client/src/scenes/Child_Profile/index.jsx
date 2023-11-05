@@ -69,7 +69,7 @@ const ChildProfile = ({ child, updateChildData }) => {
   const [initialYear, setInitialYear] = useState(null);
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedQuarter, setSelectedQuarter] = useState("");
-
+  const [dataExists, setDataExists] = useState(false);
   const birthYear = editedChild.birthdate
     ? new Date(editedChild.birthdate).getFullYear()
     : new Date().getFullYear();
@@ -131,6 +131,7 @@ const ChildProfile = ({ child, updateChildData }) => {
         );
         if (childHealthInfo) {
           setSelectedQuarter(childHealthInfo.quarter);
+          setDataExists(!!childHealthInfo);
         }
       })
       .catch((error) => {
@@ -148,8 +149,85 @@ const ChildProfile = ({ child, updateChildData }) => {
   const handleEditClick = () => {
     setIsEditing(true);
   };
-  const handleSaveClick = () => {
-    // Update the table data immediately with the updated information
+  const buttonLabel = dataExists ? "Save" : "Create";
+
+  const handleCreateClick = () => {
+    if (!dataExists) {
+      // Determine the quarter based on the 'dow' (Date of Weighing) value
+      const dowDate = new Date(editedChild.dow);
+      const dowMonth = dowDate.getMonth() + 1; // Get the month (1-12)
+
+      // Get the numeric value for the selected quarter
+      let selectedQuarterValue;
+      switch (selectedQuarter) {
+        case "1st Quarter":
+          selectedQuarterValue = 1;
+          break;
+        case "2nd Quarter":
+          selectedQuarterValue = 2;
+          break;
+        case "3rd Quarter":
+          selectedQuarterValue = 3;
+          break;
+        case "4th Quarter":
+          selectedQuarterValue = 4;
+          break;
+        default:
+          selectedQuarterValue = 0;
+      }
+
+      // Check if the 'dow' corresponds to the selected quarter
+      if (
+        (selectedQuarterValue === 1 && dowMonth >= 1 && dowMonth <= 3) ||
+        (selectedQuarterValue === 2 && dowMonth >= 4 && dowMonth <= 6) ||
+        (selectedQuarterValue === 3 && dowMonth >= 7 && dowMonth <= 9) ||
+        (selectedQuarterValue === 4 && dowMonth >= 10 && dowMonth <= 12)
+      ) {
+        // Create new child data
+        const newChildData = {
+          child: child.id,
+          quarter: selectedQuarter, // Use the selected quarter
+          year: selectedYear, // Use the selected year
+          weight: editedChild.weight || null,
+          height: editedChild.height || null,
+          disability: editedChild.disability || null,
+          dow: editedChild.dow || null,
+          vac: editedChild.vac || null,
+          purga: editedChild.purga || null,
+          weightForAge: editedChild.weightForAge || null,
+          lengthForAge: editedChild.lengthForAge || null,
+          weightForLength: editedChild.weightForLength || null,
+        };
+
+        // Now, send a POST request to create the new child data
+        axios
+          .post(`http://127.0.0.1:8000/childhealthinfo/`, newChildData)
+          .then((response) => {
+            setIsSnackbarOpen(
+              true,
+              "success",
+              "Successfully Created a New Health Data"
+            );
+            setIsEditing(false);
+            // You may want to do something here after the data is successfully created.
+            // For example, you could update your local state or display a success message.
+          })
+          .catch((error) => {
+            console.error("Error creating new ChildHealthInfo data:", error);
+          });
+      } else {
+        // 'dow' does not match the selected quarter, log a message
+        console.log("Cannot create in another quarter:", selectedQuarterValue);
+      }
+    } else {
+      // Handle the case when dataExists is true (data for the selected quarter already exists).
+      // You might want to display a message or implement your desired logic.
+      console.log("Data already exists for the selected quarter and year.");
+    }
+  };
+
+  //{Update Button}//
+  const handleUpdateClick = () => {
     setGridData((prevGridData) => {
       return prevGridData.map((rowData) => {
         if (rowData.id === child.id) {
@@ -195,11 +273,13 @@ const ChildProfile = ({ child, updateChildData }) => {
       .then((primaryChildResponse) => {
         console.log("Primarychild data updated:", primaryChildResponse.data);
 
-        // Now, fetch the related ChildHealthInfo record based on the foreign key
+        // Now, fetch the related ChildHealthInfo record based on the foreign key, quarter, and year
         axios
-          .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
+          .get(
+            `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&quarter=${editedChild.quarter}&year=${editedChild.year}`
+          )
           .then((childHealthInfoResponse) => {
-            const childHealthInfo = childHealthInfoResponse.data[0]; // Assuming only one record is returned
+            const childHealthInfo = childHealthInfoResponse.data[0]; // Get the specific record you want to update
             if (childHealthInfo) {
               // Update the ChildHealthInfo record based on your needs
               const updatedChildData = {
@@ -217,11 +297,15 @@ const ChildProfile = ({ child, updateChildData }) => {
 
               axios
                 .put(
-                  `http://127.0.0.1:8000/childhealthinfo/${child.id}/`,
+                  `http://127.0.0.1:8000/childhealthinfo/${childHealthInfo.childHealth_id}/`,
                   updatedChildData
                 )
                 .then((response) => {
                   console.log("Childhealthinfo data updated:", response.data);
+                  console.log(
+                    "Childhealthinfo data updated:",
+                    childHealthInfo.childHealth_id
+                  );
                 })
                 .catch((error) => {
                   console.error("Error updating childhealthinfo data:", error);
@@ -318,91 +402,31 @@ const ChildProfile = ({ child, updateChildData }) => {
       return updatedChild;
     });
   };
-
   const handleYearChange = (event) => {
     const newYear = event.target.value;
     setSelectedYear(newYear); // Update the selectedYear state
 
-    // Get the current selected quarter
-    const newQuarter = selectedQuarter;
-
-    // Make an Axios request to check if data exists for the selected quarter and year
-    axios
-      .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
-      .then((response) => {
-        // Filter the data based on both quarter and year
-        const childHealthInfo = response.data.find(
-          (info) =>
-            info.quarter === newQuarter &&
-            info.year === newYear &&
-            info.child === child.id
-        );
-
-        if (childHealthInfo) {
-          // Data with the same child ID, selected quarter, and year exists
-          console.log(
-            "Data found for the selected quarter and year:",
-            childHealthInfo
-          );
-          setDataExists(true); // Set dataExists to true
-          // Populate the health-related fields in the editedChild state with data
-          setEditedChild((prevChild) => ({
-            ...prevChild,
-            weight: childHealthInfo.weight || "",
-            height: childHealthInfo.height || "",
-            disability: childHealthInfo.disability || "",
-            dow: childHealthInfo.dow || "",
-            vac: childHealthInfo.vac || "",
-            purga: childHealthInfo.purga || "",
-            weightForAge: childHealthInfo.weightForAge || "",
-            lengthForAge: childHealthInfo.lengthForAge || "",
-            weightForLength: childHealthInfo.weightForLength || "",
-          }));
-        } else {
-          // No data found for the selected quarter and year
-          console.log(
-            "No data found for the selected quarter and year",
-            newQuarter,
-            newYear
-          );
-          setDataExists(false); // Set dataExists to false
-          // Clear the health-related fields in the editedChild state
-          setEditedChild((prevChild) => ({
-            ...prevChild,
-            weight: "N/A",
-            height: "N/A",
-            disability: "N/A",
-            dow: "N/A",
-            vac: "N/A",
-            purga: "N/A",
-            weightForAge: "N/A",
-            lengthForAge: "N/A",
-            weightForLength: "N/A",
-          }));
-        }
-      })
-      .catch((error) => {
-        console.error("Error checking data:", error);
-      });
+    // Use both the new quarter and the selected year
+    fetchData(selectedQuarter, newYear);
   };
 
-  const [dataExists, setDataExists] = useState(false);
   const handleQuarterChange = (event) => {
     const newQuarter = event.target.value;
     setSelectedQuarter(newQuarter); // Update the selectedQuarter state
 
     // When the quarter changes, also get the selected year
-    const newYear = selectedYear;
+    fetchData(newQuarter, selectedYear);
+  };
 
-    // Use both the new quarter and the selected year
+  const fetchData = (quarter, year) => {
     axios
       .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
       .then((response) => {
         // Filter the data based on both quarter and year
         const childHealthInfo = response.data.find(
           (info) =>
-            info.quarter === newQuarter &&
-            info.year === newYear &&
+            info.quarter === quarter &&
+            info.year === year &&
             info.child === child.id
         );
 
@@ -430,8 +454,8 @@ const ChildProfile = ({ child, updateChildData }) => {
           // No data found for the selected quarter and year
           console.log(
             "No data found for the selected quarter and year",
-            newQuarter,
-            newYear
+            quarter,
+            year
           );
           setDataExists(false); // Set dataExists to false
           // Clear the health-related fields in the editedChild state
@@ -837,14 +861,23 @@ const ChildProfile = ({ child, updateChildData }) => {
 
       {isEditing ? (
         <Box mt="16px" sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            variant="contained"
-            color={dataExists ? "success" : "primary"}
-            onClick={handleSaveClick}
-          >
-            {dataExists ? "Save" : "Create"}
-          </Button>
-
+          {dataExists ? (
+            <Button
+              variant="contained"
+              color="info"
+              onClick={handleUpdateClick}
+            >
+              {buttonLabel}
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleCreateClick}
+            >
+              Create
+            </Button>
+          )}
           <Button
             variant="contained"
             color="error"
@@ -871,10 +904,14 @@ const ChildProfile = ({ child, updateChildData }) => {
       >
         <MuiAlert
           onClose={handleSnackbarClose}
-          severity="success"
+          severity={dataExists ? "info" : "success"} // Use "info" for updates, "success" for new creations
           sx={{ width: "100%" }}
         >
-          Information Updated
+          {
+            dataExists
+              ? "Information Updated" // Display this message for updates
+              : "Successfully Created a New Health Data" // Display this message for new creations
+          }
         </MuiAlert>
       </Snackbar>
     </Box>
