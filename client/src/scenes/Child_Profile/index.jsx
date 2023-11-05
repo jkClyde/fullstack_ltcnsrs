@@ -145,11 +145,10 @@ const ChildProfile = ({ child, updateChildData }) => {
     }
     setIsSnackbarOpen(false);
   };
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-  const buttonLabel = dataExists ? "Save" : "Create";
+  const [buttonLabel, setButtonLabel] = useState(
+    dataExists ? "Save" : "Create"
+  );
+  const [isErrorSnackbarOpen, setIsErrorSnackbarOpen] = useState(false);
 
   const handleCreateClick = () => {
     if (!dataExists) {
@@ -218,12 +217,14 @@ const ChildProfile = ({ child, updateChildData }) => {
       } else {
         // 'dow' does not match the selected quarter, log a message
         console.log("Cannot create in another quarter:", selectedQuarterValue);
+        setIsErrorSnackbarOpen(true);
       }
     } else {
       // Handle the case when dataExists is true (data for the selected quarter already exists).
       // You might want to display a message or implement your desired logic.
       console.log("Data already exists for the selected quarter and year.");
     }
+    setButtonLabel("Save");
   };
 
   //{Update Button}//
@@ -276,12 +277,16 @@ const ChildProfile = ({ child, updateChildData }) => {
         // Now, fetch the related ChildHealthInfo record based on the foreign key, quarter, and year
         axios
           .get(
-            `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&quarter=${editedChild.quarter}&year=${editedChild.year}`
+            `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&childHealth_id=${editedChild.childHealth_id}`
           )
           .then((childHealthInfoResponse) => {
-            const childHealthInfo = childHealthInfoResponse.data[0]; // Get the specific record you want to update
+            // Find the ChildHealthInfo record for the desired quarter
+            const childHealthInfo = childHealthInfoResponse.data.find(
+              (item) => item.quarter === selectedQuarter
+            );
+
             if (childHealthInfo) {
-              // Update the ChildHealthInfo record based on your needs
+              // Update the ChildHealthInfo record for the specific quarter
               const updatedChildData = {
                 weight: editedChild.weight,
                 height: editedChild.height,
@@ -302,10 +307,6 @@ const ChildProfile = ({ child, updateChildData }) => {
                 )
                 .then((response) => {
                   console.log("Childhealthinfo data updated:", response.data);
-                  console.log(
-                    "Childhealthinfo data updated:",
-                    childHealthInfo.childHealth_id
-                  );
                 })
                 .catch((error) => {
                   console.error("Error updating childhealthinfo data:", error);
@@ -330,7 +331,11 @@ const ChildProfile = ({ child, updateChildData }) => {
         console.error("Error updating primarychild data:", primaryChildError);
       });
   };
-
+  const handleEditClick = () => {
+    setIsEditing(true);
+    const buttonLabel = dataExists ? "Save" : "Create";
+    setButtonLabel(buttonLabel);
+  };
   const handleCancelClick = () => {
     setIsEditing(false);
     setEditedChild({ ...child });
@@ -912,6 +917,20 @@ const ChildProfile = ({ child, updateChildData }) => {
               ? "Information Updated" // Display this message for updates
               : "Successfully Created a New Health Data" // Display this message for new creations
           }
+        </MuiAlert>
+      </Snackbar>
+      <Snackbar
+        open={isErrorSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setIsErrorSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MuiAlert
+          onClose={() => setIsErrorSnackbarOpen(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          You have inputed the wrong Date Of Weighing
         </MuiAlert>
       </Snackbar>
     </Box>

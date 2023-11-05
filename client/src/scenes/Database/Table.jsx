@@ -41,25 +41,20 @@ const Table = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleDeleteRow = (id) => {
-    // Ask the user for confirmation before deleting
     const confirmed = window.confirm(
       "Are you sure you want to delete this row?"
     );
 
     if (!confirmed) {
-      // If the user cancels the deletion, do nothing
       return;
     }
-    // Make an API request to delete the record
     fetch(`http://127.0.0.1:8000/primarychild/${id}/`, {
       method: "DELETE",
     })
       .then((response) => {
         if (response.status === 204) {
-          // Deletion in the database was successful, now update the frontend state
           setGridData((prevData) => prevData.filter((row) => row.id !== id));
         } else {
-          // Handle errors here
           console.error("Error deleting the record");
         }
       })
@@ -69,7 +64,6 @@ const Table = () => {
   };
   const fetchData = async () => {
     try {
-      // Fetch data from the primarychild endpoint
       const primaryChildResponse = await fetch(
         "http://127.0.0.1:8000/primarychild/"
       );
@@ -81,9 +75,6 @@ const Table = () => {
         return;
       }
       const primaryChildData = await primaryChildResponse.json();
-
-      // Log the primaryChildData response to inspect its structure
-      console.log("Primary Child Data Response:", primaryChildData);
 
       // Fetch data from the childhealthinfo endpoint
       const childHealthInfoResponse = await fetch(
@@ -97,13 +88,8 @@ const Table = () => {
         return;
       }
       const childHealthInfoData = await childHealthInfoResponse.json();
-
-      // Log the childHealthInfoData response to inspect its structure
-
-      // Merge the data based on a common foreign key (e.g., 'child' field)
       const mergedData = mergeData(primaryChildData, childHealthInfoData);
       setGridData(mergedData);
-      // Log the merged data
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -115,7 +101,6 @@ const Table = () => {
 
   const mergeData = (primaryChildData, childHealthInfoData) => {
     return primaryChildData.map((primaryChild) => {
-      // Find the corresponding childHealthInfo by matching 'id' with 'child' field
       const matchingChildHealthInfo = childHealthInfoData.find(
         (childHealthInfo) => childHealthInfo.child === primaryChild.id
       );
