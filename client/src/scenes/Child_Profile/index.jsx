@@ -252,27 +252,27 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   //{Update Button}//
   const handleUpdateClick = () => {
-    setGridData((prevGridData) => {
-      return prevGridData.map((rowData) => {
-        if (rowData.id === child.id) {
-          return {
-            ...rowData,
-            fullName: editedChild.fullName,
-            address: editedChild.address,
-            pt: editedChild.pt,
-            gender: editedChild.gender,
-            birthdate: editedChild.birthdate,
-            aim: editedChild.aim,
-            parentName: editedChild.parentName,
-            occupation: editedChild.occupation,
-            relationship: editedChild.relationship,
-            ethnicity: editedChild.ethnicity,
-            barangay: editedChild.barangay,
-          };
-        }
-        return rowData;
-      });
-    });
+    // setGridData((prevGridData) => {
+    //   return prevGridData.map((rowData) => {
+    //     if (rowData.id === child.id) {
+    //       return {
+    //         ...rowData,
+    //         fullName: editedChild.fullName,
+    //         address: editedChild.address,
+    //         pt: editedChild.pt,
+    //         gender: editedChild.gender,
+    //         birthdate: editedChild.birthdate,
+    //         aim: editedChild.aim,
+    //         parentName: editedChild.parentName,
+    //         occupation: editedChild.occupation,
+    //         relationship: editedChild.relationship,
+    //         ethnicity: editedChild.ethnicity,
+    //         barangay: editedChild.barangay,
+    //       };
+    //     }
+    //     return rowData;
+    //   });
+    // });
 
     // Now, send a PUT request to update the primary child data
     const updatedPrimaryChildData = {
@@ -344,6 +344,7 @@ const ChildProfile = ({ child, updateChildData }) => {
             );
           });
 
+          
         setIsEditing(false);
 
         // Refresh the page immediately
