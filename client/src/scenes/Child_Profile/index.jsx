@@ -189,6 +189,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           year: selectedYear, // Use the selected year
           weight: editedChild.weight || null,
           height: editedChild.height || null,
+          muac: editedChild.muac || null,
           disability: editedChild.disability || null,
           dow: editedChild.dow || null,
           vac: editedChild.vac || null,
@@ -290,6 +291,7 @@ const ChildProfile = ({ child, updateChildData }) => {
               const updatedChildData = {
                 weight: editedChild.weight,
                 height: editedChild.height,
+                muac: editedChild.muac,
                 disability: editedChild.disability,
                 dow: editedChild.dow,
                 vac: editedChild.vac,
@@ -338,7 +340,24 @@ const ChildProfile = ({ child, updateChildData }) => {
   };
   const handleCancelClick = () => {
     setIsEditing(false);
-    setEditedChild({ ...child });
+    setEditedChild({ 
+      ...child,
+      weightForAge: weightForAgeStatus(
+        child.birthdate,
+        child.weight,
+        child.gender
+      ),
+      lengthForAge: lengthForAgeStatus(
+        child.birthdate,
+        child.height,
+        child.gender
+      ),
+      weightForLength: weightForLengthStatus(
+        child.birthdate,
+        child.height,
+        child.weight,
+        child.gender
+      ), });
   };
 
   const handleInputChange = (e) => {
@@ -447,6 +466,7 @@ const ChildProfile = ({ child, updateChildData }) => {
             ...prevChild,
             weight: childHealthInfo.weight || "",
             height: childHealthInfo.height || "",
+            muac: childHealthInfo.muac || "",
             disability: childHealthInfo.disability || "",
             dow: childHealthInfo.dow || "",
             vac: childHealthInfo.vac || "",
@@ -454,6 +474,9 @@ const ChildProfile = ({ child, updateChildData }) => {
             weightForAge: childHealthInfo.weightForAge || "",
             lengthForAge: childHealthInfo.lengthForAge || "",
             weightForLength: childHealthInfo.weightForLength || "",
+            weightForAge: childHealthInfo.weightForAge || weightForAgeStatus(prevChild.birthdate, childHealthInfo.weight, prevChild.gender),
+            lengthForAge: childHealthInfo.lengthForAge || lengthForAgeStatus(prevChild.birthdate, childHealthInfo.height, prevChild.gender),
+            weightForLength: childHealthInfo.weightForLength || weightForLengthStatus(prevChild.birthdate, childHealthInfo.height, childHealthInfo.weight, prevChild.gender),
           }));
         } else {
           // No data found for the selected quarter and year
@@ -468,6 +491,7 @@ const ChildProfile = ({ child, updateChildData }) => {
             ...prevChild,
             weight: "N/A",
             height: "N/A",
+            muac: "N/A",
             disability: "N/A",
             dow: "N/A",
             vac: "N/A",
@@ -503,10 +527,7 @@ const ChildProfile = ({ child, updateChildData }) => {
     <Box mt="10px">
       {/* Add this line for debugging */}
       {isEditing ? (
-        name === "birthdate" ||
-        name === "dow" ||
-        name === "vac" ||
-        name === "purga" ? (
+        (name === "birthdate" || name === "dow" || name === "vac" || name === "purga") ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={label}
@@ -556,6 +577,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       )}
     </Box>
   );
+  
 
   const renderChildProfile = () => (
     <Grid container columnSpacing={2}>
@@ -614,6 +636,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       <Grid item xs={4}>
         {renderTextField("Weight", "weight", editedChild.weight, "kg")}
         {renderTextField("Height", "height", editedChild.height, "cm")}
+        {renderTextField("MUAC", "muac", editedChild.muac, "cm")}
         {renderTextField("Disability", "disability", editedChild.disability)}
       </Grid>
 

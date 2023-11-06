@@ -11,20 +11,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import {
-  Box,
-  Typography,
-  useTheme,
-  Button,
-  Dialog,
-  DialogContent,
-  Select,
-  MenuItem,
-} from "@mui/material";
-import {
-  DownloadOutlined as DownloadOutlinedIcon,
-  Search,
-  SearchOffOutlined,
+import { Box, Typography, useTheme, Button, Dialog, DialogContent, Select, MenuItem, Tab, Tabs } from "@mui/material";
+import { DownloadOutlined as DownloadOutlinedIcon, Search, SearchOffOutlined,
 } from "@mui/icons-material";
 import { tokens } from "../../theme";
 import {
@@ -33,12 +21,19 @@ import {
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 
+
 const Table = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [gridData, setGridData] = useState([]);
   const [selectedChild, setselectedChild] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [currentTab, setCurrentTab] = useState(0);
+
+  // Define a function to handle tab change
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
 
   const handleDeleteRow = (id) => {
     const confirmed = window.confirm(
@@ -182,7 +177,9 @@ const Table = () => {
     setselectedChild(child);
     setIsProfileOpen(true);
   };
-  const columns = [
+
+  // Table columns on Master table or Tab 1
+  const columnsTab1 = [
     {
       field: "fullName",
       headerName: "Name",
@@ -333,6 +330,276 @@ const Table = () => {
       ),
     },
   ];
+  // Table columns on EOPT table or Tab 2
+  const columnsTab2 = [
+    {
+      field: "fullName",
+      headerName: "Name",
+      flex: 2,
+      cellClassName: "fname-column--cell",
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "birthdate",
+      headerName: "DOB",
+      flex: 2,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "dow",
+      headerName: "DOW",
+      flex: 2,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "aim",
+      headerName: "AIM",
+      type: "number",
+      flex: 1,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "weight",
+      headerName: "Wt.",
+      type: "number",
+      flex: 1.5,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "height",
+      headerName: "Ht.",
+      type: "number",
+      flex: 1.5,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "muac",
+      headerName: "MUAC",
+      type: "number",
+      flex: 1.5,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "gender",
+      headerName: "Gender",
+      flex: 2,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "vac",
+      headerName: "VAC",
+      type: "number", //need to identify if value is text/number
+      flex: 3,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "purga",
+      headerName: "Purga",
+      type: "number", //need to identify if value is text/number
+      flex: 3,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "weightForAge",
+      headerName: "WFA",
+      flex: 3,
+      cellClassName: getCellClassNameWFA,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+    },
+    {
+      field: "lengthForAge",
+      headerName: "LFA",
+      flex: 3,
+      cellClassName: getCellClassNameLFA,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+    },
+    {
+      field: "weightForLength",
+      headerName: "WFL",
+      flex: 3,
+      cellClassName: getCellClassNameWFL,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+    },
+    {
+      field: "profile",
+      headerName: "View",
+      headerAlign: "center",
+      flex: 2,
+      renderCell: (params) => (
+        <IconButton
+          variant="outlined"
+          color={theme.palette.secondary.main}
+          sx={
+            {
+              // Add additional styling here if needed
+            }
+          }
+          onClick={(e) => {
+            e.stopPropagation(); // Stop the event from propagating to the row
+            handleProfileButtonClick(params.row);
+          }}
+        >
+          <VisibilityIcon />
+        </IconButton>
+      ),
+    },
+    {
+      field: "delete",
+      headerName: "Delete",
+      headerAlign: "center",
+      flex: 2,
+      renderCell: (params) => (
+        <IconButton
+          variant="outlined"
+          color="error"
+          onClick={() => handleDeleteRow(params.row.id)}
+        >
+          <DeleteIcon />
+        </IconButton>
+      ),
+    },
+  ];
+
+  // Conditionally select the columns based on the current tab index
+  const currentColumns = currentTab === 0 ? columnsTab1 : columnsTab2;
+
+const tabs = [
+  {
+    label: "Master List",
+    content: (
+      <div>
+        {/* Button Export Data */}
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        p="10px"
+      >
+        <Button
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: "14px",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            marginRight: "10px",
+          }}
+        >
+          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+          Import Data
+        </Button>
+
+        <Button
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: "14px",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            marginRight: "10px",
+          }}
+        >
+          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+          Export Data
+        </Button>
+      </Box>
+        <DataGrid
+          rows={gridData}
+          columns={columnsTab1}
+          onRowClick={(params, event) => handleRowClick(params, event)}
+          components={{
+            Toolbar: () => (
+              <div>
+                <GridToolbarColumnsButton />
+                <GridToolbarFilterButton />
+              </div>
+            ),
+          }}
+        />
+      </div>
+    ),
+  },
+  {
+    label: "EOPT",
+    content: (
+      <div>
+        {/* Button Export Data */}
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        p="10px"
+      >
+        <Button
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: "14px",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            marginRight: "10px",
+          }}
+        >
+          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+          Import Data
+        </Button>
+
+        <Button
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: "14px",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            marginRight: "10px",
+          }}
+        >
+          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+          Export Data
+        </Button>
+      </Box>
+        <DataGrid
+          rows={gridData}
+          columns={columnsTab2}
+          onRowClick={(params, event) => handleRowClick(params, event)}
+          components={{
+            Toolbar: () => (
+              <div>
+                <GridToolbarColumnsButton />
+                <GridToolbarFilterButton />
+              </div>
+            ),
+          }}
+        />
+      </div>
+    ),
+  },
+];
+
+
   return (
     <Box
       m="0px 10px"
@@ -369,44 +636,10 @@ const Table = () => {
         },
       }}
     >
-      {/* Button Export Data */}
-      <Box
-        display="flex"
-        justifyContent="flex-end"
-        alignItems="center"
-        p="10px"
-      >
-        <Button
-          sx={{
-            backgroundColor: colors.blueAccent[700],
-            color: colors.grey[100],
-            fontSize: "14px",
-            fontWeight: "bold",
-            padding: "10px 20px",
-            marginRight: "10px",
-          }}
-        >
-          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-          Import Data
-        </Button>
-
-        <Button
-          sx={{
-            backgroundColor: colors.blueAccent[700],
-            color: colors.grey[100],
-            fontSize: "14px",
-            fontWeight: "bold",
-            padding: "10px 20px",
-            marginRight: "10px",
-          }}
-        >
-          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-          Export Data
-        </Button>
-      </Box>
+      
 
       {/* Data Grid */}
-      <Box m="10px 0 0 0" height="75vh" minHeight="50vh" sx={{}}>
+      {/* <Box m="10px 0 0 0" height="75vh" minHeight="50vh" sx={{}}>
         <Box height="100%" overflow="auto">
           <DataGrid
             rows={gridData}
@@ -422,7 +655,27 @@ const Table = () => {
             }}
           />
         </Box>
-      </Box>
+      </Box> */}
+
+      {/* Tabs for Tables */}
+      <Tabs
+        value={currentTab}
+        onChange={handleTabChange} // Add the handleTabChange function
+        >
+        {tabs.map((tab, index) => (
+          <Tab key={index} label={tab.label} 
+          sx={{
+            backgroundColor: currentTab === index ? colors.blueAccent[700] : "initial",
+            color: currentTab === index ? colors.grey[100] : colors.grey[100],
+            borderRadius: "20px 20px 0 0",
+          }}/>
+        ))}
+      </Tabs>
+      {tabs.map((tab, index) => (
+        <div key={index} hidden={currentTab !== index}>
+          {tab.content}
+        </div>
+      ))}
 
       {/* Profile Dialog */}
       <Dialog
