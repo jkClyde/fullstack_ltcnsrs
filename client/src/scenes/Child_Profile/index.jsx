@@ -132,6 +132,10 @@ const ChildProfile = ({ child, updateChildData }) => {
         if (childHealthInfo) {
           setSelectedQuarter(childHealthInfo.quarter);
           setDataExists(!!childHealthInfo);
+
+          // Set initialYear to the year of the data
+          setInitialYear(childHealthInfo.getYear);
+          console.log("Dropdown Year: ", childHealthInfo.getYear);
         }
       })
       .catch((error) => {
@@ -155,6 +159,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       // Determine the quarter based on the 'dow' (Date of Weighing) value
       const dowDate = new Date(editedChild.dow);
       const dowMonth = dowDate.getMonth() + 1; // Get the month (1-12)
+      const dowYear = dowDate.getFullYear(); // Get the year
 
       // Get the numeric value for the selected quarter
       let selectedQuarterValue;
@@ -163,24 +168,36 @@ const ChildProfile = ({ child, updateChildData }) => {
           selectedQuarterValue = 1;
           break;
         case "2nd Quarter":
-          selectedQuarterValue = 2;
+          selectedQuarterValue = 4;
           break;
         case "3rd Quarter":
-          selectedQuarterValue = 3;
+          selectedQuarterValue = 7;
           break;
         case "4th Quarter":
-          selectedQuarterValue = 4;
+          selectedQuarterValue = 10;
           break;
         default:
           selectedQuarterValue = 0;
       }
 
-      // Check if the 'dow' corresponds to the selected quarter
+      // Check if the 'dow' corresponds to the selected quarter and year
       if (
-        (selectedQuarterValue === 1 && dowMonth >= 1 && dowMonth <= 3) ||
-        (selectedQuarterValue === 2 && dowMonth >= 4 && dowMonth <= 6) ||
-        (selectedQuarterValue === 3 && dowMonth >= 7 && dowMonth <= 9) ||
-        (selectedQuarterValue === 4 && dowMonth >= 10 && dowMonth <= 12)
+        (selectedQuarterValue === 1 &&
+          dowMonth >= 1 &&
+          dowMonth <= 3 &&
+          dowYear === selectedYear) ||
+        (selectedQuarterValue === 4 &&
+          dowMonth >= 4 &&
+          dowMonth <= 6 &&
+          dowYear === selectedYear) ||
+        (selectedQuarterValue === 7 &&
+          dowMonth >= 7 &&
+          dowMonth <= 9 &&
+          dowYear === selectedYear) ||
+        (selectedQuarterValue === 10 &&
+          dowMonth >= 10 &&
+          dowMonth <= 12 &&
+          dowYear === selectedYear)
       ) {
         // Create new child data
         const newChildData = {
@@ -215,8 +232,13 @@ const ChildProfile = ({ child, updateChildData }) => {
             console.error("Error creating new ChildHealthInfo data:", error);
           });
       } else {
-        // 'dow' does not match the selected quarter, log a message
-        console.log("Cannot create in another quarter:", selectedQuarterValue);
+        // 'dow' does not match the selected quarter and year, log an error message
+        console.log(
+          "Cannot create in another quarter or year:",
+          selectedQuarterValue,
+          dowYear,
+          dowMonth
+        );
         setIsErrorSnackbarOpen(true);
       }
     } else {
@@ -423,7 +445,7 @@ const ChildProfile = ({ child, updateChildData }) => {
     fetchData(newQuarter, selectedYear);
   };
 
-  const fetchData = (quarter, year) => {
+  const fetchData = (quarter, getYear) => {
     axios
       .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
       .then((response) => {
@@ -431,7 +453,7 @@ const ChildProfile = ({ child, updateChildData }) => {
         const childHealthInfo = response.data.find(
           (info) =>
             info.quarter === quarter &&
-            info.year === year &&
+            info.getYear === getYear &&
             info.child === child.id
         );
 
@@ -460,7 +482,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           console.log(
             "No data found for the selected quarter and year",
             quarter,
-            year
+            getYear
           );
           setDataExists(false); // Set dataExists to false
           // Clear the health-related fields in the editedChild state
