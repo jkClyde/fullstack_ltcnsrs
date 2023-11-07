@@ -270,6 +270,7 @@ const ChildProfile = ({ child, updateChildData }) => {
     //         barangay: editedChild.barangay,
     //       };
     //     }
+
     //     return rowData;
     //   });
     // });
@@ -279,6 +280,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       fullName: editedChild.fullName,
       address: editedChild.address,
       pt: editedChild.pt,
+      muac: editedChild.muac,
       gender: editedChild.gender,
       birthdate: editedChild.birthdate,
       aim: editedChild.aim,
@@ -347,8 +349,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           
         setIsEditing(false);
 
-        // Refresh the page immediately
-        // window.location.reload();
+  
 
         setIsSnackbarOpen(true);
       })

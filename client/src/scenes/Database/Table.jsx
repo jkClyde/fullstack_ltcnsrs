@@ -38,12 +38,24 @@ const Table = () => {
   const [gridDataTab1, setGridDataTab1] = useState([]);
   const [gridDataTab2, setGridDataTab2] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
-  
+  //Refreshing to update data Fix Here
   // Fetch data for both tabs when the component mounts
   useEffect(() => {
-    fetchTab1Data();
-    fetchTab2Data();
+    
+    // Set an interval to periodically fetch updated data (e.g., every 5 seconds)
+    const pollingInterval = setInterval(() => {
+      fetchTab1Data();
+      fetchTab2Data();
+    }, 5000); // Change the interval duration as needed
+
+    // Clear the interval when the component unmounts to avoid memory leaks
+    return () => {
+      clearInterval(pollingInterval);
+    };
   }, []);
+
+
+  
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
