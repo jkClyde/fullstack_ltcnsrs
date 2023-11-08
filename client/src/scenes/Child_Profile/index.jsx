@@ -6,6 +6,8 @@ import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
 import weightForLengthStatus from "../Database/Calculations/weightForLengthStatus";
 import "./../Database/StatusReference/StatusCellColors/statusColors.css";
 import { getClassForStatusColorValue } from "./getClassForStatusColorValue";
+import barangayOptions from "./../form/barangayOptions.js";
+
 // import ChildInfo from "./ChildInfo";
 import {
   Box,
@@ -639,6 +641,7 @@ const ChildProfile = ({ child, updateChildData }) => {
             </Box>
           </Grid>
         )}
+        
       </Grid>
       <Grid item xs={4}>
         {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
@@ -735,10 +738,41 @@ const ChildProfile = ({ child, updateChildData }) => {
             </Box>
           </Box>
         )}
+        {isEditing ? (
+          // Render the ethnicity field only when editing
+          <Box mt="16px">
+            <Select
+              fullWidth
+              id="ethnicity"
+              name="ethnicity"
+              label="Parent's Ethnicity"
+              value={editedChild.ethnicity}
+              onChange={handleInputChange}
+              variant="outlined"
+            >
+              {ethnicityOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+        ) : (
+          // Display ethnicity information when not editing
+          <Box>
+            <Box mt="10px" padding="10px" borderRadius="5px" border="1px solid grey">
+              <Typography variant="h6">Ethnicity:</Typography>
+              <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                {editedChild.ethnicity}
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </Grid>
 
       <Grid item xs={4}>
         {renderTextField("Address", "address", editedChild.address)}
+        
         {isEditing ? (
           // Render the field only when editing
           <Box mt="16px">
@@ -773,41 +807,51 @@ const ChildProfile = ({ child, updateChildData }) => {
       </Grid>
 
       <Grid item xs={4}>
-        {renderTextField(
-          "Parent's Occupation",
-          "occupation",
-          editedChild.occupation
-        )}
+      <Box mt="10px">
         {isEditing ? (
-          // Render the ethnicity field only when editing
-          <Box mt="16px">
-            <Select
-              fullWidth
-              id="ethnicity"
-              name="ethnicity"
-              label="Parent's Ethnicity"
-              value={editedChild.ethnicity}
-              onChange={handleInputChange}
-              variant="outlined"
-            >
-              {ethnicityOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </Box>
-        ) : (
-          // Display ethnicity information when not editing
-          <Box>
-            <Box padding="10px" borderRadius="5px" border="1px solid grey">
-              <Typography variant="h6">Ethnicity:</Typography>
-              <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                {editedChild.ethnicity}
-              </Typography>
+            // Render the barangay field only when editing
+            <Box mt="10px">
+              <FormControl fullWidth variant="outlined">
+                <InputLabel id="barangay-select-label">Barangay</InputLabel>
+                <Select
+                  labelId="barangay-select-label"
+                  label="Barangay"
+                  id="barangay-select"
+                  name="barangay"
+                  value={editedChild.barangay}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                >
+                  {barangayOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
             </Box>
-          </Box>
-        )}
+          ) : (
+            // Display barangay information when not editing
+                <Box>
+                  <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                    <Typography variant="h6">Barangay:</Typography>
+                    <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                      {editedChild.barangay}
+                    </Typography>
+                  </Box>
+                </Box>
+        
+        
+          )}
+      </Box>
+        <Box mt="10px">
+          {renderTextField(
+            "Parent's Occupation",
+            "occupation",
+            editedChild.occupation
+          )}
+        </Box>
+        
       </Grid>
     </Grid>
   );

@@ -10,8 +10,9 @@ import { getCellClassNameWFL } from "./StatusReference/StatusCellColors/getCellC
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import barangayOptions from "./../form/barangayOptions.js";
 
-import { Box, Typography, useTheme, Button, Dialog, DialogContent, Select, MenuItem, Tab, Tabs } from "@mui/material";
+import { Box, Typography, useTheme, Button, Dialog, DialogContent, Select, MenuItem, Tab, Tabs, TextField,FormControl, InputLabel } from "@mui/material";
 import { DownloadOutlined as DownloadOutlinedIcon, Search, SearchOffOutlined,
 } from "@mui/icons-material";
 import { tokens } from "../../theme";
@@ -32,8 +33,21 @@ const Table = () => {
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedQuarter, setSelectedQuarter] = useState("");
   const [currentTab, setCurrentTab] = useState(0);
+  const [yearInput, setYearInput] = useState("");
+  const [isYearInputValid, setIsYearInputValid] = useState(true); // Initialize as true
+    // Define a function to validate the year filter
+  const validateYear = (year) => {
+    const yearPattern = /^\d{4}$/; // Regular expression to match a 4-digit year
+    return yearPattern.test(year);
+  };
+  // Handle year input change
+const handleYearInputChange = (e) => {
+  const year = e.target.value;
+  setYearInput(year);
 
-  
+  // Validate the year and set the isYearInputValid state
+  setIsYearInputValid(validateYear(year));
+};
   
   const [gridDataTab1, setGridDataTab1] = useState([]);
   const [gridDataTab2, setGridDataTab2] = useState([]);
@@ -42,11 +56,11 @@ const Table = () => {
   // Fetch data for both tabs when the component mounts
   useEffect(() => {
     
-    // Set an interval to periodically fetch updated data (e.g., every 5 seconds)
+    // Set an interval to periodically fetch updated data (e.g., every 3 seconds)
     const pollingInterval = setInterval(() => {
       fetchTab1Data();
       fetchTab2Data();
-    }, 5000); // Change the interval duration as needed
+    }, 3000); // Change the interval duration as needed
 
     // Clear the interval when the component unmounts to avoid memory leaks
     return () => {
@@ -468,15 +482,6 @@ const Table = () => {
   // Table columns on EOPT table or Tab 2
   const columnsTab2 = [
     {
-      field: "id",
-      headerName: "Seq. No.",//Sequence number
-      flex: 1,
-      cellClassName: "id-column--cell",
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
       field: "address",
       headerName: "Address",
       flex: 2,
@@ -604,48 +609,58 @@ const dataGridTab1 = (
         p="10px"
         
       >
-        {/* Year and Quarter */}
-        <Select
-              labelId="year-select-label"
-              id="year-select"
-              // onChange={}
-              sx={{ m: "0 10px 10px 0" }}
-              // value={selectedYear || initialYear}
-            >
-             
-                <MenuItem>
-                  {/* {year} */}
-                  year
-                </MenuItem>
-              
-            </Select>
-
+        {/* Barangay Dropdown*/}
+        <Box width="10rem">
+          <FormControl fullWidth>
+          <InputLabel id="barangay-select-label">Barangay</InputLabel>
             <Select
-              labelId="quarter-select-label"
-              id="quarter-select"
-              sx={{ m: "0 10px 10px 0"}}
-              // value={selectedQuarter} // Use the selectedQuarter state as the value
-              // onChange={handleQuarterChange}
-            >
-              <MenuItem value="1st Quarter">1st Quarter</MenuItem>
-              <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
-              <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
-              <MenuItem value="4th Quarter">4th Quarter</MenuItem>
-            </Select>
+                  label="Barangay"
+                  labelId="barangay-select-label"
+                  id="barangay-select"
+                  sx={{ m: "0 10px 10px 0"}}
+                  // value={selectedQuarter} // Use the selectedQuarter state as the value
+                  // onChange={handleQuarterChange}
+                >
+                  {barangayOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+          </FormControl>
+        </Box>
+        {/* Year and Quarter */}
+        <TextField
+          id="outlined-basic"
+          label="Year"
+          variant="outlined"
+          sx={{ m: "0 10px 10px 0", width: "5rem" }}
+          value={yearInput}
+          onChange={handleYearInputChange}
+          error={!isYearInputValid} // Use isYearInputValid to handle errors
+          helperText={!isYearInputValid ? "4-digit" : ""}
+        />
+       
+
+
+            <FormControl>
+            <InputLabel id="quarter-select-label">Quarter</InputLabel>
+              <Select
+              label="Quarter"
+                labelId="quarter-select-label"
+                id="quarter-select"
+                sx={{ m: "0 10px 10px 0", width:"10rem"}}
+                // value={selectedQuarter} // Use the selectedQuarter state as the value
+                // onChange={handleQuarterChange}
+              >
+                <MenuItem value="1st Quarter">1st Quarter</MenuItem>
+                <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
+                <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
+                <MenuItem value="4th Quarter">4th Quarter</MenuItem>
+              </Select>
+            </FormControl>
         {/* Button Export and Import Data */}
-        <Button
-          sx={{
-            backgroundColor: colors.blueAccent[700],
-            color: colors.grey[100],
-            fontSize: "14px",
-            fontWeight: "bold",
-            padding: "10px 20px",
-            marginRight: "10px",
-          }}
-        >
-          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-          Import Data
-        </Button>
+        
 
         <Button
           sx={{
@@ -660,7 +675,21 @@ const dataGridTab1 = (
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Export Data
         </Button>
+        <Button
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: "14px",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            marginRight: "10px",
+          }}
+        >
+          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+          Import Data
+        </Button>
       </Box>
+      
     <DataGrid
       rows={gridDataTab1}
       columns={columnsTab1}
@@ -686,49 +715,60 @@ const dataGridTab2 = (
         justifyContent="flex-end"
         alignItems="center"
         p="10px"
+        
       >
-        {/* Year and Quarter */}
-        <Select
-              labelId="year-select-label"
-              id="year-select"
-              // onChange={}
-              sx={{ m: "0 10px 10px 0" }}
-              // value={selectedYear || initialYear}
-            >
-             
-                <MenuItem>
-                  {/* {year} */}
-                  year
-                </MenuItem>
-              
-            </Select>
-
+        {/* Barangay Dropdown*/}
+        <Box width="10rem">
+          <FormControl fullWidth>
+          <InputLabel id="barangay-select-label">Barangay</InputLabel>
             <Select
-              labelId="quarter-select-label"
-              id="quarter-select"
-              sx={{ m: "0 10px 10px 0"}}
-              // value={selectedQuarter} // Use the selectedQuarter state as the value
-              // onChange={handleQuarterChange}
-            >
-              <MenuItem value="1st Quarter">1st Quarter</MenuItem>
-              <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
-              <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
-              <MenuItem value="4th Quarter">4th Quarter</MenuItem>
-            </Select>
-            {/* Button Export Data */}
-        <Button
-          sx={{
-            backgroundColor: colors.blueAccent[700],
-            color: colors.grey[100],
-            fontSize: "14px",
-            fontWeight: "bold",
-            padding: "10px 20px",
-            marginRight: "10px",
-          }}
-        >
-          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-          Import Data
-        </Button>
+                  label="Barangay"
+                  labelId="barangay-select-label"
+                  id="barangay-select"
+                  sx={{ m: "0 10px 10px 0"}}
+                  // value={selectedQuarter} // Use the selectedQuarter state as the value
+                  // onChange={handleQuarterChange}
+                >
+                  {barangayOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+          </FormControl>
+        </Box>
+        {/* Year and Quarter */}
+        <TextField
+          id="outlined-basic"
+          label="Year"
+          variant="outlined"
+          sx={{ m: "0 10px 10px 0", width: "5rem" }}
+          value={yearInput}
+          onChange={handleYearInputChange}
+          error={!isYearInputValid} // Use isYearInputValid to handle errors
+          helperText={!isYearInputValid ? "4-digit" : ""}
+        />
+       
+
+
+            <FormControl>
+            <InputLabel id="quarter-select-label">Quarter</InputLabel>
+              <Select
+              label="Quarter"
+                labelId="quarter-select-label"
+                id="quarter-select"
+                sx={{ m: "0 10px 10px 0", width:"10rem"}}
+                // value={selectedQuarter} // Use the selectedQuarter state as the value
+                // onChange={handleQuarterChange}
+              >
+                <MenuItem value="1st Quarter">1st Quarter</MenuItem>
+                <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
+                <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
+                <MenuItem value="4th Quarter">4th Quarter</MenuItem>
+              </Select>
+            </FormControl>
+        {/* Button Export and Import Data */}
+        
 
         <Button
           sx={{
@@ -742,6 +782,19 @@ const dataGridTab2 = (
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Export Data
+        </Button>
+        <Button
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: "14px",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            marginRight: "10px",
+          }}
+        >
+          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+          Import Data
         </Button>
       </Box>
     <DataGrid

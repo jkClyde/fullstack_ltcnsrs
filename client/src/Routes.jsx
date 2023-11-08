@@ -4,7 +4,7 @@ import GuestLayout from './components/GuestLayout';
 import Login from "./scenes/account/Login";
 import Signup from "./scenes/account/Signup";
 
-import DefaltLayout from './components/DefaultLayout';
+import DefaultLayout from './components/DefaultLayout';
 import Dashboard from "./scenes/Dashboard";
 import Table from "./scenes/Database/Table";
 import Form from "./scenes/form/Form";
@@ -139,7 +139,7 @@ const user_route = [
 const MyRoutes = createBrowserRouter([
   {
     path: '/',
-    element: isAdmin ? <DefaltLayout /> : <UserLayout />,
+    element: isAdmin ? <DefaultLayout /> : <UserLayout />,
     children: [
       ...(isAdmin ? admin_route : user_route),
     ]
