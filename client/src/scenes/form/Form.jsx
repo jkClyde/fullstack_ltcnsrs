@@ -25,6 +25,7 @@ const Form = () => {
   const [selectedDOW, setSelectedDOW] = useState(null);
   const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
   const notify = () => toast.success("Child Data added successfully!");
+  const [existingEntries, setExistingEntries] = useState([]);
 
   const handleDateChange = (name, date, dateType) => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
@@ -43,6 +44,18 @@ const Form = () => {
   };
 
   const handleFormSubmit = (values, { resetForm }) => {
+    const isDuplicate = existingEntries.some(
+      (entry) =>
+        entry.fullName === values.fullName &&
+        dayjs(entry.birthdate).format("YYYY-MM-DD") ===
+          dayjs(selectedBirthdate).format("YYYY-MM-DD")
+    );
+
+    if (isDuplicate) {
+      alert("Duplicate entry found: This child already exists.");
+      return;
+    }
+
     if (!selectedBirthdate || !selectedDOW) {
       alert("Birthdate and Date of Weighing are required");
       return;
@@ -78,6 +91,13 @@ const Form = () => {
       quarter = "fourth";
     }
 
+    setExistingEntries([
+      ...existingEntries,
+      {
+        fullName: values.fullName,
+        birthdate: formattedBirthdate,
+      },
+    ]);
     // Create a data object to send to your Django backend for saving in the appropriate quarter table
     const quarterData = {
       dow: formattedDOW,

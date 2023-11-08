@@ -96,7 +96,21 @@ class PrimaryChild(models.Model):
    
     barangay = models.CharField(
         max_length=200, choices=barangay_choices, default='Not specified')
+    archive = models.BooleanField(default=False) 
     
+    def save(self, *args, **kwargs):
+        if self.birthdate:
+            today = datetime.now().date()
+            age = (today.year - self.birthdate.year) * 12 + today.month - self.birthdate.month
+            self.aim = age
+            
+        if self.aim > 60:
+            self.archive = True
+        else:
+            self.archive = False
+
+        super(PrimaryChild, self).save(*args, **kwargs)
+
 class ChildHealthInfo(models.Model):
     childHealth_id = models.AutoField(primary_key=True)
     dow = models.DateField(null=True, blank=True)

@@ -103,6 +103,11 @@ const Table = () => {
       }
       const primaryChildData = await primaryChildResponse.json();
 
+      // Filter out children with archive set to true
+      const filteredPrimaryChildData = primaryChildData.filter(
+        (child) => !child.archive
+      );
+
       // Fetch data from the childhealthinfo endpoint
       const childHealthInfoResponse = await fetch(
         "http://127.0.0.1:8000/childhealthinfo/"
@@ -115,7 +120,10 @@ const Table = () => {
         return;
       }
       const childHealthInfoData = await childHealthInfoResponse.json();
-      const mergedData = mergeData(primaryChildData, childHealthInfoData);
+      const mergedData = mergeData(
+        filteredPrimaryChildData,
+        childHealthInfoData
+      );
       setGridDataTab1(mergedData);
     } catch (error) {
       console.error("Error fetching data:", error);
