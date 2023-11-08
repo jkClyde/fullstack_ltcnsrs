@@ -242,6 +242,47 @@ const Table = () => {
     );
   };
 
+  const ExportToExcelButton = async () => {
+    try {
+      const primaryChildResponse = await fetch(
+        "http://127.0.0.1:8000/primarychild/"
+      );
+      if (!primaryChildResponse.ok) {
+        console.error(
+          "Error fetching primarychild data:",
+          primaryChildResponse.statusText
+        );
+        return;
+      }
+      const primaryChildData = await primaryChildResponse.json();
+
+      // Fetch data from the childhealthinfo endpoint
+      const childHealthInfoResponse = await fetch(
+        "http://127.0.0.1:8000/childhealthinfo/"
+      );
+      if (!childHealthInfoResponse.ok) {
+        console.error(
+          "Error fetching childhealthinfo data:",
+          childHealthInfoResponse.statusText
+        );
+        return;
+      }
+      const childHealthInfoData = await childHealthInfoResponse.json();
+      const mergedData = mergeData(primaryChildData, childHealthInfoData);
+      console.log(mergedData)
+
+      const existingWorkbook = XLSX.readFile('exported_data (5).xlsx');
+      const existingSheet = existingWorkbook.Sheets[sheetName];
+
+      console.log(existingSheet)
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+ 
+
+
   const renderWrappedCell = (params) => (
     <Typography variant="body2" sx={{ whiteSpace: "normal" }}>
       {params.colDef?.field === "aim"
@@ -656,6 +697,8 @@ const dataGridTab1 = (
             padding: "10px 20px",
             marginRight: "10px",
           }}
+                onClick={ExportToExcelButton} // Add this click event handler
+
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Export Data
@@ -739,6 +782,8 @@ const dataGridTab2 = (
             padding: "10px 20px",
             marginRight: "10px",
           }}
+          onClick={ExportToExcelButton} // Add this click event handler
+
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Export Data
