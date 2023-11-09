@@ -11,6 +11,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import barangayOptions from "./../form/barangayOptions.js";
+import ExcelToJSON from "../Import/index.jsx";
 
 import {
   Box,
@@ -237,6 +238,16 @@ const Table = () => {
     setGridData((prevData) =>
       prevData.map((row) => (row.id === updatedChild.id ? updatedChild : row))
     );
+  };
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const openDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
   };
 
   const renderWrappedCell = (params) => (
@@ -660,6 +671,8 @@ const Table = () => {
             padding: "10px 20px",
             marginRight: "10px",
           }}
+          onClick={openDialog}
+
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Import Data
@@ -762,6 +775,8 @@ const Table = () => {
             padding: "10px 20px",
             marginRight: "10px",
           }}
+          onClick={openDialog}
+
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Import Data
@@ -880,6 +895,9 @@ const Table = () => {
             />
           )}
         </DialogContent>
+      </Dialog>
+      <Dialog open={isDialogOpen} onClose={closeDialog}>
+        <ExcelToJSON closeDialog={closeDialog} />
       </Dialog>
     </Box>
   );

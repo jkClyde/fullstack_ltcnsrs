@@ -20,10 +20,11 @@ import VerificationNotice from "./components/registration/verificationNotice";
 import Verify from "./components/registration/verify";
 import UserLayout from "./components/UserView";
 import UserDrawer from "./scenes/global/UserDrawer";
-import ExcelReader from "./scenes/Import";
-
+// import ExcelReader from "./scenes/Import";
+import ExcelToJSON from "./scenes/Import"
 import { useStateContext } from "./contexts/ContextProvider";
 import jwtDecode from 'jwt-decode';
+
 
 
 
@@ -94,8 +95,8 @@ const admin_route = [
         element: <UserLayout/>
       },
       {
-        path: '/excel',
-        element: <ExcelReader/>
+        path: '/import',
+        element: <ExcelToJSON/>
       },
 ]
 
