@@ -704,7 +704,7 @@ const ChildProfile = ({ child, updateChildData }) => {
   const renderParentInformation = () => (
     <Grid container spacing={2}>
       <Grid item xs={4}>
-        {renderTextField("Parent Name", "parentName", editedChild.parentName)}
+        {renderTextField("Caregiver Name", "parentName", editedChild.parentName)}
         {/* Replace the "Parent-Child Relation" TextField with a Select */}
         {isEditing ? (
           <Box mt="16px">
@@ -745,7 +745,7 @@ const ChildProfile = ({ child, updateChildData }) => {
               fullWidth
               id="ethnicity"
               name="ethnicity"
-              label="Parent's Ethnicity"
+              label="Ethnicity"
               value={editedChild.ethnicity}
               onChange={handleInputChange}
               variant="outlined"
@@ -846,7 +846,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       </Box>
         <Box mt="10px">
           {renderTextField(
-            "Parent's Occupation",
+            "Caregiver's Occupation",
             "occupation",
             editedChild.occupation
           )}
@@ -901,7 +901,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           />
           <Tab
             icon={<EscalatorWarningOutlined />}
-            label="Parent"
+            label="Caregiver"
             value="parent"
             sx={(theme) => ({
               backgroundColor:

@@ -72,7 +72,7 @@ const Table = () => {
     const pollingInterval = setInterval(() => {
       fetchTab1Data();
       fetchTab2Data();
-    }, 3000); // Change the interval duration as needed
+    }, 2000); // Change the interval duration as needed
 
     // Clear the interval when the component unmounts to avoid memory leaks
     return () => {
