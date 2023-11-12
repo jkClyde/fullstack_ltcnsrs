@@ -68,18 +68,18 @@ const Table = () => {
   const [activeTab, setActiveTab] = useState(0);
   //Refreshing to update data Fix Here
   // Fetch data for both tabs when the component mounts
-  useEffect(() => {
-    // Set an interval to periodically fetch updated data (e.g., every 3 seconds)
-    const pollingInterval = setInterval(() => {
-      fetchTab1Data();
-      fetchTab2Data();
-    }, 2000); // Change the interval duration as needed
+  // useEffect(() => {
+  //   // Set an interval to periodically fetch updated data (e.g., every 3 seconds)
+  //   const pollingInterval = setInterval(() => {
+  //     fetchTab1Data();
+  //     fetchTab2Data();
+  //   }, 2000); // Change the interval duration as needed
 
-    // Clear the interval when the component unmounts to avoid memory leaks
-    return () => {
-      clearInterval(pollingInterval);
-    };
-  }, []);
+  //   // Clear the interval when the component unmounts to avoid memory leaks
+  //   return () => {
+  //     clearInterval(pollingInterval);
+  //   };
+  // }, []);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);

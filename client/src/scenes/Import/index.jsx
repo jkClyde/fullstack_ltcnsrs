@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 
+
+
 function formatDateToYYYYMMDD(excelDate) {
   const date = new Date(1900, 0, excelDate - 1); // Subtract 1 because Excel counts from 1/0/1900
   const year = date.getFullYear();
@@ -37,21 +39,23 @@ function ExcelToJSON() {
     // Define a mapping object to map source keys to target keys
     const keyMapping = {
       "Name of Child": "fullName",
-      "Address": "address",
+      // "Address": "address",
       "P/T": "pt",
       "Sex": "gender",
       "DoB": "birthdate",
       "AIM": "aim",
       "Name of Mothe/Father": "parentName",
       "Occupation": "occupation",
-      // "Given": "relationship",
-      // "Ethnicity": "ethnicity",
-      // "DoW": "barangay",
+      // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
+      // "Relationship": "relationship",
+      "Given" : "vac",
+      "Ethnicity" : "ethnicity",
+      "DoW": "dow",
       "Address" : "barangay",
-
       "Height" : "height",
       "Weight" : "weight",
-      "DoW" : "dow"
+      "DoW" : "dow",
+      // "Given": "purga",
     };
 
     reader.onload = (e) => {
@@ -64,21 +68,21 @@ function ExcelToJSON() {
 
       // Convert the sheet data to JSON
       const json = XLSX.utils.sheet_to_json(sheet);
+      const valueInO2 = sheet['O2'].v;
 
       // Transform the JSON data using the key mapping and date formatting
       const transformedData = json.map((item) => {
         const transformedItem = {};
         for (const sourceKey in item) {
           if (keyMapping[sourceKey]) {
-            if (sourceKey === "DoB") {
-              transformedItem[keyMapping[sourceKey]] = formatDateToYYYYMMDD(item[sourceKey]);
-            }else if (sourceKey === "DoW"){
+            if (sourceKey === "DoB" || sourceKey ===  "DoW" || sourceKey ===  "Given") {
               transformedItem[keyMapping[sourceKey]] = formatDateToYYYYMMDD(item[sourceKey]);
             } else if (sourceKey === "Sex") {
               transformedItem[keyMapping[sourceKey]] = mapGender(item[sourceKey]);
             }else if(sourceKey == "P/T"){
               transformedItem[keyMapping[sourceKey]] = mapPT(item[sourceKey]);
-            } else {
+            }
+              else {
               transformedItem[keyMapping[sourceKey]] = item[sourceKey];
             }
           }
@@ -99,11 +103,34 @@ function ExcelToJSON() {
           body: JSON.stringify(item), // Send each item individually
         })
           .then((response) => {
-            if (response.status === 200) {
+            if (response.status === 200 || response.status === 201) {
               console.log('Data sent successfully to the server.');
+              return response.json(); // Parse the response body as JSON
             } else {
               console.error('Failed to send data to the server.');
             }
+          })
+          .then((data) => {
+            const userID = data.id;
+
+            const healthInfoItem = {
+              child : userID,
+              dow : item.dow,
+              height : item.height,
+              weight : item.weight,
+               purga : item.valueInO2,
+              vac : item.vac
+            };
+
+            console.log(healthInfoItem)
+            // Now send a POST request to http://127.0.0.1:8000/childhealthinfo/ with the id of userID
+            return fetch('http://127.0.0.1:8000/childhealthinfo/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(healthInfoItem), // Assuming the server expects an object with 'id' property
+            });
           })
           .catch((error) => {
             console.error('Error:', error);

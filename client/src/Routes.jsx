@@ -22,6 +22,7 @@ import UserLayout from "./components/UserView";
 import UserDrawer from "./scenes/global/UserDrawer";
 // import ExcelReader from "./scenes/Import";
 import ExcelToJSON from "./scenes/Import"
+import ExcelDataTransfer from "./scenes/export";
 import { useStateContext } from "./contexts/ContextProvider";
 import jwtDecode from 'jwt-decode';
 
@@ -97,6 +98,10 @@ const admin_route = [
       {
         path: '/import',
         element: <ExcelToJSON/>
+      },
+      {
+        path: '/export',
+        element: <ExcelDataTransfer/>
       },
 ]
 
