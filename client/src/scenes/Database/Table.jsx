@@ -1348,6 +1348,7 @@ const Table = () => {
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <MuiAlert
           elevation={6}
