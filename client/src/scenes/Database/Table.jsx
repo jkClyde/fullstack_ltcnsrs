@@ -47,51 +47,59 @@ const Table = () => {
   const [initialYear, setInitialYear] = useState(null);
   const [selectedChild, setselectedChild] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [selectedQuarter, setSelectedQuarter] = useState(""); // Provide an initial value based on your requirements
+  const [selectedBarangay, setSelectedBarangay] = useState("Alapang");
   const [yearInput, setYearInput] = useState("");
-  const [isYearInputValid, setIsYearInputValid] = useState(true); // Initialize as true
-  // Define a function to validate the year filter
+  const [isYearInputValid, setIsYearInputValid] = useState(true);
   const validateYear = (year) => {
-    const yearPattern = /^\d{4}$/; // Regular expression to match a 4-digit year
+    const yearPattern = /^\d{4}$/;
     return yearPattern.test(year);
   };
-  // Handle year input change
   const handleYearInputChange = (e) => {
     const year = e.target.value;
     setYearInput(year);
-
-    // Validate the year and set the isYearInputValid state
     setIsYearInputValid(validateYear(year));
   };
 
   const [gridDataTab1, setGridDataTab1] = useState([]);
   const [gridDataTab2, setGridDataTab2] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
-  // Refreshing to update data Fix Here
-  // Fetch data for both tabs when the component mounts
-  // useEffect(() => {
-  //   // Set an interval to periodically fetch updated data (e.g., every 3 seconds)
-  //   const pollingInterval = setInterval(() => {
-  //     fetchTab1Data();
-  //     fetchTab2Data();
-  //   }, 2000); // Change the interval duration as needed
-
-  //   // Clear the interval when the component unmounts to avoid memory leaks
-  //   return () => {
-  //     clearInterval(pollingInterval);
-  //   };
-  // }, []);
+  useEffect(() => {
+    fetchTab1Data();
+    fetchTab2Data();
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
   useEffect(() => {
-    // Update the current data based on the active tab
     const currentData = activeTab === 0 ? gridData : gridData;
     setGridData(currentData);
   }, [activeTab]);
 
+  const handleBarangayChange = (event) => {
+    setSelectedBarangay(event.target.value);
+    console.log("Selected Barangay:", event.target.value);
+  };
+  const handleQuarterChange = (event) => {
+    setSelectedQuarter(event.target.value);
+    console.log("Selected Quarter:", event.target.value);
+  };
+
+  useEffect(() => {
+    console.log(
+      "Fetching data for Barangay:",
+      selectedBarangay,
+      "and Quarter:",
+      selectedQuarter
+    );
+    fetchTab1Data();
+    fetchTab2Data();
+  }, [selectedBarangay, selectedQuarter]);
+
   const fetchTab1Data = async () => {
     try {
+      // Fetch primary child data
       const primaryChildResponse = await fetch(
         "http://127.0.0.1:8000/primarychild/"
       );
@@ -109,7 +117,7 @@ const Table = () => {
         (child) => !child.archive
       );
 
-      // Fetch data from the childhealthinfo endpoint
+      // Fetch child health info data
       const childHealthInfoResponse = await fetch(
         "http://127.0.0.1:8000/childhealthinfo/"
       );
@@ -121,11 +129,26 @@ const Table = () => {
         return;
       }
       const childHealthInfoData = await childHealthInfoResponse.json();
+
+      // Merge data
       const mergedData = mergeData(
         filteredPrimaryChildData,
         childHealthInfoData
       );
-      setGridDataTab1(mergedData);
+
+      // Filter data based on selected barangay and entered year
+      console.log("Entered Year:", parseInt(yearInput)); // Add this line to log the entered year
+      let filteredData = mergedData.filter((child) => {
+        return (
+          child.barangay === selectedBarangay &&
+          (!yearInput ||
+            child.childHealthInfo.getYear === parseInt(yearInput)) &&
+          (selectedQuarter === "All Quarters" ||
+            child.childHealthInfo.quarter === selectedQuarter)
+        );
+      });
+
+      setGridDataTab1(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -133,6 +156,7 @@ const Table = () => {
 
   const fetchTab2Data = async () => {
     try {
+      // Fetch primary child data
       const primaryChildResponse = await fetch(
         "http://127.0.0.1:8000/primarychild/"
       );
@@ -157,8 +181,22 @@ const Table = () => {
         return;
       }
       const childHealthInfoData = await childHealthInfoResponse.json();
+
+      // Merge data
       const mergedData = mergeData(primaryChildData, childHealthInfoData);
-      setGridDataTab2(mergedData);
+
+      // Filter data based on selected barangay and entered year
+      let filteredData = mergedData.filter((child) => {
+        return (
+          child.barangay === selectedBarangay &&
+          (!yearInput ||
+            child.childHealthInfo.getYear === parseInt(yearInput)) &&
+          (selectedQuarter === "All Quarters" ||
+            child.childHealthInfo.quarter === selectedQuarter)
+        );
+      });
+
+      setGridDataTab2(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -608,11 +646,14 @@ const Table = () => {
               labelId="barangay-select-label"
               id="barangay-select"
               sx={{ m: "0 10px 10px 0" }}
-              // value={selectedQuarter} // Use the selectedQuarter state as the value
-              // onChange={handleQuarterChange}
+              value={selectedBarangay}
+              onChange={handleBarangayChange}
             >
               {barangayOptions.map((option) => (
-                <MenuItem key={option} value={option}>
+                <MenuItem
+                  key={option}
+                  value={option === "All Barangay" ? "" : option}
+                >
                   {option}
                 </MenuItem>
               ))}
@@ -638,8 +679,8 @@ const Table = () => {
             labelId="quarter-select-label"
             id="quarter-select"
             sx={{ m: "0 10px 10px 0", width: "10rem" }}
-            // value={selectedQuarter} // Use the selectedQuarter state as the value
-            // onChange={handleQuarterChange}
+            value={selectedQuarter}
+            onChange={handleQuarterChange}
           >
             <MenuItem value="1st Quarter">1st Quarter</MenuItem>
             <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
@@ -672,7 +713,6 @@ const Table = () => {
             marginRight: "10px",
           }}
           onClick={openDialog}
-
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Import Data
@@ -712,11 +752,14 @@ const Table = () => {
               labelId="barangay-select-label"
               id="barangay-select"
               sx={{ m: "0 10px 10px 0" }}
-              // value={selectedQuarter} // Use the selectedQuarter state as the value
-              // onChange={handleQuarterChange}
+              value={selectedBarangay}
+              onChange={handleBarangayChange}
             >
               {barangayOptions.map((option) => (
-                <MenuItem key={option} value={option}>
+                <MenuItem
+                  key={option}
+                  value={option === "All Barangay" ? "" : option}
+                >
                   {option}
                 </MenuItem>
               ))}
@@ -742,8 +785,8 @@ const Table = () => {
             labelId="quarter-select-label"
             id="quarter-select"
             sx={{ m: "0 10px 10px 0", width: "10rem" }}
-            // value={selectedQuarter} // Use the selectedQuarter state as the value
-            // onChange={handleQuarterChange}
+            value={selectedQuarter}
+            onChange={handleQuarterChange}
           >
             <MenuItem value="1st Quarter">1st Quarter</MenuItem>
             <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
@@ -776,7 +819,6 @@ const Table = () => {
             marginRight: "10px",
           }}
           onClick={openDialog}
-
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Import Data
@@ -896,7 +938,7 @@ const Table = () => {
           )}
         </DialogContent>
       </Dialog>
-      <Dialog open={isDialogOpen} onClose={closeDialog} maxWidth="sm" fullWidth>
+      <Dialog open={isDialogOpen} onClose={closeDialog}>
         <ExcelToJSON closeDialog={closeDialog} />
       </Dialog>
     </Box>
