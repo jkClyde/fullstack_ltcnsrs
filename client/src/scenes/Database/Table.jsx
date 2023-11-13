@@ -11,7 +11,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import barangayOptions from "./../form/barangayOptions.js";
+
 import ExcelToJSON from "../Import/index.jsx";
+import ExportToExcel from "../export/index.jsx";
 
 import {
   Box,
@@ -68,6 +70,9 @@ const Table = () => {
     fetchTab1Data();
     fetchTab2Data();
   }, []);
+
+  const [exportDialogue, setExportDialogue] = useState(false);
+
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -291,13 +296,19 @@ const Table = () => {
   };
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen2, setIsDialogOpen2] = useState(false);
 
   const openDialog = () => {
     setIsDialogOpen(true);
   };
 
+  const openDialog2 = () => {
+    setIsDialogOpen2(true);
+  };
+
   const closeDialog = () => {
     setIsDialogOpen(false);
+    setIsDialogOpen2(false);
   };
 
   const renderWrappedCell = (params) => (
@@ -714,6 +725,7 @@ const Table = () => {
             padding: "10px 20px",
             marginRight: "10px",
           }}
+          onClick={openDialog2}
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Export Data
@@ -823,6 +835,7 @@ const Table = () => {
             padding: "10px 20px",
             marginRight: "10px",
           }}
+          onClick={openDialog2}
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
           Export Data
@@ -894,25 +907,8 @@ const Table = () => {
       }}
     >
       {/* Data Grid */}
-      {/* <Box m="10px 0 0 0" height="75vh" minHeight="50vh" sx={{}}>
-        <Box height="100%" overflow="auto">
-          <DataGrid
-            rows={gridData}
-            columns={columns}
-            onRowClick={(params, event) => handleRowClick(params, event)}
-            components={{
-              Toolbar: () => (
-                <div>
-                  <GridToolbarColumnsButton />
-                  <GridToolbarFilterButton />
-                </div>
-              ),
-            }}
-          />
-        </Box>
-      </Box> */}
-
-      {/* Tabs for Tables */}
+    
+          
       <Tabs value={activeTab} onChange={handleTabChange}>
         <Tab
           key={0}
@@ -956,11 +952,18 @@ const Table = () => {
           )}
         </DialogContent>
       </Dialog>
-      <Dialog open={isDialogOpen} onClose={closeDialog}>
+
+
+      <Dialog open={isDialogOpen} onClose={closeDialog} maxWidth="sm" fullWidth>
         <ExcelToJSON closeDialog={closeDialog} />
       </Dialog>
+
+        
+      <Dialog open={isDialogOpen2} onClose={closeDialog} maxWidth="sm" fullWidth>
+        <ExportToExcel closeDialog={closeDialog} />
+      </Dialog>
     </Box>
-  );
+  );  
 };
 
 export default Table;
