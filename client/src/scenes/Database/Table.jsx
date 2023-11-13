@@ -47,8 +47,8 @@ const Table = () => {
   const [initialYear, setInitialYear] = useState(null);
   const [selectedChild, setselectedChild] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [selectedQuarter, setSelectedQuarter] = useState(""); // Provide an initial value based on your requirements
-  const [selectedBarangay, setSelectedBarangay] = useState("Alapang");
+  const [selectedQuarter, setSelectedQuarter] = useState("All Quarter"); // Provide an initial value based on your requirements
+  const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
   const [yearInput, setYearInput] = useState("");
   const [isYearInputValid, setIsYearInputValid] = useState(true);
   const validateYear = (year) => {
@@ -139,12 +139,18 @@ const Table = () => {
       // Filter data based on selected barangay and entered year
       console.log("Entered Year:", parseInt(yearInput)); // Add this line to log the entered year
       let filteredData = mergedData.filter((child) => {
+        const isAllQuartersSelected =
+          selectedQuarter === "All Quarter" || selectedQuarter === "";
+        const isAllBarangaySelected =
+          selectedBarangay === "All Barangay" || selectedBarangay === "";
+
         return (
-          child.barangay === selectedBarangay &&
+          (isAllBarangaySelected || child.barangay === selectedBarangay) &&
           (!yearInput ||
             child.childHealthInfo.getYear === parseInt(yearInput)) &&
-          (selectedQuarter === "All Quarters" ||
-            child.childHealthInfo.quarter === selectedQuarter)
+          (isAllQuartersSelected ||
+            (selectedQuarter !== "All Quarter" &&
+              child.childHealthInfo.quarter === selectedQuarter))
         );
       });
 
@@ -187,12 +193,18 @@ const Table = () => {
 
       // Filter data based on selected barangay and entered year
       let filteredData = mergedData.filter((child) => {
+        const isAllQuartersSelected =
+          selectedQuarter === "All Quarter" || selectedQuarter === "";
+        const isAllBarangaySelected =
+          selectedBarangay === "All Barangay" || selectedBarangay === "";
+
         return (
-          child.barangay === selectedBarangay &&
+          (isAllBarangaySelected || child.barangay === selectedBarangay) &&
           (!yearInput ||
             child.childHealthInfo.getYear === parseInt(yearInput)) &&
-          (selectedQuarter === "All Quarters" ||
-            child.childHealthInfo.quarter === selectedQuarter)
+          (isAllQuartersSelected ||
+            (selectedQuarter !== "All Quarter" &&
+              child.childHealthInfo.quarter === selectedQuarter))
         );
       });
 
@@ -649,11 +661,13 @@ const Table = () => {
               value={selectedBarangay}
               onChange={handleBarangayChange}
             >
+              {/* Use an empty string as the value for "All Barangay" */}
+              <MenuItem key="All Barangay" value="All Barangay">
+                All Barangay
+              </MenuItem>
+              {/* Render other barangay options */}
               {barangayOptions.map((option) => (
-                <MenuItem
-                  key={option}
-                  value={option === "All Barangay" ? "" : option}
-                >
+                <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
               ))}
@@ -682,6 +696,7 @@ const Table = () => {
             value={selectedQuarter}
             onChange={handleQuarterChange}
           >
+            <MenuItem value="All Quarter">All Quarter</MenuItem>
             <MenuItem value="1st Quarter">1st Quarter</MenuItem>
             <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
             <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
@@ -755,11 +770,13 @@ const Table = () => {
               value={selectedBarangay}
               onChange={handleBarangayChange}
             >
+              {/* Use an empty string as the value for "All Barangay" */}
+              <MenuItem key="All Barangay" value="All Barangay">
+                All Barangay
+              </MenuItem>
+              {/* Render other barangay options */}
               {barangayOptions.map((option) => (
-                <MenuItem
-                  key={option}
-                  value={option === "All Barangay" ? "" : option}
-                >
+                <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
               ))}
@@ -788,6 +805,7 @@ const Table = () => {
             value={selectedQuarter}
             onChange={handleQuarterChange}
           >
+            <MenuItem value="All Quarter">All Quarter</MenuItem>
             <MenuItem value="1st Quarter">1st Quarter</MenuItem>
             <MenuItem value="2nd Quarter">2nd Quarter</MenuItem>
             <MenuItem value="3rd Quarter">3rd Quarter</MenuItem>
