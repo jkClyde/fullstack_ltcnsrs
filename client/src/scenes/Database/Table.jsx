@@ -240,42 +240,46 @@ const Table = () => {
   };
   const fetchTab3Data = async () => {
     try {
-      // Fetch archived primary child data
-      const archivedPrimaryChildResponse = await fetch(
-        "http://127.0.0.1:8000/primarychild/?archive=true"
+      // Fetch primary child data
+      const primaryChildResponse = await fetch(
+        "http://127.0.0.1:8000/primarychild/"
       );
-      if (!archivedPrimaryChildResponse.ok) {
+      if (!primaryChildResponse.ok) {
         console.error(
-          "Error fetching archived primarychild data:",
-          archivedPrimaryChildResponse.statusText
+          "Error fetching primarychild data:",
+          primaryChildResponse.statusText
         );
         return;
       }
-      const archivedPrimaryChildData =
-        await archivedPrimaryChildResponse.json();
+      const primaryChildData = await primaryChildResponse.json();
 
-      // Fetch archived child health info data
-      const archivedChildHealthInfoResponse = await fetch(
-        "http://127.0.0.1:8000/childhealthinfo/?archive=true"
+      // Filter out children with archive set to false
+      const filteredPrimaryChildData = primaryChildData.filter(
+        (child) => child.archive !== false
       );
-      if (!archivedChildHealthInfoResponse.ok) {
+
+      // Fetch child health info data
+      const childHealthInfoResponse = await fetch(
+        "http://127.0.0.1:8000/childhealthinfo/"
+      );
+      if (!childHealthInfoResponse.ok) {
         console.error(
-          "Error fetching archived childhealthinfo data:",
-          archivedChildHealthInfoResponse.statusText
+          "Error fetching childhealthinfo data:",
+          childHealthInfoResponse.statusText
         );
         return;
       }
-      const archivedChildHealthInfoData =
-        await archivedChildHealthInfoResponse.json();
+      const childHealthInfoData = await childHealthInfoResponse.json();
 
       // Merge data
-      const mergedArchivedData = mergeData(
-        archivedPrimaryChildData,
-        archivedChildHealthInfoData
+      const mergedData = mergeData(
+        filteredPrimaryChildData,
+        childHealthInfoData
       );
 
       // Filter data based on selected barangay and entered year
-      let filteredArchivedData = mergedArchivedData.filter((child) => {
+      console.log("Entered Year:", parseInt(yearInput)); // Add this line to log the entered year
+      let filteredData = mergedData.filter((child) => {
         const isAllQuartersSelected =
           selectedQuarter === "All Quarter" || selectedQuarter === "";
         const isAllBarangaySelected =
@@ -291,11 +295,12 @@ const Table = () => {
         );
       });
 
-      setGridDataTab3(filteredArchivedData);
+      setGridDataTab3(filteredData);
     } catch (error) {
-      console.error("Error fetching archived data:", error);
+      console.error("Error fetching data:", error);
     }
   };
+
   const handleDeleteRow = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this row?"
