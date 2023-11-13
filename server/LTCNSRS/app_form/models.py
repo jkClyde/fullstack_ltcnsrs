@@ -99,6 +99,15 @@ class PrimaryChild(models.Model):
     archive = models.BooleanField(default=False) 
     
     def save(self, *args, **kwargs):
+        # Check for duplicates based on fullName, birthdate, and barangay
+        duplicates = PrimaryChild.objects.filter(
+            fullName=self.fullName,
+            birthdate=self.birthdate,
+            barangay=self.barangay,
+        ).exclude(id=self.id)
+
+        if duplicates.exists():
+            raise ValueError("Duplicate entry found.")
         if self.birthdate:
             today = datetime.now().date()
             age = (today.year - self.birthdate.year) * 12 + today.month - self.birthdate.month

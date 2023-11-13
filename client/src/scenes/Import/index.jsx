@@ -29,8 +29,52 @@ function mapPT(input){
     }
 }
 
+// New component for displaying success or failure message
+const MessagePopup = ({ successCount, failureCount }) => {
+  const successStyle = {
+    marginBottom: '10px',
+    padding: '10px',
+    borderRadius: '5px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#DFF2BF',
+    color: 'green',
+  };
+
+  const failureStyle = {
+    padding: '10px',
+    borderRadius: '5px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#FFBABA',
+    color: 'red',
+  };
+
+  return (
+    <div>
+      {successCount > 0 && (
+        <div style={successStyle}>
+          {`Success: ${successCount} item${successCount !== 1 ? 's have been added to the database' : ''}.`}
+        </div>
+      )}
+      {failureCount > 0 && (
+        <div style={failureStyle}>
+          {`Failed/Duplicate: ${failureCount} item${failureCount !== 1 ? 's' : ''}.`}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
 function ExcelToJSON() {
   const [jsonData, setJsonData] = useState(null);
+  const [success, setSuccess] = useState(0);
+  const [failed, setFailed] = useState(-1);
 
    const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -55,6 +99,7 @@ function ExcelToJSON() {
       "Height" : "height",
       "Weight" : "weight",
       "DoW" : "dow",
+      "__EMPTY" : "purga",
       // "Given": "purga",
     };
 
@@ -75,7 +120,7 @@ function ExcelToJSON() {
         const transformedItem = {};
         for (const sourceKey in item) {
           if (keyMapping[sourceKey]) {
-            if (sourceKey === "DoB" || sourceKey ===  "DoW" || sourceKey ===  "Given") {
+            if (sourceKey === "DoB" || sourceKey ===  "DoW" || sourceKey ===  "Given" || sourceKey ===  "__EMPTY") {
               transformedItem[keyMapping[sourceKey]] = formatDateToYYYYMMDD(item[sourceKey]);
             } else if (sourceKey === "Sex") {
               transformedItem[keyMapping[sourceKey]] = mapGender(item[sourceKey]);
@@ -105,9 +150,13 @@ function ExcelToJSON() {
           .then((response) => {
             if (response.status === 200 || response.status === 201) {
               console.log('Data sent successfully to the server.');
+              setSuccess((prevSuccess) => prevSuccess + 1); 
+              
               return response.json(); // Parse the response body as JSON
             } else {
               console.error('Failed to send data to the server.');
+              setFailed((prevFailed) => prevFailed + 1); 
+
             }
           })
           .then((data) => {
@@ -118,11 +167,13 @@ function ExcelToJSON() {
               dow : item.dow,
               height : item.height,
               weight : item.weight,
-               purga : item.valueInO2,
+              purga : item.purga,
               vac : item.vac
             };
 
             console.log(healthInfoItem)
+          
+
             // Now send a POST request to http://127.0.0.1:8000/childhealthinfo/ with the id of userID
             return fetch('http://127.0.0.1:8000/childhealthinfo/', {
               method: 'POST',
@@ -139,16 +190,20 @@ function ExcelToJSON() {
     };
 
     reader.readAsArrayBuffer(file);
-  };
+  };  
 
   return (
-    <div>
-      {/* <h1>Excel to JSON Converter</h1> */}
+    <div style={{ margin: '1%' }}>
       <input type="file" onChange={handleFileUpload} />
       {jsonData && (
         <div>
-          <h2>JSON Data:</h2>
-          <pre>{JSON.stringify(jsonData, null, 2)}</pre>
+          {/* <h2>JSON Data:</h2>
+          <pre>{JSON.stringify(jsonData, null, 2)}</pre> */}
+          <pre style={{ marginTop: '10px' }}>
+            {(success > 0 || failed > 0) && (
+              <MessagePopup successCount={success} failureCount={failed} />
+            )}
+          </pre>
         </div>
       )}
     </div>

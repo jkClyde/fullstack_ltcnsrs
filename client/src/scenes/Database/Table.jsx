@@ -66,7 +66,7 @@ const Table = () => {
   const [gridDataTab1, setGridDataTab1] = useState([]);
   const [gridDataTab2, setGridDataTab2] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
-  //Refreshing to update data Fix Here
+  // Refreshing to update data Fix Here
   // Fetch data for both tabs when the component mounts
   // useEffect(() => {
   //   // Set an interval to periodically fetch updated data (e.g., every 3 seconds)
@@ -896,7 +896,7 @@ const Table = () => {
           )}
         </DialogContent>
       </Dialog>
-      <Dialog open={isDialogOpen} onClose={closeDialog}>
+      <Dialog open={isDialogOpen} onClose={closeDialog} maxWidth="sm" fullWidth>
         <ExcelToJSON closeDialog={closeDialog} />
       </Dialog>
     </Box>

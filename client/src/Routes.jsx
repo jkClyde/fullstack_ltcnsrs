@@ -29,6 +29,9 @@ import jwtDecode from 'jwt-decode';
 
 
 
+
+
+
 let isAdmin = false;
 
 const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
@@ -101,8 +104,9 @@ const admin_route = [
       },
       {
         path: '/export',
-        element: <ExcelDataTransfer/>
+        element: <ExcelDataTransfer />
       },
+      
 ]
 
 const user_route = [
