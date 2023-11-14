@@ -111,7 +111,7 @@ const Statistics = () => {
       if (!dataProcessed) {
         data.forEach((patient) => {
           const latestQuarter = getLatestQuarter();
-          if (patient.quarter === latestQuarter.quarter && patient.year === latestQuarter.year) {
+          if ( patient.year === latestQuarter.year) {
             const lfa_status = lengthForAgeStatus(patient.birthdate, patient.height, patient.gender);
             const wfa_status = weightForAgeStatus(patient.birthdate, patient.weight, patient.gender);
             const wfl_status = weigthForLengthStatus(patient.birthdate, patient.height, patient.weight, patient.gender);
