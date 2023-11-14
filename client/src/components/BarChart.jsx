@@ -2,14 +2,28 @@ import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../theme";
 import { mockBarangayData as data } from "../data/mockData";
+import Statistics from "../scenes/Database/Calculations/Statistics";
+
+
+ // Define a custom color for the "normal" category
+ const customColors = {
+  scheme: 'nivo',
+  category: {
+    "Severly Underweight/Underweight": "#4cceac", // Replace with your color
+    "normal": "#db4f4a", // Replace with your color
+    "overweight": "#db4f4a", // Replace with your color
+  },
+};
 
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const statsData = Statistics();
 
   return (
     <ResponsiveBar
-      data={data}
+    
+      data={statsData.BarData}
       theme={{
         // added
         axis: {
@@ -39,13 +53,13 @@ const BarChart = ({ isDashboard = false }) => {
           },
         },
       }}
-      keys={["malnourished", "normal"]}
+      keys={[ "overweight",  "Underweight", "normal", ]}
       indexBy="barangay"
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
-      colors={{ scheme: "nivo" }}
+      colors={{ scheme: "set1" }}
       defs={[
         {
           id: "dots",

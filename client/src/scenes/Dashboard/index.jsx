@@ -18,6 +18,7 @@ import { useStateContext } from "../../contexts/ContextProvider";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import jwtDecode from 'jwt-decode';
+import Statistics from "../Database/Calculations/Statistics";
 
 
 
@@ -28,27 +29,29 @@ const Dashboard = () => {
   const [user, setUser] = useState({});
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const statsData = Statistics();
+
 
     // Categories and corresponding subtitles and progress values
     const data = {
       "Length for Age": [
-        {name: 'Severly Stunted', subtitle: 'Subtitle 1', progress: '10'},
-        {name: 'Stunted', subtitle: 'Subtitle 2', progress: '20'},
-        {name: 'Normal', subtitle: 'Subtitle 3', progress: '30'},
-        {name: 'Tall', subtitle: 'Subtitle 4', progress: '40'}
+        {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: statsData.lfa_severe},
+        {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: statsData.lfa_stunted},
+        {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: statsData.lfa_normal},
+        {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: statsData.lfa_tall}
       ],
       "Weight for Length": [
-        {name: 'Severly Wasted', subtitle: 'Subtitle 5', progress: '50'},
-        {name: 'Wasted', subtitle: 'Subtitle 6', progress: '60'},
-        {name: 'Normal', subtitle: 'Subtitle 7', progress: '70'},
-        {name: 'Overweight', subtitle: 'Subtitle 8', progress: '80'},
-        {name: 'Obese', subtitle: 'Subtitle 9', progress: '90'}
+        {name: 'Severly Wasted', progress: Math.round((statsData.wfl_severe / statsData.population) * 100), number: statsData.wfl_severe},
+        {name: 'Wasted', progress: Math.round((statsData.wfl_wasted / statsData.population) * 100), number: statsData.wfl_wasted},
+        {name: 'Normal', progress: Math.round((statsData.wfl_normal / statsData.population) * 100), number: statsData.wfl_normal},
+        {name: 'Overweight', progress: Math.round((statsData.wfl_overweight / statsData.population) * 100), number: statsData.wfl_overweight},
+        {name: 'Obese', progress: Math.round((statsData.wfl_obese / statsData.population) * 100), number: statsData.wfl_obese}
       ],
       "Weight for Age": [
-        {name: 'Severly Underweight', subtitle: 'Subtitle 10', progress: '100'},
-        {name: 'Underweight', subtitle: 'Subtitle 11', progress: '110'},
-        {name: 'Normal', subtitle: 'Subtitle 12', progress: '120'},
-        {name: 'Overweight', subtitle: 'Subtitle 13', progress: '130'}
+        {name: 'Severly Underweight', progress: Math.round((statsData.wfa_severe / statsData.population) * 100), number: statsData.wfa_severe},
+        {name: 'Underweight', progress: Math.round((statsData.wfa_underweight / statsData.population) * 100), number: statsData.wfa_underweight},
+        {name: 'Normal', progress: Math.round((statsData.wfa_normal / statsData.population) * 100), number: statsData.wfa_normal},
+        {name: 'Overweight', progress: Math.round((statsData.wfa_overweight / statsData.population) * 100), number: statsData.wfa_overweight}
       ],
     };
 
@@ -89,22 +92,26 @@ const Dashboard = () => {
 
 
       {/* DropDown */}
-      <Box>
-        <Select
-        value={selectedCategory}
-        onChange={handleCategoryChange}
-        sx={{
-          backgroundColor: colors.blueAccent[800],
-          color: colors.grey[100],
-          fontSize: "17px",
-          fontWeight: "bold",
-          padding: "0px 10px",
-          }}
-        >
-        {Object.keys(data).map(category => (
-          <MenuItem key={category} value={category}>{category}</MenuItem>
-        ))}
-      </Select>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="h3" sx={{ color: colors.redAccent[100], marginRight: '10px' }}>
+          📅 {statsData.latestQuarter.year} - {statsData.latestQuarter.quarter}  
+          </Typography>
+
+            <Select
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            sx={{
+              backgroundColor: colors.blueAccent[800],
+              color: colors.grey[100],
+              fontSize: "17px",
+              fontWeight: "bold",
+              padding: "0px 10px",
+              }}
+            >
+            {Object.keys(data).map(category => (
+              <MenuItem key={category} value={category}>{category}</MenuItem>
+            ))}
+          </Select>
         </Box>
       </Box>
 
@@ -119,7 +126,6 @@ const Dashboard = () => {
         {data[selectedCategory].map((item, index) => (
         <Box
           gridColumn="span 3"
-          // backgroundColor="#D7816A"
           display="flex"
           alignItems="center"
           justifyContent="center"
@@ -131,9 +137,12 @@ const Dashboard = () => {
             title={item.name}
             subtitle={item.subtitle}
             progress={item.progress}
+            number = {item.number}
           />
         </Box>
         ))}
+
+
 
         {/* ROW 2 */}
         <Box
@@ -223,7 +232,7 @@ const Dashboard = () => {
               color={colors.greenAccent[500]}
               sx={{ mt: "15px" }}
             >
-              13,420 total children monitored
+              {statsData.population} total children monitored
             </Typography>
             <Typography>For the 16 Baranngays of La Trinidad</Typography>
           </Box>

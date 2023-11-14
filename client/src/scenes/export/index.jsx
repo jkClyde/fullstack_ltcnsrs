@@ -6,6 +6,7 @@ import { styled } from '@mui/system';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import Box from '@mui/material/Box';
 
+
 const exportToExcel2 = (childData) => {
   if (!Array.isArray(childData)) {
     console.error('Invalid data format. Expected an array.');
@@ -172,7 +173,29 @@ const exportToExcel = (childData) => {
           formattedItem[excelKey] = item[dataKey] === 'Male' ? 'M' : 'F';
         } else if (dataKey === 'pt') {
           formattedItem[excelKey] = item[dataKey] === 'Permanent' ? 'P' : 'T';
-        } else {
+        } else if (dataKey === 'birthdate'  ) {
+           // Reformat date from YYYY-MM-DD to DD-MM-YYYY
+          const dobParts = item[dataKey].split('-');
+          formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
+        }
+        else if (dataKey === 'dow' && item[dataKey]) {
+          // Reformat date from YYYY-MM-DD to DD-MM-YYYY
+          const dobParts = item[dataKey].split('-');
+          formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
+        }
+        else if (dataKey === 'vac' && item[dataKey]) {
+          // Reformat date from YYYY-MM-DD to DD-MM-YYYY
+          const dobParts = item[dataKey].split('-');
+          formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
+        }
+        else if (dataKey === 'purga' && item[dataKey]) {
+          // Reformat date from YYYY-MM-DD to DD-MM-YYYY
+          console.log([excelKey] = item[dataKey])
+          const dobParts = item[dataKey].split('-');
+          formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
+          
+        }
+        else {
           formattedItem[excelKey] = item[dataKey];
         }
       }
@@ -235,6 +258,7 @@ function App() {
         }));
 
         setChildData(mergedData);
+        console.log(childData)
       } catch (error) {
         console.error('Error fetching data:', error);
       }

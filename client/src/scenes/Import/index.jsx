@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { format, parse } from 'date-fns'; // Import the required functions
+
 import * as XLSX from 'xlsx';
 
 
@@ -10,6 +12,30 @@ function formatDateToYYYYMMDD(excelDate) {
   const day = date.getDate().toString().padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+// const formatDateToYYYYMMDD = (excelDate) => {
+//   // Assuming the Excel date format is 'MM/DD/YYYY'
+//   const originalFormat = 'MM/dd/yyyy';
+
+//   try {
+//     // Parse the original date with the specified format
+//     const parsedDate = parse(excelDate, originalFormat, new Date());
+
+//     // Check if the parsed date is valid
+//     if (isNaN(parsedDate)) {
+//       throw new Error('Invalid date format');
+//     }
+
+//     // Format the parsed date to 'YYYY/MM/DD'
+//     const targetFormat = 'yyyy/MM/dd';
+//     const formattedDate = format(parsedDate, targetFormat);
+
+//     return formattedDate;
+//   } catch (error) {
+//     console.error('Error formatting date:', error.message);
+//     return null; // Or handle the error as needed in your application
+//   }
+// };
 
 function mapGender(gender) {
   if (gender === 'M') {

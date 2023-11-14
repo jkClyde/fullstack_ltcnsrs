@@ -1,4 +1,306 @@
 import { tokens } from "../theme";
+import Statistics from "../scenes/Database/Calculations/Statistics";
+
+
+// function statsData(){
+//   const data =  Statistics();
+//   return data;
+// }
+
+
+// const LineData = [
+//   {
+//     id: "Severly Underweight",
+//     color: tokens("dark").greenAccent[500],
+//     data: [
+//       {
+//         x: "Alapang",
+//         y: statsData.barangayData['Alapang']?.severe,
+//       },
+//       {
+//         x: "Alno",
+//         y: statsData.barangayData['Alno']?.severe,
+//       },
+//       {
+//         x: "Ambiong",
+//         y: statsData.barangayData['Ambiong']?.severe,
+//       },
+//       {
+//         x: "Balili",
+//         y: statsData.barangayData['Balili']?.severe,
+//       },
+//       {
+//         x: "Bahong",
+//         y: statsData.barangayData['Bahong']?.severe,
+//       },
+//       {
+//         x: "Beckel",
+//         y: statsData.barangayData['Beckel']?.severe,
+//       },
+//       {
+//         x: "Betag",
+//         y: statsData.barangayData['Betag']?.severe,
+//       },
+//       {
+//         x: "Bineng",
+//         y: statsData.barangayData['Bineng']?.severe,
+//       },
+//       {
+//         x: "Cruz",
+//         y: statsData.barangayData['Cruz']?.severe,
+//       },
+//       {
+//         x: "Lubas",
+//         y: statsData.barangayData['Lubas']?.severe,
+//       },
+//       {
+//         x: "Pico",
+//         y: statsData.barangayData['Pico']?.severe,
+//       },
+//       {
+//         x: "Poblacion",
+//         y: statsData.barangayData['Poblacion']?.severe,
+//       },
+//       {
+//         x: "Puguis",
+//         y: statsData.barangayData['Puguis']?.severe,
+//       },
+//       {
+//         x: "Shilan",
+//         y: statsData.barangayData['Shilan']?.severe,
+//       },
+//       {
+//         x: "Tawang ",
+//         y: statsData.barangayData['Tawang']?.severe,
+//       },
+//       {
+//         x: "Wangal ",
+//         y: statsData.barangayData['Wangal']?.severe,
+//       },
+//     ],
+//   },
+//   {
+//     id: "Underweight",
+//     color: tokens("dark").blueAccent[300],
+//     data: [
+//       {
+//         x: "Alapang",
+//         y: statsData.barangayData['Alapang']?.underweight,
+//       },
+//       {
+//         x: "Alno",
+//         y: statsData.barangayData['Alno']?.underweight,
+//       },
+//       {
+//         x: "Ambiong",
+//         y: statsData.barangayData['Ambiong']?.underweight,
+//       },
+//       {
+//         x: "Balili",
+//         y: statsData.barangayData['Balili']?.underweight,
+//       },
+//       {
+//         x: "Bahong",
+//         y: statsData.barangayData['Bahong']?.underweight,
+//       },
+//       {
+//         x: "Beckel",
+//         y: statsData.barangayData['Beckel']?.underweight,
+//       },
+//       {
+//         x: "Betag",
+//         y: statsData.barangayData['Betag']?.underweight,
+//       },
+//       {
+//         x: "Bineng",
+//         y: statsData.barangayData['Bineng']?.underweight,
+//       },
+//       {
+//         x: "Cruz",
+//         y: statsData.barangayData['Cruz']?.underweight,
+//       },
+//       {
+//         x: "Lubas",
+//         y: statsData.barangayData['Lubas']?.underweight,
+//       },
+//       {
+//         x: "Pico",
+//         y: statsData.barangayData['Pico']?.underweight,
+//       },
+//       {
+//         x: "Poblacion",
+//         y: statsData.barangayData['Poblacion']?.underweight,
+//       },
+//       {
+//         x: "Puguis",
+//         y: statsData.barangayData['Puguis']?.underweight,
+//       },
+//       {
+//         x: "Shilan",
+//         y: statsData.barangayData['Shilan']?.underweight,
+//       },
+//       {
+//         x: "Tawang ",
+//         y: statsData.barangayData['Tawang']?.underweight,
+//       },
+//       {
+//         x: "Wangal ",
+//         y: statsData.barangayData['Wangal']?.underweight,
+//       },
+//     ],
+//   },
+//   {
+//     id: "Normal",
+//     color: tokens("dark").redAccent[200],
+//     data: [
+//       {
+//         x: "Alapang",
+//         y: statsData.barangayData['Alapang']?.normal,
+//       },
+//       {
+//         x: "Alno",
+//         y: statsData.barangayData['Alno']?.normal,
+//       },
+//       {
+//         x: "Ambiong",
+//         y: statsData.barangayData['Ambiong']?.normal,
+//       },
+//       {
+//         x: "Balili",
+//         y: statsData.barangayData['Balili']?.normal,
+//       },
+//       {
+//         x: "Bahong",
+//         y: statsData.barangayData['Bahong']?.normal,
+//       },
+//       {
+//         x: "Beckel",
+//         y: statsData.barangayData['Beckel']?.normal,
+//       },
+//       {
+//         x: "Betag",
+//         y: statsData.barangayData['Betag']?.normal,
+//       },
+//       {
+//         x: "Bineng",
+//         y: statsData.barangayData['Bineng']?.normal,
+//       },
+//       {
+//         x: "Cruz",
+//         y: statsData.barangayData['Cruz']?.normal,
+//       },
+//       {
+//         x: "Lubas",
+//         y: statsData.barangayData['Lubas']?.normal,
+//       },
+//       {
+//         x: "Pico",
+//         y: statsData.barangayData['Pico']?.normal,
+//       },
+//       {
+//         x: "Poblacion",
+//         y: statsData.barangayData['Poblacion']?.normal,
+//       },
+//       {
+//         x: "Puguis",
+//         y: statsData.barangayData['Puguis']?.normal,
+//       },
+//       {
+//         x: "Shilan",
+//         y: statsData.barangayData['Shilan']?.normal,
+//       },
+//       {
+//         x: "Tawang ",
+//         y: statsData.barangayData['Tawang']?.normal,
+//       },
+//       {
+//         x: "Wangal ",
+//         y: statsData.barangayData['Wangal']?.normal,
+//       },
+//     ],
+//   },
+//   {
+//       id: "Overweight",
+//       color: tokens("dark").redAccent[200],
+//       data: [
+//         {
+//           x: "Alapang",
+//           y: statsData.barangayData['Alapang']?.overweight,
+//         },
+//         {
+//           x: "Alno",
+//           y: statsData.barangayData['Alno']?.overweight,
+//         },
+//         {
+//           x: "Ambiong",
+//           y: statsData.barangayData['Balili']?.overweight,
+//         },
+//         {
+//           x: "Balili",
+//           y: statsData.barangayData['Balili']?.overweight,
+//         },
+//         {
+//           x: "Bahong",
+//           y: statsData.barangayData['Bahong']?.overweight,
+//         },
+//         {
+//           x: "Beckel",
+//           y: statsData.barangayData['Beckel']?.overweight,
+//         },
+//         {
+//           x: "Betag",
+//           y: statsData.barangayData['Betag']?.overweight,
+//         },
+//         {
+//           x: "Bineng",
+//           y: statsData.barangayData['Bineng']?.overweight,
+//         },
+//         {
+//           x: "Cruz",
+//           y: statsData.barangayData['Cruz']?.overweight,
+//         },
+//         {
+//           x: "Lubas",
+//           y: statsData.barangayData['Lubas']?.overweight,
+//         },
+//         {
+//           x: "Pico",
+//           y: statsData.barangayData['Pico']?.overweight,
+//         },
+//         {
+//           x: "Poblacion",
+//           y: statsData.barangayData['Poblacion']?.overweight,
+//         },
+//         {
+//           x: "Puguis",
+//           y: statsData.barangayData['Puguis']?.overweight,
+//         },
+//         {
+//           x: "Shilan",
+//           y: statsData.barangayData['Shilan']?.overweight,
+//         },
+//         {
+//           x: "Tawang ",
+//           y: statsData.barangayData['Tawang']?.overweight,
+//         },
+//         {
+//           x: "Wangal ",
+//           y: statsData.barangayData['Wangal']?.overweight,
+//         },
+//       ],
+//     },
+// ];
+
+
+
+
+
+
+
+
+
+
+
 
 function getRandomInitial() {
   const initials = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -682,6 +984,17 @@ export const mockPieData = [
     color: "hsl(360, 70%, 50%)",
   },
 ];
+
+
+//----------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 
 export const mockLineData = [

@@ -1,10 +1,11 @@
 import { calculateAgeInMonths } from "./calculateAgeInMonths";
 import lengthForAgeData from "../StatusReference/lengthForAge.json";
+import { useState } from "react";
 
-//  // Read the JSON data using fetch
-// const response = await fetch('weightForAge.json');
-// const weightForAgeData = await response.json();
-// Add a function to calculate "Weight For Age Status"
+
+
+
+
 const lengthForAgeStatus = (birthdate, length, gender) => {
   const ageInMonths = calculateAgeInMonths(birthdate);
   const lengthForAgeGender = lengthForAgeData[gender];

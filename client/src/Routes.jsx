@@ -26,7 +26,7 @@ import ExcelDataTransfer from "./scenes/export";
 import { useStateContext } from "./contexts/ContextProvider";
 import jwtDecode from 'jwt-decode';
 
-
+import Statistics from "./scenes/Database/Calculations/Statistics";
 
 
 
@@ -105,6 +105,10 @@ const admin_route = [
       {
         path: '/export',
         element: <ExcelDataTransfer />
+      },
+      {
+        path: '/stat',
+        element: <Statistics />
       },
       
 ]
