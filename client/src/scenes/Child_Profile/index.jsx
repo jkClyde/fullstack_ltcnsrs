@@ -255,30 +255,6 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   //{Update Button}//
   const handleUpdateClick = () => {
-    // setGridData((prevGridData) => {
-    //   return prevGridData.map((rowData) => {
-    //     if (rowData.id === child.id) {
-    //       return {
-    //         ...rowData,
-    //         fullName: editedChild.fullName,
-    //         address: editedChild.address,
-    //         pt: editedChild.pt,
-    //         gender: editedChild.gender,
-    //         birthdate: editedChild.birthdate,
-    //         aim: editedChild.aim,
-    //         parentName: editedChild.parentName,
-    //         occupation: editedChild.occupation,
-    //         relationship: editedChild.relationship,
-    //         ethnicity: editedChild.ethnicity,
-    //         barangay: editedChild.barangay,
-    //       };
-    //     }
-
-    //     return rowData;
-    //   });
-    // });
-
-    // Now, send a PUT request to update the primary child data
     const updatedPrimaryChildData = {
       fullName: editedChild.fullName,
       address: editedChild.address,
@@ -350,10 +326,7 @@ const ChildProfile = ({ child, updateChildData }) => {
             );
           });
 
-          
         setIsEditing(false);
-
-  
 
         setIsSnackbarOpen(true);
       })
@@ -368,7 +341,7 @@ const ChildProfile = ({ child, updateChildData }) => {
   };
   const handleCancelClick = () => {
     setIsEditing(false);
-    setEditedChild({ 
+    setEditedChild({
       ...child,
       weightForAge: weightForAgeStatus(
         child.birthdate,
@@ -385,7 +358,8 @@ const ChildProfile = ({ child, updateChildData }) => {
         child.height,
         child.weight,
         child.gender
-      ), });
+      ),
+    });
   };
 
   const handleInputChange = (e) => {
@@ -407,7 +381,11 @@ const ChildProfile = ({ child, updateChildData }) => {
           ...prevChild,
           [name]: value,
         };
-      } else if (name === "dow" || name === "deworming1" || name === "deworming2") {
+      } else if (
+        name === "dow" ||
+        name === "deworming1" ||
+        name === "deworming2"
+      ) {
         updatedChild = {
           ...prevChild,
           [name]: value,
@@ -503,9 +481,28 @@ const ChildProfile = ({ child, updateChildData }) => {
             weightForAge: childHealthInfo.weightForAge || "",
             lengthForAge: childHealthInfo.lengthForAge || "",
             weightForLength: childHealthInfo.weightForLength || "",
-            weightForAge: childHealthInfo.weightForAge || weightForAgeStatus(prevChild.birthdate, childHealthInfo.weight, prevChild.gender),
-            lengthForAge: childHealthInfo.lengthForAge || lengthForAgeStatus(prevChild.birthdate, childHealthInfo.height, prevChild.gender),
-            weightForLength: childHealthInfo.weightForLength || weightForLengthStatus(prevChild.birthdate, childHealthInfo.height, childHealthInfo.weight, prevChild.gender),
+            weightForAge:
+              childHealthInfo.weightForAge ||
+              weightForAgeStatus(
+                prevChild.birthdate,
+                childHealthInfo.weight,
+                prevChild.gender
+              ),
+            lengthForAge:
+              childHealthInfo.lengthForAge ||
+              lengthForAgeStatus(
+                prevChild.birthdate,
+                childHealthInfo.height,
+                prevChild.gender
+              ),
+            weightForLength:
+              childHealthInfo.weightForLength ||
+              weightForLengthStatus(
+                prevChild.birthdate,
+                childHealthInfo.height,
+                childHealthInfo.weight,
+                prevChild.gender
+              ),
           }));
         } else {
           // No data found for the selected quarter and year
@@ -557,7 +554,10 @@ const ChildProfile = ({ child, updateChildData }) => {
     <Box mt="10px">
       {/* Add this line for debugging */}
       {isEditing ? (
-        (name === "birthdate" || name === "dow" || name === "deworming1" || name === "deworming2") ? (
+        name === "birthdate" ||
+        name === "dow" ||
+        name === "deworming1" ||
+        name === "deworming2" ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={label}
@@ -607,7 +607,6 @@ const ChildProfile = ({ child, updateChildData }) => {
       )}
     </Box>
   );
-  
 
   const renderChildProfile = () => (
     <Grid container columnSpacing={2}>
@@ -645,7 +644,6 @@ const ChildProfile = ({ child, updateChildData }) => {
             </Box>
           </Grid>
         )}
-        
       </Grid>
       <Grid item xs={4}>
         {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
@@ -679,7 +677,9 @@ const ChildProfile = ({ child, updateChildData }) => {
           // Render the gender field only when editing
           <Box mt="10px">
             <FormControl fullWidth>
-              <InputLabel id="fic-select-label">Fully Immunized Child</InputLabel>
+              <InputLabel id="fic-select-label">
+                Fully Immunized Child
+              </InputLabel>
               <Select
                 labelId="fic-select-label"
                 label="Fully Immunized Child"
@@ -688,7 +688,7 @@ const ChildProfile = ({ child, updateChildData }) => {
                 value={editedChild.fic}
                 onChange={handleInputChange}
               >
-                <MenuItem value="Ye">Yes</MenuItem>
+                <MenuItem value="Yes">Yes</MenuItem>
                 <MenuItem value="No">No</MenuItem>
               </Select>
             </FormControl>
@@ -741,7 +741,11 @@ const ChildProfile = ({ child, updateChildData }) => {
   const renderParentInformation = () => (
     <Grid container spacing={2}>
       <Grid item xs={4}>
-        {renderTextField("Caregiver Name", "parentName", editedChild.parentName)}
+        {renderTextField(
+          "Caregiver Name",
+          "parentName",
+          editedChild.parentName
+        )}
         {/* Replace the "Parent-Child Relation" TextField with a Select */}
         {isEditing ? (
           <Box mt="16px">
@@ -797,7 +801,12 @@ const ChildProfile = ({ child, updateChildData }) => {
         ) : (
           // Display ethnicity information when not editing
           <Box>
-            <Box mt="10px" padding="10px" borderRadius="5px" border="1px solid grey">
+            <Box
+              mt="10px"
+              padding="10px"
+              borderRadius="5px"
+              border="1px solid grey"
+            >
               <Typography variant="h6">Ethnicity:</Typography>
               <Typography variant="body1" style={{ fontWeight: "bold" }}>
                 {editedChild.ethnicity}
@@ -809,7 +818,7 @@ const ChildProfile = ({ child, updateChildData }) => {
 
       <Grid item xs={4}>
         {renderTextField("Address", "address", editedChild.address)}
-        
+
         {isEditing ? (
           // Render the field only when editing
           <Box mt="16px">
@@ -844,8 +853,8 @@ const ChildProfile = ({ child, updateChildData }) => {
       </Grid>
 
       <Grid item xs={4}>
-      <Box mt="10px">
-        {isEditing ? (
+        <Box mt="10px">
+          {isEditing ? (
             // Render the barangay field only when editing
             <Box mt="10px">
               <FormControl fullWidth variant="outlined">
@@ -860,27 +869,25 @@ const ChildProfile = ({ child, updateChildData }) => {
                   variant="outlined"
                 >
                   {barangayOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>
           ) : (
             // Display barangay information when not editing
-                <Box>
-                  <Box padding="10px" borderRadius="5px" border="1px solid grey">
-                    <Typography variant="h6">Barangay:</Typography>
-                    <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                      {editedChild.barangay}
-                    </Typography>
-                  </Box>
-                </Box>
-        
-        
+            <Box>
+              <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                <Typography variant="h6">Barangay:</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild.barangay}
+                </Typography>
+              </Box>
+            </Box>
           )}
-      </Box>
+        </Box>
         <Box mt="10px">
           {renderTextField(
             "Caregiver's Occupation",
@@ -888,7 +895,6 @@ const ChildProfile = ({ child, updateChildData }) => {
             editedChild.occupation
           )}
         </Box>
-        
       </Grid>
     </Grid>
   );

@@ -32,10 +32,10 @@ const Form = () => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
     if (dateType === "birthdate") {
       setSelectedBirthdate(formattedDate);
-    } 
+    }
     // else if (dateType === "vaccination") {
     //   setSelectedVaccinationDate(formattedDate);
-    // } 
+    // }
     else if (dateType === "dow") {
       setSelectedDOW(formattedDate);
     } else if (dateType === "deworming1") {
@@ -75,14 +75,8 @@ const Form = () => {
     const formattedDewormingDate2 = selectedDewormingDate2
       ? dayjs(selectedDewormingDate2).format("YYYY-MM-DD")
       : null;
-    // const formattedVaccinationDate = selectedVaccinationDate
-    //   ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
-    //   : null;
 
-    // Convert selectedDOW to a Date object
     const dowDate = new Date(selectedDOW);
-
-    // Determine the quarter based on the selectedDOW
     let quarter;
 
     if (dowDate.getMonth() >= 0 && dowDate.getMonth() <= 2) {
@@ -112,9 +106,9 @@ const Form = () => {
       weight: values.weight,
       height: values.height,
       muac: values.muac,
+      fic: values.fic,
       deworming1: formattedDewormingDate1,
       deworming2: formattedDewormingDate2,
-      // vac: formattedVaccinationDate,
       bpe: values.bpe,
       disability: values.disability,
     };
@@ -504,7 +498,9 @@ const Form = () => {
                 label="1st Deworming"
                 name="deworming1"
                 value={selectedDewormingDate1}
-                onChange={(name, date) => handleDateChange(name, date, "deworming1")}
+                onChange={(name, date) =>
+                  handleDateChange(name, date, "deworming1")
+                }
                 error={!!touched.deworming1 && !!errors.deworming1}
                 helperText={touched.deworming1 && errors.deworming1}
                 className="dateInput" // You can add custom CSS classes if needed
@@ -515,7 +511,9 @@ const Form = () => {
                 label="2nd Deworming"
                 name="deworming2"
                 value={selectedDewormingDate2}
-                onChange={(name, date) => handleDateChange(name, date, "deworming2")}
+                onChange={(name, date) =>
+                  handleDateChange(name, date, "deworming2")
+                }
                 error={!!touched.deworming2 && !!errors.deworming2}
                 helperText={touched.deworming2 && errors.deworming2}
                 className="dateInput" // You can add custom CSS classes if needed

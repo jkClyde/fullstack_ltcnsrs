@@ -15,6 +15,10 @@ bpe_choices = (
     ('Yes', 'Yes'),
     ('No', 'No')
 )
+fic_choices = (
+    ('Yes', 'Yes'),
+    ('No', 'No')
+)
 relationship_choices = (
     ('Mother', 'Mother'),
     ('Father', 'Father'),
@@ -127,8 +131,9 @@ class ChildHealthInfo(models.Model):
     weight = models.FloatField(default=0)
     height = models.FloatField(default=0)
     muac = models.FloatField(default=0)
-    purga = models.DateField(null=True, blank=True)
-    vac = models.DateField(null=True, blank=True)
+    deworming1 = models.DateField(null=True, blank=True)
+    deworming2 = models.DateField(null=True, blank=True)
+    fic = models.CharField(max_length=10, choices=fic_choices, default='no')
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
     disability = models.CharField(max_length=50, blank=True, default='')
     child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
