@@ -10,6 +10,7 @@ import TrafficIcon from "@mui/icons-material/Traffic";
 import Header from "../../components/Header";
 import LineChart from "../../components/LineChart";
 import GeographyChart from "../../components/GeographyChart";
+import PieChart from "../../components/PieChart";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
@@ -218,7 +219,7 @@ const Dashboard = () => {
           p="30px"
         >
           <Typography variant="h5" fontWeight="600">
-            Progress
+            Monitoring
           </Typography>
           <Box
             display="flex"
@@ -234,7 +235,7 @@ const Dashboard = () => {
             >
               {statsData.population} total children monitored
             </Typography>
-            <Typography>For the 16 Baranngays of La Trinidad</Typography>
+            <Typography>For the 16 Barangays of La Trinidad</Typography>
           </Box>
         </Box>
         <Box
@@ -264,10 +265,10 @@ const Dashboard = () => {
             fontWeight="600"
             sx={{ marginBottom: "15px" }}
           >
-            La Trinidad Map
+            Population per Barangay
           </Typography>
           <Box height="200px">
-            <GeographyChart isDashboard={true} />
+            <PieChart isDashboard={true} />
           </Box>
         </Box>
       </Box>

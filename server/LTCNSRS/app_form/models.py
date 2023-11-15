@@ -18,7 +18,8 @@ bpe_choices = (
 relationship_choices = (
     ('Mother', 'Mother'),
     ('Father', 'Father'),
-    ('Guardian', 'Guardian')
+    ('Guardian', 'Guardian'),
+    ('', 'not specified')
 )
 ethnicity_choices = (
     ('Aggay', 'Aggay'),

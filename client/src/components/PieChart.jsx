@@ -2,13 +2,16 @@ import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
 import { mockPieData as data } from "../data/mockData";
+import Statistics from "../scenes/Database/Calculations/Statistics";
 
-const PieChart = () => {
+const PieChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const statsData = Statistics();
+
   return (
     <ResponsivePie
-      data={data}
+      data={statsData.pieData}
       theme={{
         axis: {
           domain: {
@@ -81,7 +84,7 @@ const PieChart = () => {
           spacing: 10,
         },
       ]}
-      legends={[
+      legends={isDashboard ? [] : [
         {
           anchor: "bottom",
           direction: "row",

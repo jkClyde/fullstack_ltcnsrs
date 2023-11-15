@@ -576,7 +576,7 @@ const BarData = [
   ];
 
   
-  const mockPieData = [
+  const pieData = [
     {
       id: "Baranggay Alapang",
       label: "Baranggay Alapang",
@@ -586,91 +586,91 @@ const BarData = [
     {
       id: "Alno",
       label: "Alno",
-      value: barangayData['Alapang']?.overweight+ barangayData['Alapang']?.severe + barangayData['Alapang']?.underweight+ barangayData['Alapang']?.normal,
+      value: barangayData['Alno']?.overweight+ barangayData['Alno']?.severe + barangayData['Alno']?.underweight+ barangayData['Alno']?.normal,
       color: "hsl(220, 70%, 50%)",
     },
     {
       id: "Ambiong",
       label: "Ambiong",
-      value: 400,
+      value: barangayData['Ambiong']?.overweight+ barangayData['Ambiong']?.severe + barangayData['Ambiong']?.underweight+ barangayData['Ambiong']?.normal,
       color: "hsl(230, 70%, 50%)",
     },
     {
       id: "Balili",
       label: "Balili",
-      value: 350,
+      value: barangayData['Balili']?.overweight+ barangayData['Balili']?.severe + barangayData['Balili']?.underweight+ barangayData['Balili']?.normal,
       color: "hsl(240, 70%, 50%)",
     },
     {
       id: "Bahong",
       label: "Bahong",
-      value: 450,
+      value: barangayData['Bahong']?.overweight+ barangayData['Bahong']?.severe + barangayData['Bahong']?.underweight+ barangayData['Bahong']?.normal,
       color: "hsl(250, 70%, 50%)",
     },
     {
       id: "Beckel",
       label: "Beckel",
-      value: 300,
+      value: barangayData['Beckel']?.overweight+ barangayData['Beckel']?.severe + barangayData['Beckel']?.underweight+ barangayData['Beckel']?.normal,
       color: "hsl(260, 70%, 50%)",
     },
     {
       id: "Betag",
       label: "Betag",
-      value: 420,
+      value: barangayData['Betag']?.overweight+ barangayData['Betag']?.severe + barangayData['Betag']?.underweight+ barangayData['Betag']?.normal,
       color: "hsl(270, 70%, 50%)",
     },
     {
       id: "Bineng",
       label: "Bineng",
-      value: 480,
+      value: barangayData['Bineng']?.overweight+ barangayData['Bineng']?.severe + barangayData['Bineng']?.underweight+ barangayData['Bineng']?.normal,
       color: "hsl(280, 70%, 50%)",
     },
     {
       id: "Cruz",
       label: "Cruz",
-      value: 380,
+      value: barangayData['Cruz']?.overweight+ barangayData['Cruz']?.severe + barangayData['Cruz']?.underweight+ barangayData['Cruz']?.normal,
       color: "hsl(290, 70%, 50%)",
     },
     {
       id: "Lubas",
       label: "Lubas",
-      value: 320,
+      value: barangayData['Lubas']?.overweight+ barangayData['Lubas']?.severe + barangayData['Lubas']?.underweight+ barangayData['Lubas']?.normal,
       color: "hsl(300, 70%, 50%)",
     },
     {
       id: "Pico",
       label: "Pico",
-      value: 380,
+      value: barangayData['Pico']?.overweight+ barangayData['Pico']?.severe + barangayData['Pico']?.underweight+ barangayData['Pico']?.normal,
       color: "hsl(310, 70%, 50%)",
     },
     {
       id: "Poblacion",
       label: "Poblacion",
-      value: 600,
+      value: barangayData['Poblacion']?.overweight+ barangayData['Poblacion']?.severe + barangayData['Poblacion']?.underweight+ barangayData['Poblacion']?.normal,
       color: "hsl(320, 70%, 50%)",
     },
     {
       id: "Puguis",
       label: "Puguis",
-      value: 420,
+      value: barangayData['Puguis']?.overweight+ barangayData['Puguis']?.severe + barangayData['Puguis']?.underweight+ barangayData['Puguis']?.normal,
       color: "hsl(330, 70%, 50%)",
     },
     {
       id: "Shilan",
       label: "Shilan",
-      value: 350,
+      value: barangayData['Shilan']?.overweight+ barangayData['Shilan']?.severe + barangayData['Shilan']?.underweight+ barangayData['Shilan']?.normal,
       color: "hsl(340, 70%, 50%)",
     },
     {
       id: "Tawang",
       label: "Tawang",
-      value: 550,
+      value: barangayData['Tawang']?.overweight+ barangayData['Tawang']?.severe + barangayData['Tawang']?.underweight+ barangayData['Tawang']?.normal,
       color: "hsl(350, 70%, 50%)",
     },
     {
       id: "Wangal",
       label: "Wangal",
-      value: 480,
+      value: barangayData['Wangal']?.overweight+ barangayData['Wangal']?.severe + barangayData['Wangal']?.underweight+ barangayData['Wangal']?.normal,
       color: "hsl(360, 70%, 50%)",
     },
   ];
@@ -702,6 +702,7 @@ const BarData = [
     barangayData,
     LineData,
     BarData,
+    pieData,
   };
 };
 

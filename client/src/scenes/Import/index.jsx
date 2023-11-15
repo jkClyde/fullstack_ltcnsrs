@@ -117,7 +117,7 @@ function ExcelToJSON() {
       "Name of Mothe/Father": "parentName",
       "Occupation": "occupation",
       // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
-      // "Relationship": "relationship",
+      "Relationship": "relationship",
       "Given" : "vac",
       "Ethnicity" : "ethnicity",
       "DoW": "dow",

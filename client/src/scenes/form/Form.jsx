@@ -339,8 +339,8 @@ const Form = () => {
                 onChange={(name, value) => {
                   setFieldValue(name, value);
                 }}
-                error={!!touched.relationship && !!errors.relationship}
-                helperText={touched.relationship && errors.relationship}
+                // error={!!touched.relationship && !!errors.relationship}
+                // helperText={touched.relationship && errors.relationship}
                 options={[
                   { value: "", label: "Select", isDisabled: true }, // Add a null option
                   { value: "Mother", label: "Mother" },
@@ -523,7 +523,7 @@ const checkoutSchema = yup.object().shape({
       "Should be in the format 'Last Name, First Name'"
     ),
   gender: yup.string().required("Gender is required"),
-  relationship: yup.string().required("Relationship is required"),
+  // relationship: yup.string().required("Relationship is required"),
   ethnicity: yup.string().required("Ethnicity is required"),
   address: yup
     .string()

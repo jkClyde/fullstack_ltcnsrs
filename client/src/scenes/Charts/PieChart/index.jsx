@@ -5,7 +5,7 @@ import PieChart from "../../../components/PieChart";
 const Pie = () => {
   return (
     <Box m="20px">
-      <Header title="Barangay Children Population"  />
+      <Header title="Children Population per Barangay Monitored"  />
       <Box height="75vh">
         <PieChart />
       </Box>
