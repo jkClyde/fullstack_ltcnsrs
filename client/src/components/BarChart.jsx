@@ -93,6 +93,8 @@ const BarChart = ({ isDashboard = false }) => {
         legend: isDashboard ? undefined : "country", // changed
         legendPosition: "middle",
         legendOffset: 32,
+        tickValues: [], // Set tickValues as an empty array to remove x-axis labels
+
       }}
       axisLeft={{
         tickSize: 5,

@@ -574,6 +574,108 @@ const BarData = [
       overweight:  barangayData['Wangal']?.overweight,
     },
   ];
+
+  
+  const mockPieData = [
+    {
+      id: "Baranggay Alapang",
+      label: "Baranggay Alapang",
+      value: barangayData['Alapang']?.overweight+ barangayData['Alapang']?.severe + barangayData['Alapang']?.underweight+ barangayData['Alapang']?.normal,
+      color: "hsl(210, 70%, 50%)",
+    },
+    {
+      id: "Alno",
+      label: "Alno",
+      value: barangayData['Alapang']?.overweight+ barangayData['Alapang']?.severe + barangayData['Alapang']?.underweight+ barangayData['Alapang']?.normal,
+      color: "hsl(220, 70%, 50%)",
+    },
+    {
+      id: "Ambiong",
+      label: "Ambiong",
+      value: 400,
+      color: "hsl(230, 70%, 50%)",
+    },
+    {
+      id: "Balili",
+      label: "Balili",
+      value: 350,
+      color: "hsl(240, 70%, 50%)",
+    },
+    {
+      id: "Bahong",
+      label: "Bahong",
+      value: 450,
+      color: "hsl(250, 70%, 50%)",
+    },
+    {
+      id: "Beckel",
+      label: "Beckel",
+      value: 300,
+      color: "hsl(260, 70%, 50%)",
+    },
+    {
+      id: "Betag",
+      label: "Betag",
+      value: 420,
+      color: "hsl(270, 70%, 50%)",
+    },
+    {
+      id: "Bineng",
+      label: "Bineng",
+      value: 480,
+      color: "hsl(280, 70%, 50%)",
+    },
+    {
+      id: "Cruz",
+      label: "Cruz",
+      value: 380,
+      color: "hsl(290, 70%, 50%)",
+    },
+    {
+      id: "Lubas",
+      label: "Lubas",
+      value: 320,
+      color: "hsl(300, 70%, 50%)",
+    },
+    {
+      id: "Pico",
+      label: "Pico",
+      value: 380,
+      color: "hsl(310, 70%, 50%)",
+    },
+    {
+      id: "Poblacion",
+      label: "Poblacion",
+      value: 600,
+      color: "hsl(320, 70%, 50%)",
+    },
+    {
+      id: "Puguis",
+      label: "Puguis",
+      value: 420,
+      color: "hsl(330, 70%, 50%)",
+    },
+    {
+      id: "Shilan",
+      label: "Shilan",
+      value: 350,
+      color: "hsl(340, 70%, 50%)",
+    },
+    {
+      id: "Tawang",
+      label: "Tawang",
+      value: 550,
+      color: "hsl(350, 70%, 50%)",
+    },
+    {
+      id: "Wangal",
+      label: "Wangal",
+      value: 480,
+      color: "hsl(360, 70%, 50%)",
+    },
+  ];
+  
+  
   
   
   
