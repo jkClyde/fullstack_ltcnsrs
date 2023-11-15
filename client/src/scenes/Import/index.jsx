@@ -106,25 +106,27 @@ function ExcelToJSON() {
 
     // Define a mapping object to map source keys to target keys
     const keyMapping = {
-      // "Name of Child": "fullName",
-      // // "Address": "address",
-      // "P/T": "pt",
-      // "Sex": "gender",
-      // "DoB": "birthdate",
-      // "AIM": "aim",
-      // "Name of Mothe/Father": "parentName",
-      // "Occupation": "occupation",
-      // // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
-      // "Relationship": "relationship",
-      // "Given" : "vac",
-      // "Ethnicity" : "ethnicity",
-      // "DoW": "dow",
-      // "Address" : "barangay",
-      // "Height" : "height",
-      // "Weight" : "weight",
-      // "DoW" : "dow",
-      // "__EMPTY" : "purga",
-      // // "Given": "purga",
+      "Name of Child": "fullName",
+      // "Address": "address",
+      "P/T": "pt",
+      "Sex": "gender",
+      "DoB": "birthdate",
+      "AIM": "aim",
+      "Name of Mothe/Father": "parentName",
+      "Occupation": "occupation",
+      // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
+      "Relationship": "relationship",
+      "Given" : "vac",
+      "Ethnicity" : "ethnicity",
+      "DoW": "dow",
+      "Address" : "barangay",
+      "Height" : "height",
+      "Weight" : "weight",
+      "DoW" : "dow",
+      "__EMPTY" : "purga",
+      // "Given": "purga",
+
+
 
       "NAME OF CHILD": "fullName",
       "SEX": "gender",

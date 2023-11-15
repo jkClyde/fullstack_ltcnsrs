@@ -59,6 +59,7 @@ const Statistics = () => {
   };
 
   const updateBarangayData = (barangay, category, incrementBy = 1) => {
+  try {
     setBarangayData((prev) => ({
       ...prev,
       [barangay]: {
@@ -66,7 +67,11 @@ const Statistics = () => {
         [category]: prev[barangay][category] + incrementBy,
       },
     }));
-  };
+  } catch (error) {
+    console.error('Error updating barangay data:', error);
+  }
+};
+
 
   const barangays = ['Alno','Alapang', 'Pico', 'Wangal', 'Cruz', 'Poblacion', 'Puguis','Ambiong', 'Ambiong', 'Balili', 'Bahong', 'Beckel','Bineng', 'Betag', 'Lubas', 'Shilan', 'Tawang'];
   useEffect(() => {
@@ -111,77 +116,109 @@ const Statistics = () => {
       if (!dataProcessed) {
         data.forEach((patient) => {
           const latestQuarter = getLatestQuarter();
-          if ( patient.year === latestQuarter.year) {
+          if ( patient) {
             const lfa_status = lengthForAgeStatus(patient.birthdate, patient.height, patient.gender);
             const wfa_status = weightForAgeStatus(patient.birthdate, patient.weight, patient.gender);
             const wfl_status = weigthForLengthStatus(patient.birthdate, patient.height, patient.weight, patient.gender);
             setPopulation((prev) => prev + 1)
 
-            switch (lfa_status) {
-              case 'Severely Stunted':
-                set_LFA_severe((prev) => prev + 1);
-                
-                break;
-              case 'Stunted':
-                set_LFA_stunted((prev) => prev + 1);
-                break;
-              case 'Normal':
-                set_LFA_normal((prev) => prev + 1);
-                break;
-              case 'Tall':
-                set_LFA_tall((prev) => prev + 1);
-                break;
-              default:
-                break;
+            try {
+              switch (lfa_status) {
+                case 'Severely Stunted':
+                  set_LFA_severe((prev) => prev + 1);
+                  break;
+                case 'Stunted':
+                  set_LFA_stunted((prev) => prev + 1);
+                  break;
+                case 'Normal':
+                  set_LFA_normal((prev) => prev + 1);
+                  break;
+                case 'Tall':
+                  set_LFA_tall((prev) => prev + 1);
+                  break;
+                default:
+                  break;
+              }
+            
+              switch (wfa_status) {
+                case 'Severely Underweight':
+                  set_WFA_severe((prev) => prev + 1);
+                  try {
+                    if (patient.barangay) {
+                      updateBarangayData(patient.barangay, 'severe');
+                    }
+                  } catch (error) {
+                    console.error('Error updating barangay data:', error);
+                  }
+                  break;
+            
+                case 'Underweight':
+                  set_WFA_underweight((prev) => prev + 1);
+                  try {
+                    if (patient.barangay) {
+                      updateBarangayData(patient.barangay, 'underweight');
+                    }
+                  } catch (error) {
+                    console.error('Error updating barangay data:', error);
+                  }
+                  break;
+            
+                case 'Normal':
+                  set_WFA_normal((prev) => prev + 1);
+                  try {
+                    if (patient.barangay) {
+                      updateBarangayData(patient.barangay, 'normal');
+                    }
+                  } catch (error) {
+                    console.error('Error updating barangay data:', error);
+                  }
+                  break;
+            
+                case 'Overweight':
+                  set_WFA_overweight((prev) => prev + 1);
+                  try {
+                    if (patient.barangay) {
+                      updateBarangayData(patient.barangay, 'overweight');
+                    }
+                  } catch (error) {
+                    console.error('Error updating barangay data:', error);
+                  }
+                  break;
+            
+                case 'Weight N/A':
+                  return;
+            
+                default:
+                  break;
+              }
+            
+              switch (wfl_status) {
+                case 'Severely Wasted':
+                  set_WFL_severe((prev) => prev + 1);
+                  break;
+                case 'Wasted':
+                  set_WFL_wasted((prev) => prev + 1);
+                  break;
+                case 'Normal':
+                  set_WFL_normal((prev) => prev + 1);
+                  break;
+                case 'Overweight':
+                  set_WFL_overweight((prev) => prev + 1);
+                  break;
+                case 'Obese':
+                  set_WFL_obese((prev) => prev + 1);
+                  break;
+                case 'Height not found':
+                  console.log('Height not found');
+                  break;
+                default:
+                  console.log(wfl_status);
+                  break;
+              }
+            } catch (error) {
+              console.error('An error occurred in the switch statements:', error);
             }
-
-            switch (wfa_status) {
-              case 'Severely Underweight':
-                set_WFA_severe((prev) => prev + 1);
-                updateBarangayData(patient.barangay, 'severe');
-
-                break;
-              case 'Underweight':
-                set_WFA_underweight((prev) => prev + 1);
-                updateBarangayData(patient.barangay, 'underweight');
-
-                break;
-              case 'Normal':
-                set_WFA_normal((prev) => prev + 1);
-                updateBarangayData(patient.barangay, 'normal');
-                break;
-              case 'Overweight':
-                set_WFA_overweight((prev) => prev + 1);
-                updateBarangayData(patient.barangay, 'overweight');
-
-                break;
-              default:
-                break;
-            }
-
-            switch (wfl_status) {
-              case 'Severely Wasted':
-                set_WFL_severe((prev) => prev + 1);
-                break;
-              case 'Wasted':
-                set_WFL_wasted((prev) => prev + 1);
-                break;
-              case 'Normal':
-                set_WFL_normal((prev) => prev + 1);
-                break;
-              case 'Overweight':
-                set_WFL_overweight((prev) => prev + 1);
-                break;
-              case 'Obese':
-                set_WFL_obese((prev) => prev + 1);
-                break;
-              case 'Height not found':
-                console.log('Height not found');
-                break;
-              default:
-                console.log(wfl_status);
-                break;
-            }
+            
           }
         });
 
