@@ -106,25 +106,25 @@ function ExcelToJSON() {
 
     // Define a mapping object to map source keys to target keys
     const keyMapping = {
-      "Name of Child": "fullName",
-      // "Address": "address",
-      "P/T": "pt",
-      "Sex": "gender",
-      "DoB": "birthdate",
-      "AIM": "aim",
-      "Name of Mothe/Father": "parentName",
-      "Occupation": "occupation",
-      // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
-      "Relationship": "relationship",
-      "Given" : "vac",
-      "Ethnicity" : "ethnicity",
-      "DoW": "dow",
-      "Address" : "barangay",
-      "Height" : "height",
-      "Weight" : "weight",
-      "DoW" : "dow",
-      "__EMPTY" : "purga",
-      // "Given": "purga",
+      // "Name of Child": "fullName",
+      // // "Address": "address",
+      // "P/T": "pt",
+      // "Sex": "gender",
+      // "DoB": "birthdate",
+      // "AIM": "aim",
+      // "Name of Mothe/Father": "parentName",
+      // "Occupation": "occupation",
+      // // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
+      // "Relationship": "relationship",
+      // // "Given" : "vac",
+      // "Ethnicity" : "ethnicity",
+      // "DoW": "dow",
+      // "Address" : "barangay",
+      // "Height" : "height",
+      // "Weight" : "weight",
+      // "DoW" : "dow",
+      // // "__EMPTY" : "purga",
+      // // "Given": "purga",
 
 
 
@@ -135,11 +135,12 @@ function ExcelToJSON() {
       "Address": "address",
       "P/T": "pt",
       "NAME OF FATHER/ MOTHER": "parentName",
-      "OCCUPATION OF FATHER/MOTHE": "occupation",
+      "OCCUPATION OF FATHER/MOTHER": "occupation",
       "HT" : "height",
       "WT" : "weight",
       "ADDRESS" : "address",
       "AIM": "aim",
+      "barangay" : "barangay",
     };
 
     reader.onload = (e) => {
@@ -150,8 +151,27 @@ function ExcelToJSON() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
 
-      // Convert the sheet data to JSON
-      const json = XLSX.utils.sheet_to_json(sheet, { range: 8 });
+
+      const line7Value = sheet['A7'].v;
+      const barangayName = line7Value.split(':')[1].trim();
+
+      // Capitalize the first letter and keep the rest in lowercase
+      const formattedBarangayName = barangayName.charAt(0).toUpperCase() + barangayName.slice(1).toLowerCase();
+
+      const barangayJSON = {
+        barangay: formattedBarangayName
+      };
+
+
+      
+      const json = XLSX.utils.sheet_to_json(sheet, { range: 8 }) ; 
+
+        // Add barangayJSON to each item in the json array
+      json.forEach(item => {
+        Object.assign(item, barangayJSON);
+      });
+
+     
       
       // Transform the JSON data using the key mapping and date formatting
       const transformedData = json.map((item) => {
@@ -170,6 +190,7 @@ function ExcelToJSON() {
             }
           }
         }
+        console.log(transformedItem)
         return transformedItem;
       });
 
@@ -240,6 +261,7 @@ function ExcelToJSON() {
           <pre style={{ marginTop: '10px' }}>
             {(success > 0 || failed > 0) && (
               <MessagePopup successCount={success} failureCount={failed} />
+              
             )}
           </pre>
         </div>
