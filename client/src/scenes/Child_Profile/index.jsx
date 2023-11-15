@@ -211,8 +211,9 @@ const ChildProfile = ({ child, updateChildData }) => {
           muac: editedChild.muac || null,
           disability: editedChild.disability || null,
           dow: editedChild.dow || null,
-          vac: editedChild.vac || null,
-          purga: editedChild.purga || null,
+          fic: editedChild.fic || null,
+          deworming1: editedChild.deworming1 || null,
+          deworming2: editedChild.deworming2 || null,
           weightForAge: editedChild.weightForAge || null,
           lengthForAge: editedChild.lengthForAge || null,
           weightForLength: editedChild.weightForLength || null,
@@ -320,8 +321,9 @@ const ChildProfile = ({ child, updateChildData }) => {
                 muac: editedChild.muac,
                 disability: editedChild.disability,
                 dow: editedChild.dow,
-                vac: editedChild.vac,
-                purga: editedChild.purga,
+                fic: editedChild.fic,
+                deworming1: editedChild.deworming1,
+                deworming2: editedChild.deworming2,
                 weightForAge: editedChild.weightForAge,
                 lengthForAge: editedChild.lengthForAge,
                 weightForLength: editedChild.weightForLength,
@@ -405,7 +407,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           ...prevChild,
           [name]: value,
         };
-      } else if (name === "dow" || name === "purga" || name === "vac") {
+      } else if (name === "dow" || name === "deworming1" || name === "deworming2") {
         updatedChild = {
           ...prevChild,
           [name]: value,
@@ -495,8 +497,9 @@ const ChildProfile = ({ child, updateChildData }) => {
             muac: childHealthInfo.muac || "",
             disability: childHealthInfo.disability || "",
             dow: childHealthInfo.dow || "",
-            vac: childHealthInfo.vac || "",
-            purga: childHealthInfo.purga || "",
+            fic: childHealthInfo.fic,
+            deworming1: childHealthInfo.deworming1 || "",
+            deworming2: childHealthInfo.deworming2 || "",
             weightForAge: childHealthInfo.weightForAge || "",
             lengthForAge: childHealthInfo.lengthForAge || "",
             weightForLength: childHealthInfo.weightForLength || "",
@@ -520,8 +523,9 @@ const ChildProfile = ({ child, updateChildData }) => {
             muac: "N/A",
             disability: "N/A",
             dow: "N/A",
-            vac: "N/A",
-            purga: "N/A",
+            fic: "N/A",
+            deworming1: "N/A",
+            deworming2: "N/A",
             weightForAge: "N/A",
             lengthForAge: "N/A",
             weightForLength: "N/A",
@@ -553,7 +557,7 @@ const ChildProfile = ({ child, updateChildData }) => {
     <Box mt="10px">
       {/* Add this line for debugging */}
       {isEditing ? (
-        (name === "birthdate" || name === "dow" || name === "vac" || name === "purga") ? (
+        (name === "birthdate" || name === "dow" || name === "deworming1" || name === "deworming2") ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={label}
@@ -665,12 +669,45 @@ const ChildProfile = ({ child, updateChildData }) => {
         {renderTextField("Height", "height", editedChild.height, "cm")}
         {renderTextField("MUAC", "muac", editedChild.muac, "cm")}
         {renderTextField("Disability", "disability", editedChild.disability)}
+        {renderTextField("Bilateral Pitting Edema", "bpe", editedChild.bpe)}
       </Grid>
 
       <Grid item xs={4}>
         {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
-        {renderTextField("Vaccination", "vac", editedChild.vac)}
-        {renderTextField("Purga", "purga", editedChild.purga)}
+        {/* {renderTextField("Fully Immunized Child", "fic", editedChild.fic)} */}
+        {isEditing ? (
+          // Render the gender field only when editing
+          <Box mt="10px">
+            <FormControl fullWidth>
+              <InputLabel id="fic-select-label">Fully Immunized Child</InputLabel>
+              <Select
+                labelId="fic-select-label"
+                label="Fully Immunized Child"
+                id="fic-select"
+                name="fic"
+                value={editedChild.fic}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="Ye">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        ) : (
+          // Display gender information when not editing
+          <Grid item xs={12}>
+            <Box>
+              <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                <Typography variant="h6">Fully Immunized Child</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild.fic}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        )}
+        {renderTextField("1st Deworming", "deworming1", editedChild.deworming1)}
+        {renderTextField("2nd Deworming", "deworming2", editedChild.deworming2)}
       </Grid>
       <Divider
         orientation="vertical"

@@ -21,9 +21,10 @@ const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedBirthdate, setSelectedBirthdate] = useState(null);
-  const [selectedVaccinationDate, setSelectedVaccinationDate] = useState(null);
+  // const [selectedVaccinationDate, setSelectedVaccinationDate] = useState(null);
   const [selectedDOW, setSelectedDOW] = useState(null);
-  const [selectedPurgaDate, setSelectedPurgaDate] = useState(null);
+  const [selectedDewormingDate1, setselectedDewormingDate1] = useState(null);
+  const [selectedDewormingDate2, setselectedDewormingDate2] = useState(null);
   const notify = () => toast.success("Child Data added successfully!");
   const [existingEntries, setExistingEntries] = useState([]);
 
@@ -31,12 +32,16 @@ const Form = () => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
     if (dateType === "birthdate") {
       setSelectedBirthdate(formattedDate);
-    } else if (dateType === "vaccination") {
-      setSelectedVaccinationDate(formattedDate);
-    } else if (dateType === "dow") {
+    } 
+    // else if (dateType === "vaccination") {
+    //   setSelectedVaccinationDate(formattedDate);
+    // } 
+    else if (dateType === "dow") {
       setSelectedDOW(formattedDate);
-    } else if (dateType === "purga") {
-      setSelectedPurgaDate(formattedDate);
+    } else if (dateType === "deworming1") {
+      setselectedDewormingDate1(formattedDate);
+    } else if (dateType === "deworming2") {
+      setselectedDewormingDate2(formattedDate);
     } else if (dateType === "current_date") {
       setSelectedCurrentDate(formattedDate);
     }
@@ -64,12 +69,15 @@ const Form = () => {
     const formattedDOW = selectedDOW
       ? dayjs(selectedDOW).format("YYYY-MM-DD")
       : null;
-    const formattedPurgaDate = selectedPurgaDate
-      ? dayjs(selectedPurgaDate).format("YYYY-MM-DD")
+    const formattedDewormingDate1 = selectedDewormingDate1
+      ? dayjs(selectedDewormingDate1).format("YYYY-MM-DD")
       : null;
-    const formattedVaccinationDate = selectedVaccinationDate
-      ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
+    const formattedDewormingDate2 = selectedDewormingDate2
+      ? dayjs(selectedDewormingDate2).format("YYYY-MM-DD")
       : null;
+    // const formattedVaccinationDate = selectedVaccinationDate
+    //   ? dayjs(selectedVaccinationDate).format("YYYY-MM-DD")
+    //   : null;
 
     // Convert selectedDOW to a Date object
     const dowDate = new Date(selectedDOW);
@@ -104,8 +112,9 @@ const Form = () => {
       weight: values.weight,
       height: values.height,
       muac: values.muac,
-      purga: formattedPurgaDate,
-      vac: formattedVaccinationDate,
+      deworming1: formattedDewormingDate1,
+      deworming2: formattedDewormingDate2,
+      // vac: formattedVaccinationDate,
       bpe: values.bpe,
       disability: values.disability,
     };
@@ -162,8 +171,9 @@ const Form = () => {
           resetForm();
           setSelectedBirthdate(null);
           setSelectedDOW(null);
-          setSelectedVaccinationDate(null);
-          setSelectedPurgaDate(null);
+          // setSelectedVaccinationDate(null);
+          setselectedDewormingDate1(null);
+          setselectedDewormingDate2(null);
           setSelectedDate(null);
         } else {
           alert("Failed to save quarter data.");
@@ -183,9 +193,10 @@ const Form = () => {
       resetForm();
       setSelectedDate(null);
       setSelectedBirthdate(null);
-      setSelectedVaccinationDate(null);
+      // setSelectedVaccinationDate(null);
       setSelectedDOW(null);
-      setSelectedPurgaDate(null);
+      setselectedDewormingDate1(null);
+      setselectedDewormingDate2(null);
 
       // Show success notification
       toast.success("Form cleared successfully!", {
@@ -460,7 +471,7 @@ const Form = () => {
                 className="textInput"
                 sx={{ gridColumn: "span 1" }}
               />
-              <DateInput
+              {/* <DateInput
                 label="Vaccination"
                 name="vac"
                 value={selectedVaccinationDate}
@@ -472,14 +483,41 @@ const Form = () => {
                 className="dateInput" // You can add custom CSS classes if needed
                 sx={{ gridColumn: "span 1" }}
                 selectedDate={selectedDate} // Pass the selectedDate prop here
+              /> */}
+              <MenuSelect
+                label="Fully Immunized Child (FIC)"
+                name="fic"
+                value={values.fic}
+                onChange={(name, value) => {
+                  setFieldValue(name, value);
+                }}
+                error={!!touched.fic && !!errors.fic}
+                helperText={touched.fic && errors.fic}
+                options={[
+                  { value: "", label: "Select", isDisabled: true }, // Add a null option
+                  { value: "Yes", label: "Yes" },
+                  { value: "No", label: "No" },
+                ]}
+                sx={{ gridColumn: "span 1" }}
               />
               <DateInput
-                label="Purga"
-                name="purga"
-                value={selectedPurgaDate}
-                onChange={(name, date) => handleDateChange(name, date, "purga")}
-                error={!!touched.purga && !!errors.purga}
-                helperText={touched.purga && errors.purga}
+                label="1st Deworming"
+                name="deworming1"
+                value={selectedDewormingDate1}
+                onChange={(name, date) => handleDateChange(name, date, "deworming1")}
+                error={!!touched.deworming1 && !!errors.deworming1}
+                helperText={touched.deworming1 && errors.deworming1}
+                className="dateInput" // You can add custom CSS classes if needed
+                sx={{ gridColumn: "span 1" }}
+                selectedDate={selectedDate} // Pass the selectedDate prop here
+              />
+              <DateInput
+                label="2nd Deworming"
+                name="deworming2"
+                value={selectedDewormingDate2}
+                onChange={(name, date) => handleDateChange(name, date, "deworming2")}
+                error={!!touched.deworming2 && !!errors.deworming2}
+                helperText={touched.deworming2 && errors.deworming2}
                 className="dateInput" // You can add custom CSS classes if needed
                 sx={{ gridColumn: "span 1" }}
                 selectedDate={selectedDate} // Pass the selectedDate prop here
@@ -576,8 +614,6 @@ const initialValues = {
   weight: "",
   height: "",
   muac: "",
-  //     vac: null,
-  //     purga: null,
   barangay: "",
 };
 
