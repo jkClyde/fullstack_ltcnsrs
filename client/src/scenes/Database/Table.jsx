@@ -358,8 +358,9 @@ const Table = () => {
         weight: matchingChildHealthInfo ? matchingChildHealthInfo.weight : 0,
         height: matchingChildHealthInfo ? matchingChildHealthInfo.height : 0,
         muac: matchingChildHealthInfo ? matchingChildHealthInfo.muac : 0,
-        purga: matchingChildHealthInfo ? matchingChildHealthInfo.purga : "N/A",
-        vac: matchingChildHealthInfo ? matchingChildHealthInfo.vac : "N/A",
+        deworming1: matchingChildHealthInfo ? matchingChildHealthInfo.deworming1 : "N/A",
+        deworming2: matchingChildHealthInfo ? matchingChildHealthInfo.deworming2 : "N/A",
+        fic: matchingChildHealthInfo ? matchingChildHealthInfo.fic : "N/A",
         bpe: matchingChildHealthInfo ? matchingChildHealthInfo.bpe : "N/A",
         disability: matchingChildHealthInfo
           ? matchingChildHealthInfo.disability
@@ -527,8 +528,16 @@ const Table = () => {
       cellClassName: "centered-cell",
     },
     {
-      field: "vac",
-      headerName: "VAC",
+      field: "fic",
+      headerName: "FIC",
+      flex: 1,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "deworming1",
+      headerName: "1st Deworming",
       type: "number", //need to identify if value is text/number
       flex: 3,
       headerAlign: "center",
@@ -546,8 +555,8 @@ const Table = () => {
       },
     },
     {
-      field: "purga",
-      headerName: "Purga",
+      field: "deworming2",
+      headerName: "2nd Deworming",
       type: "number", //need to identify if value is text/number
       flex: 3,
       headerAlign: "center",
