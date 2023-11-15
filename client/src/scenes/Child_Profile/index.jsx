@@ -554,36 +554,35 @@ const ChildProfile = ({ child, updateChildData }) => {
     <Box mt="10px">
       {/* Add this line for debugging */}
       {isEditing ? (
-        name === "birthdate" ||
-        name === "dow" ||
-        name === "deworming1" ||
-        name === "deworming2" ? (
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
-              label={label}
-              value={value ? new Date(value) : null}
-              onChange={(newValue) => {
-                const formattedDate = newValue
-                  ? format(newValue, "yyyy-MM-dd")
-                  : "";
-                const fakeEvent = { target: { name, value: formattedDate } };
-                handleInputChange(fakeEvent);
-              }}
-              renderInput={(params) => (
-                <OutlinedInput {...params} fullWidth label={label} />
-              )}
-            />
-          </LocalizationProvider>
-        ) : (
-          <TextField
-            fullWidth
-            variant="outlined"
-            name={name}
-            label={label}
-            value={value || ""} // Handle undefined or empty values
-            onChange={handleInputChange}
-          />
-        )
+  name === "birthdate" ||
+  name === "dow" || name === "deworming1" || name === "deworming2"? (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <DatePicker
+        label={label}
+        value={value ? new Date(value) : null}
+        onChange={(newValue) => {
+          const formattedDate = newValue
+            ? format(newValue, "yyyy-MM-dd")
+            : "";
+          const fakeEvent = { target: { name, value: formattedDate } };
+          handleInputChange(fakeEvent);
+        }}
+        renderInput={(params) => (
+          <OutlinedInput {...params} fullWidth label={label} />
+        )}
+      />
+    </LocalizationProvider>
+  ) : (
+    <TextField
+      fullWidth
+      variant="outlined"
+      name={name}
+      label={label}
+      value={value || ""} // Handle undefined or empty values
+      onChange={handleInputChange}
+      required={name !== "deworming1" && name !== "deworming2"} // Add this line
+    />
+  )
       ) : (
         // Show the updated value from editedChild when not editing
         <>
@@ -667,14 +666,44 @@ const ChildProfile = ({ child, updateChildData }) => {
         {renderTextField("Height", "height", editedChild.height, "cm")}
         {renderTextField("MUAC", "muac", editedChild.muac, "cm")}
         {renderTextField("Disability", "disability", editedChild.disability)}
-        {renderTextField("Bilateral Pitting Edema", "bpe", editedChild.bpe)}
+        {isEditing ? (
+          // Render the bpe field only when editing
+          <Box mt="10px">
+            <FormControl fullWidth>
+              <InputLabel id="bpe-select-label">Bilateral Pitting Edema</InputLabel>
+              <Select
+                labelId="bpe-select-label"
+                label="Bilateral Pitting Edema"
+                id="bpe-select"
+                name="bpe"
+                value={editedChild.bpe}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        ) : (
+          // Display gender information when not editing
+          <Grid item xs={12}>
+            <Box>
+              <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                <Typography variant="h6">Bilateral Pitting Edema:</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild.bpe}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        )}
       </Grid>
 
       <Grid item xs={4}>
         {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
         {/* {renderTextField("Fully Immunized Child", "fic", editedChild.fic)} */}
         {isEditing ? (
-          // Render the gender field only when editing
+          // Render the FIC field only when editing
           <Box mt="10px">
             <FormControl fullWidth>
               <InputLabel id="fic-select-label">
@@ -694,7 +723,7 @@ const ChildProfile = ({ child, updateChildData }) => {
             </FormControl>
           </Box>
         ) : (
-          // Display gender information when not editing
+          // Display FIC information when not editing
           <Grid item xs={12}>
             <Box>
               <Box padding="10px" borderRadius="5px" border="1px solid grey">
