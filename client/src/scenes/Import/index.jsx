@@ -4,7 +4,6 @@ import { format, parse } from 'date-fns'; // Import the required functions
 import * as XLSX from 'xlsx';
 
 
-
 function formatDateToYYYYMMDD(excelDate) {
   const date = new Date(1900, 0, excelDate - 1); // Subtract 1 because Excel counts from 1/0/1900
   const year = date.getFullYear();
@@ -96,7 +95,6 @@ const MessagePopup = ({ successCount, failureCount }) => {
 
 
 
-
 function ExcelToJSON() {
   const [jsonData, setJsonData] = useState(null);
   const [success, setSuccess] = useState(0);
@@ -108,25 +106,38 @@ function ExcelToJSON() {
 
     // Define a mapping object to map source keys to target keys
     const keyMapping = {
-      "Name of Child": "fullName",
-      // "Address": "address",
+      // "Name of Child": "fullName",
+      // // "Address": "address",
+      // "P/T": "pt",
+      // "Sex": "gender",
+      // "DoB": "birthdate",
+      // "AIM": "aim",
+      // "Name of Mothe/Father": "parentName",
+      // "Occupation": "occupation",
+      // // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
+      // "Relationship": "relationship",
+      // "Given" : "vac",
+      // "Ethnicity" : "ethnicity",
+      // "DoW": "dow",
+      // "Address" : "barangay",
+      // "Height" : "height",
+      // "Weight" : "weight",
+      // "DoW" : "dow",
+      // "__EMPTY" : "purga",
+      // // "Given": "purga",
+
+      "NAME OF CHILD": "fullName",
+      "SEX": "gender",
+      "DOB": "birthdate",
+      "DOW": "dow",
+      "Address": "address",
       "P/T": "pt",
-      "Sex": "gender",
-      "DoB": "birthdate",
+      "NAME OF FATHER/ MOTHER": "parentName",
+      "OCCUPATION OF FATHER/MOTHE": "occupation",
+      "HT" : "height",
+      "WT" : "weight",
+      "ADDRESS" : "address",
       "AIM": "aim",
-      "Name of Mothe/Father": "parentName",
-      "Occupation": "occupation",
-      // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
-      "Relationship": "relationship",
-      "Given" : "vac",
-      "Ethnicity" : "ethnicity",
-      "DoW": "dow",
-      "Address" : "barangay",
-      "Height" : "height",
-      "Weight" : "weight",
-      "DoW" : "dow",
-      "__EMPTY" : "purga",
-      // "Given": "purga",
     };
 
     reader.onload = (e) => {
@@ -138,17 +149,16 @@ function ExcelToJSON() {
       const sheet = workbook.Sheets[sheetName];
 
       // Convert the sheet data to JSON
-      const json = XLSX.utils.sheet_to_json(sheet);
-      const valueInO2 = sheet['O2'].v;
-
+      const json = XLSX.utils.sheet_to_json(sheet, { range: 8 });
+      
       // Transform the JSON data using the key mapping and date formatting
       const transformedData = json.map((item) => {
         const transformedItem = {};
         for (const sourceKey in item) {
           if (keyMapping[sourceKey]) {
-            if (sourceKey === "DoB" || sourceKey ===  "DoW" || sourceKey ===  "Given" || sourceKey ===  "__EMPTY") {
+            if (sourceKey === "DOB" || sourceKey ===  "DOW"  ) {
               transformedItem[keyMapping[sourceKey]] = formatDateToYYYYMMDD(item[sourceKey]);
-            } else if (sourceKey === "Sex") {
+            } else if (sourceKey === "SEX" || sourceKey === "__EMPTY") {
               transformedItem[keyMapping[sourceKey]] = mapGender(item[sourceKey]);
             }else if(sourceKey == "P/T"){
               transformedItem[keyMapping[sourceKey]] = mapPT(item[sourceKey]);
