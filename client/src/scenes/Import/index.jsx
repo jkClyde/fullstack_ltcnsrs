@@ -9,33 +9,21 @@ function formatDateToYYYYMMDD(excelDate) {
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because months are zero-based
   const day = date.getDate().toString().padStart(2, '0');
-  return `${year}-${day}-${month}`;
+
+  
+  return `${year}-${month}-${day}`;
 }
 
+const swapDayMonth = (originalDate) => {
+  const [year, month, day] = originalDate.split('-');
 
-// const formatDateToYYYYMMDD = (excelDate) => {
-//   // Assuming the Excel date format is 'MM/DD/YYYY'
-//   const originalFormat = 'MM/dd/yyyy';
+  const temp = day
+  const newDay = month;
+  const newMonth = temp;
 
-//   try {
-//     // Parse the original date with the specified format
-//     const parsedDate = parse(excelDate, originalFormat, new Date());
+  return `${year}-${newDay}-${newMonth}`;
+};
 
-//     // Check if the parsed date is valid
-//     if (isNaN(parsedDate)) {
-//       throw new Error('Invalid date format');
-//     }
-
-//     // Format the parsed date to 'YYYY/MM/DD'
-//     const targetFormat = 'yyyy/MM/dd';
-//     const formattedDate = format(parsedDate, targetFormat);
-
-//     return formattedDate;
-//   } catch (error) {
-//     console.error('Error formatting date:', error.message);
-//     return null; // Or handle the error as needed in your application
-//   }
-// };
 
 function mapGender(gender) {
   if (gender === 'M') {
@@ -106,30 +94,9 @@ function ExcelToJSON() {
     const file = e.target.files[0];
     const reader = new FileReader();
 
-    // Define a mapping object to map source keys to target keys
+    
     const keyMapping = {
-      // "Name of Child": "fullName",
-      // // "Address": "address",
-      // "P/T": "pt",
-      // "Sex": "gender",
-      // "DoB": "birthdate",
-      // "AIM": "aim",
-      // "Name of Mothe/Father": "parentName",
-      // "Occupation": "occupation",
-      // // "Given": ["purga", "vac"], // Map "Given" to both "Purga" and "VAC"
-      // "Relationship": "relationship",
-      // // "Given" : "vac",
-      // "Ethnicity" : "ethnicity",
-      // "DoW": "dow",
-      // "Address" : "barangay",
-      // "Height" : "height",
-      // "Weight" : "weight",
-      // "DoW" : "dow",
-      // // "__EMPTY" : "purga",
-      // // "Given": "purga",
-
-
-
+   
       "NAME OF CHILD": "fullName",
       "SEX": "gender",
       "DOB": "birthdate",
@@ -144,7 +111,6 @@ function ExcelToJSON() {
       "ADDRESS" : "address",
       "AIM": "aim",
       "barangay" : "barangay",
-
 
      //Poblacion
       "__EMPTY_1": "fullName",
@@ -164,40 +130,28 @@ function ExcelToJSON() {
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
-
-      // Assuming you have only one sheet in the Excel file
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-
-
       const line7Value = sheet['A7'].v;
       const barangayName = line7Value.split(':')[1].trim();
-
-      // Capitalize the first letter and keep the rest in lowercase
       const formattedBarangayName = barangayName.charAt(0).toUpperCase() + barangayName.slice(1).toLowerCase();
-
       const barangayJSON = {
         barangay: formattedBarangayName
       };
 
-
-      
       const json = XLSX.utils.sheet_to_json(sheet, { range: 8 }) ; 
-
-        // Add barangayJSON to each item in the json array
       json.forEach(item => {
         Object.assign(item, barangayJSON);
       });
 
      
-      
       // Transform the JSON data using the key mapping and date formatting
       const transformedData = json.map((item) => {
         const transformedItem = {};
         for (const sourceKey in item) {
           if (keyMapping[sourceKey]) {
             if (sourceKey === "DOB" || sourceKey ===  "DOW"  || sourceKey === "__EMPTY_4"|| sourceKey === "__EMPTY_3") {
-              transformedItem[keyMapping[sourceKey]] = formatDateToYYYYMMDD(item[sourceKey]);
+              transformedItem[keyMapping[sourceKey]] = swapDayMonth(formatDateToYYYYMMDD(item[sourceKey]));
             } else if (sourceKey === "SEX" || sourceKey === "__EMPTY_2") {
               transformedItem[keyMapping[sourceKey]] = mapGender(item[sourceKey]);
             }else if(sourceKey == "P/T" || sourceKey === "__EMPTY_12"){

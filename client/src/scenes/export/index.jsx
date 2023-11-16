@@ -123,7 +123,7 @@ const exportToExcel = (childData) => {
     "AIM": "aim",
     "Height": "height",
     "Weight": "weight",
-    "Address": "barangay",
+    "Barangay": "barangay",
     "P/T": "pt",
     "Name of Mothe/Father": "parentName",
     "Ethnicity": "ethnicity",
