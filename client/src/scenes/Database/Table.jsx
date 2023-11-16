@@ -70,12 +70,14 @@ const Table = () => {
   const [gridDataTab1, setGridDataTab1] = useState([]);
   const [gridDataTab2, setGridDataTab2] = useState([]);
   const [gridDataTab3, setGridDataTab3] = useState([]);
+  const [gridDataTab4, setGridDataTab4] = useState([]);
 
   const [activeTab, setActiveTab] = useState(0);
   useEffect(() => {
     fetchTab1Data();
     fetchTab2Data();
     fetchTab3Data();
+    // fetchTab4Data();
   }, []);
 
   const [exportDialogue, setExportDialogue] = useState(false);
@@ -682,7 +684,7 @@ const Table = () => {
     },
     {
       field: "gender",
-      headerName: "Gender",
+      headerName: "Sex",
       flex: 1,
       headerAlign: "center",
       cellClassName: "centered-cell",
@@ -834,15 +836,23 @@ const Table = () => {
     },
     {
       field: "gender",
-      headerName: "Gender",
+      headerName: "Sex",
       flex: 2,
       renderCell: renderWrappedCell,
       headerAlign: "center",
       cellClassName: "centered-cell",
     },
     {
-      field: "vac",
-      headerName: "VAC",
+      field: "fic",
+      headerName: "FIC",
+      flex: 1,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "deworming1",
+      headerName: "1st Deworming",
       type: "number", //need to identify if value is text/number
       flex: 3,
       headerAlign: "center",
@@ -860,8 +870,207 @@ const Table = () => {
       },
     },
     {
-      field: "purga",
-      headerName: "Purga",
+      field: "deworming2",
+      headerName: "2nd Deworming",
+      type: "number", //need to identify if value is text/number
+      flex: 3,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+      renderCell: (params) => {
+        if (params.value) {
+          const date = new Date(params.value);
+          const month = (date.getMonth() + 1).toString().padStart(2, "0");
+          const day = date.getDate().toString().padStart(2, "0");
+          const year = date.getFullYear().toString();
+          return `${month}/${day}/${year}`;
+        } else {
+          return ""; // Return an empty string if there's no value
+        }
+      },
+    },
+    {
+      field: "weightForAge",
+      headerName: "WFA",
+      flex: 3,
+      cellClassName: getCellClassNameWFA,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+    },
+    {
+      field: "lengthForAge",
+      headerName: "LFA",
+      flex: 3,
+      cellClassName: getCellClassNameLFA,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+    },
+    {
+      field: "weightForLength",
+      headerName: "WFL",
+      flex: 3,
+      cellClassName: getCellClassNameWFL,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+    },
+    {
+      field: "profile",
+      headerName: "View",
+      headerAlign: "center",
+      flex: 2,
+      renderCell: (params) => (
+        <IconButton
+          variant="outlined"
+          color={theme.palette.secondary.main}
+          sx={
+            {
+              // Add additional styling here if needed
+            }
+          }
+          onClick={(e) => {
+            e.stopPropagation(); // Stop the event from propagating to the row
+            handleProfileButtonClick(params.row);
+          }}
+        >
+          <VisibilityIcon />
+        </IconButton>
+      ),
+    },
+    {
+      field: "delete",
+      headerName: "Delete",
+      headerAlign: "center",
+      flex: 2,
+      renderCell: (params) => (
+        <IconButton
+          variant="outlined"
+          color="error"
+          onClick={() => handleDeleteRow(params.row.id)}
+        >
+          <DeleteIcon />
+        </IconButton>
+      ),
+    },
+  ];
+  const columnsTab4 = [
+    {
+      field: "fullName",
+      headerName: "Name",
+      flex: 3,
+      cellClassName: "fname-column--cell",
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "birthdate",
+      headerName: "DOB",
+      flex: 3,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+      renderCell: (params) => {
+        if (params.value) {
+          const date = new Date(params.value);
+          const month = (date.getMonth() + 1).toString().padStart(2, "0");
+          const day = date.getDate().toString().padStart(2, "0");
+          const year = date.getFullYear().toString();
+          return `${month}/${day}/${year}`;
+        } else {
+          return ""; // Return an empty string if there's no value
+        }
+      },
+    },
+    {
+      field: "dow",
+      headerName: "DOW",
+      flex: 3,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+      renderCell: (params) => {
+        if (params.value) {
+          const date = new Date(params.value);
+          const month = (date.getMonth() + 1).toString().padStart(2, "0");
+          const day = date.getDate().toString().padStart(2, "0");
+          const year = date.getFullYear().toString();
+          return `${month}/${day}/${year}`;
+        } else {
+          return ""; // Return an empty string if there's no value
+        }
+      },
+    },
+    {
+      field: "aim",
+      headerName: "AIM",
+      type: "number",
+      flex: 1,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "weight",
+      headerName: "Wt.",
+      type: "number",
+      flex: 1.5,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "height",
+      headerName: "Ht.",
+      type: "number",
+      flex: 1.5,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "muac",
+      headerName: "MUAC",
+      type: "number",
+      flex: 1.5,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "gender",
+      headerName: "Sex",
+      flex: 2,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "fic",
+      headerName: "FIC",
+      flex: 1,
+      renderCell: renderWrappedCell,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+    },
+    {
+      field: "deworming1",
+      headerName: "1st Deworming",
+      type: "number", //need to identify if value is text/number
+      flex: 3,
+      headerAlign: "center",
+      cellClassName: "centered-cell",
+      renderCell: (params) => {
+        if (params.value) {
+          const date = new Date(params.value);
+          const month = (date.getMonth() + 1).toString().padStart(2, "0");
+          const day = date.getDate().toString().padStart(2, "0");
+          const year = date.getFullYear().toString();
+          return `${month}/${day}/${year}`;
+        } else {
+          return ""; // Return an empty string if there's no value
+        }
+      },
+    },
+    {
+      field: "deworming2",
+      headerName: "2nd Deworming",
       type: "number", //need to identify if value is text/number
       flex: 3,
       headerAlign: "center",
@@ -1244,6 +1453,24 @@ const Table = () => {
       />
     </Box>
   );
+  const dataGridTab4 = (
+    <Box>
+
+      <DataGrid
+        rows={gridDataTab4}
+        columns={columnsTab4}
+        onRowClick={(params, event) => handleRowClick(params, event)}
+        components={{
+          Toolbar: () => (
+            <div>
+              <GridToolbarColumnsButton />
+              <GridToolbarFilterButton />
+            </div>
+          ),
+        }}
+      />
+    </Box>
+  );
 
   return (
     <Box
@@ -1314,12 +1541,24 @@ const Table = () => {
             borderRadius: "20px 20px 0 0",
           }}
         />
+        <Tab
+          key={3}
+          label="Duplicate"
+          sx={{
+            backgroundColor:
+              activeTab === 3 ? colors.blueAccent[700] : "initial",
+            color: activeTab === 3 ? colors.grey[100] : colors.grey[100],
+            borderRadius: "20px 20px 0 0",
+          }}
+        />
       </Tabs>
       {activeTab === 0
         ? dataGridTab1
         : activeTab === 1
         ? dataGridTab2
-        : dataGridTab3}
+        : activeTab === 2
+        ? dataGridTab3 
+        : dataGridTab4}
 
       {/* Profile Dialog */}
       <Dialog
