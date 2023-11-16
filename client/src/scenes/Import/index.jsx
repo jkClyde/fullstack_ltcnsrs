@@ -26,14 +26,19 @@ const swapDayMonth = (originalDate) => {
 
 
 function mapGender(gender) {
+  // Trim the input to remove leading and trailing whitespaces
+  gender = gender.trim();
+
   if (gender === 'M') {
     return 'Male';
-  } else if (gender === 'F') {
+  } 
+  else if (gender === 'F') {
     return 'Female';
   }
   // Handle other cases if needed
   return gender;
 }
+
 
 function mapPT(input){
     if (input === 'P'){
