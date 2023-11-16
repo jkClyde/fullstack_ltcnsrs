@@ -115,6 +115,13 @@ const UserDrawer = () => {
               selected={selected}
               setSelected={setSelected}
             />
+             <Item
+              title="Children Table"
+              to="/database"
+              icon={<StorageOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
             <Item
               title="Calendar"

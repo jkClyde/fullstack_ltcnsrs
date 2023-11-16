@@ -127,6 +127,10 @@ const user_route = [
         element: <Form/>
       },
       {
+        path: '/database',
+        element: <Table/>
+      },
+      {
         path: '/calendar',
         element: <Calendar/>
       },
