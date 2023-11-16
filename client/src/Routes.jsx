@@ -20,7 +20,7 @@ import VerificationNotice from "./components/registration/verificationNotice";
 import Verify from "./components/registration/verify";
 import UserLayout from "./components/UserView";
 import UserDrawer from "./scenes/global/UserDrawer";
-// import ExcelReader from "./scenes/Import";
+import ExcelTester from "./scenes/Import/ExcelTester";
 import ExcelToJSON from "./scenes/Import"
 import ExcelDataTransfer from "./scenes/export";
 import { useStateContext } from "./contexts/ContextProvider";
@@ -109,6 +109,10 @@ const admin_route = [
       {
         path: '/stat',
         element: <Statistics />
+      },
+       {
+        path: '/tester',
+        element: <ExcelTester />
       },
       
 ]

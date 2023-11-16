@@ -99,6 +99,7 @@ function ExcelToJSON() {
   const [jsonData, setJsonData] = useState(null);
   const [success, setSuccess] = useState(0);
   const [failed, setFailed] = useState(-1);
+  
 
    const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -142,6 +143,21 @@ function ExcelToJSON() {
       "ADDRESS" : "address",
       "AIM": "aim",
       "barangay" : "barangay",
+
+
+     //Poblacion
+      "__EMPTY_1": "fullName",
+      "__EMPTY_2": "gender",
+      "__EMPTY_3": "birthdate",
+      "__EMPTY_4": "dow",
+      "__EMPTY_5": "weight",
+      "__EMPTY_6" : 'height',
+      "__EMPTY_11" : "address",
+      "__EMPTY_12" : "pt",
+      "__EMPTY_15" : "parentName",
+      "__EMPTY_16": "ethnicity",
+      "__EMPTY_17": "occupation",
+
     };
 
     reader.onload = (e) => {
@@ -179,11 +195,11 @@ function ExcelToJSON() {
         const transformedItem = {};
         for (const sourceKey in item) {
           if (keyMapping[sourceKey]) {
-            if (sourceKey === "DOB" || sourceKey ===  "DOW"  ) {
+            if (sourceKey === "DOB" || sourceKey ===  "DOW"  || sourceKey === "__EMPTY_4"|| sourceKey === "__EMPTY_3") {
               transformedItem[keyMapping[sourceKey]] = formatDateToYYYYMMDD(item[sourceKey]);
-            } else if (sourceKey === "SEX" || sourceKey === "__EMPTY") {
+            } else if (sourceKey === "SEX" || sourceKey === "__EMPTY_2") {
               transformedItem[keyMapping[sourceKey]] = mapGender(item[sourceKey]);
-            }else if(sourceKey == "P/T"){
+            }else if(sourceKey == "P/T" || sourceKey === "__EMPTY_12"){
               transformedItem[keyMapping[sourceKey]] = mapPT(item[sourceKey]);
             }
               else {
