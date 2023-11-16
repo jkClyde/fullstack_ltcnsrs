@@ -9,8 +9,9 @@ function formatDateToYYYYMMDD(excelDate) {
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because months are zero-based
   const day = date.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return `${year}-${day}-${month}`;
 }
+
 
 // const formatDateToYYYYMMDD = (excelDate) => {
 //   // Assuming the Excel date format is 'MM/DD/YYYY'
