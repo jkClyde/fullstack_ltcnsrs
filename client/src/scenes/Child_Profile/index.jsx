@@ -265,7 +265,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       aim: editedChild.aim,
       parentName: editedChild.parentName,
       occupation: editedChild.occupation,
-      relationship: editedChild.relationship,
+      // relationship: editedChild.relationship,
       ethnicity: editedChild.ethnicity,
       barangay: editedChild.barangay,
     };
@@ -616,10 +616,10 @@ const ChildProfile = ({ child, updateChildData }) => {
           // Render the gender field only when editing
           <Box mt="10px">
             <FormControl fullWidth>
-              <InputLabel id="gender-select-label">Gender</InputLabel>
+              <InputLabel id="gender-select-label">Sex</InputLabel>
               <Select
                 labelId="gender-select-label"
-                label="Gender"
+                label="Sex"
                 id="gender-select"
                 name="gender"
                 value={editedChild.gender}
@@ -635,7 +635,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           <Grid item xs={12}>
             <Box>
               <Box padding="10px" borderRadius="5px" border="1px solid grey">
-                <Typography variant="h6">Gender:</Typography>
+                <Typography variant="h6">Sex</Typography>
                 <Typography variant="body1" style={{ fontWeight: "bold" }}>
                   {editedChild.gender}
                 </Typography>
@@ -658,6 +658,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       </Grid>
     </Grid>
   );
+  const isChildMoreThan12Months = editedChild.aim > 12;
 
   const renderHealthInfo = () => (
     <Grid container spacing={2}>
@@ -702,67 +703,73 @@ const ChildProfile = ({ child, updateChildData }) => {
       <Grid item xs={4}>
         {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
         {/* {renderTextField("Fully Immunized Child", "fic", editedChild.fic)} */}
-        {isEditing ? (
-          // Render the FIC field only when editing
-          <Box mt="10px">
-            <FormControl fullWidth>
-              <InputLabel id="fic-select-label">
-                Fully Immunized Child
-              </InputLabel>
-              <Select
-                labelId="fic-select-label"
-                label="Fully Immunized Child"
-                id="fic-select"
-                name="fic"
-                value={editedChild.fic}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        ) : (
-          // Display FIC information when not editing
-          <Grid item xs={12}>
-            <Box>
-              <Box padding="10px" borderRadius="5px" border="1px solid grey">
-                <Typography variant="h6">Fully Immunized Child</Typography>
-                <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                  {editedChild.fic}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        )}
-        {renderTextField("1st Deworming", "deworming1", editedChild.deworming1)}
-        {renderTextField("2nd Deworming", "deworming2", editedChild.deworming2)}
-      </Grid>
-      <Divider
-        orientation="vertical"
-        variant="middle"
-        flexItem
-        style={{ margin: "0px 20px 0px 40px" }}
-      />
-      <Grid item xs={3}>
-        {!isEditing &&
-          renderTextField(
-            "Weight For Age",
-            "weightForAge",
-            editedChild.weightForAge
-          )}
-        {!isEditing &&
-          renderTextField(
-            "Length For Age",
-            "lengthForAge",
-            editedChild.lengthForAge
-          )}
-        {!isEditing &&
-          renderTextField(
-            "Weight For Length",
-            "weightForLength",
-            editedChild.weightForLength
-          )}
+        {isEditing && isChildMoreThan12Months ? (
+  // Render the FIC field only when editing and child is more than 12 months old
+  <Box mt="10px">
+    <FormControl fullWidth>
+      <InputLabel id="fic-select-label">Fully Immunized Child</InputLabel>
+      <Select
+        labelId="fic-select-label"
+        label="Fully Immunized Child"
+        id="fic-select"
+        name="fic"
+        value={editedChild.fic}
+        onChange={handleInputChange}
+      >
+        <MenuItem value="Yes">Yes</MenuItem>
+        <MenuItem value="No">No</MenuItem>
+      </Select>
+    </FormControl>
+  </Box>
+) : !isEditing && isChildMoreThan12Months ? (
+  // Display FIC information when not editing
+  <Grid item xs={12}>
+    <Box>
+      <Box padding="10px" borderRadius="5px" border="1px solid grey">
+        <Typography variant="h6">Fully Immunized Child</Typography>
+        <Typography variant="body1" style={{ fontWeight: "bold" }}>
+          {editedChild.fic}
+        </Typography>
+      </Box>
+    </Box>
+  </Grid>
+) : null}
+
+{isChildMoreThan12Months && (
+  <>
+    {renderTextField("1st Deworming", "deworming1", editedChild.deworming1)}
+    {renderTextField("2nd Deworming", "deworming2", editedChild.deworming2)}
+  </>
+)}
+
+</Grid>
+
+<Divider
+  orientation="vertical"
+  variant="middle"
+  flexItem
+  style={{ margin: "0px 20px 0px 40px" }}
+/>
+
+<Grid item xs={3}>
+  {!isEditing &&
+    renderTextField(
+      "Weight For Age",
+      "weightForAge",
+      editedChild.weightForAge
+    )}
+  {!isEditing &&
+    renderTextField(
+      "Length For Age",
+      "lengthForAge",
+      editedChild.lengthForAge
+    )}
+  {!isEditing &&
+    renderTextField(
+      "Weight For Length",
+      "weightForLength",
+      editedChild.weightForLength
+    )}
       </Grid>
     </Grid>
   );
@@ -776,7 +783,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           editedChild.parentName
         )}
         {/* Replace the "Parent-Child Relation" TextField with a Select */}
-        {isEditing ? (
+        {/* {isEditing ? (
           <Box mt="16px">
             <FormControl fullWidth variant="outlined">
               <InputLabel id="relationship-select-label">
@@ -807,8 +814,8 @@ const ChildProfile = ({ child, updateChildData }) => {
               </Typography>
             </Box>
           </Box>
-        )}
-        {isEditing ? (
+        )} */}
+        {/* {isEditing ? (
           // Render the ethnicity field only when editing
           <Box mt="16px">
             <Select
@@ -842,7 +849,37 @@ const ChildProfile = ({ child, updateChildData }) => {
               </Typography>
             </Box>
           </Box>
-        )}
+        )} */}
+        {isEditing ? (
+        // Render the ethnicity field as TextField when editing
+        <Box mt="16px">
+          <TextField
+            fullWidth
+            id="ethnicity"
+            name="ethnicity"
+            label="Ethnicity"
+            value={editedChild.ethnicity}
+            onChange={handleInputChange}
+            variant="outlined"
+          />
+        </Box>
+      ) : (
+        // Display ethnicity information when not editing
+        <Box>
+          <Box
+            mt="10px"
+            padding="10px"
+            borderRadius="5px"
+            border="1px solid grey"
+          >
+            <Typography variant="h6">Ethnicity:</Typography>
+            <Typography variant="body1" style={{ fontWeight: "bold" }}>
+              {editedChild.ethnicity}
+            </Typography>
+          </Box>
+        </Box>
+      )}
+
       </Grid>
 
       <Grid item xs={4}>

@@ -25,45 +25,41 @@ relationship_choices = (
     ('Guardian', 'Guardian'),
     ('', 'not specified')
 )
-ethnicity_choices = (
-    ('Aggay', 'Aggay'),
-    ('Akeanon/Aklanon', 'Akeanon/Aklanon'),
-    ('Apayao/Yapayao', 'Apayao/Yapayao'),
-    ('Ayangan', 'Ayangan'),
-    ('Balangao/Baliwon', 'Balangao/Baliwon'),
-    ('Bikol/Bicol', 'Bikol/Bicol'),
-    ('Bisaya/Binisaya', 'Bisaya/Binisaya'),
-    ('Bontok/Binontok', 'Bontok/Binontok'),
-    ('Cebuano', 'Cebuano'),
-    ('Hamtikanon', 'Hamtikanon'),
-    ('Hiligaynon,Ilonggo', 'Hiligaynon,Ilonggo'),
-    ('Ibaloi/Inibaloi', 'Ibaloi/Inibaloi'),
-    ('Ibanag', 'Ibanag'),
-    ('Ibontoc', 'Ibontoc'),
-    ('Ifugao', 'Ifugao'),
-    ('Kalanguya/Ikalahan', 'Kalanguya/Ikalahan'),
-    ('Ilocano', 'Ilocano'),
-    ('Iranon', 'Iranon'),
-    ('Itneg', 'Itneg'),
-    ('Kalinga', 'Kalinga'),
-    ('Kankanai/Kankanaey', 'Kankanai/Kankanaey'),
-    ('Kapampangan', 'Kapampangan'),
-    ('Karao', 'Karao'),
-    ('Kinalinga', 'Kinalinga'),
-    ('Kiniray-a', 'Kiniray-a'),
-    ('Maranao', 'Maranao'),
-    ('Masbateno/Masbatean', 'Masbateno/Masbatean'),
-    ('Pangasinan/Panggalato', 'Pangasinan/Panggalato'),
-    ('Surigaonon', 'Surigaonon'),
-    ('Tagalog', 'Tagalog'),
-    ('Tausug', 'Tausug'),
-    ('Waray', 'Waray'),
-    ('Other Local Ethnicity', 'Other Local Ethnicity'),
-    ('Chinese', 'Chinese'),
-    ('American/English', 'American/English'),
-    ('Other Foreign Ethnicity', 'Other Foreign Ethnicity'),
-    ('Not Reported', 'Not Reported'),
-)
+# ethnicity_choices = (
+#     ('Others', 'Other'),
+#     ('Aggay', 'Aggay'),
+#     ('Akeanon/Aklanon', 'Akeanon/Aklanon'),
+#     ('Apayao/Yapayao', 'Apayao/Yapayao'),
+#     ('Ayangan', 'Ayangan'),
+#     ('Balangao/Baliwon', 'Balangao/Baliwon'),
+#     ('Bikol/Bicol', 'Bikol/Bicol'),
+#     ('Bisaya/Binisaya', 'Bisaya/Binisaya'),
+#     ('Bontok/Binontok', 'Bontok/Binontok'),
+#     ('Cebuano', 'Cebuano'),
+#     ('Hamtikanon', 'Hamtikanon'),
+#     ('Hiligaynon,Ilonggo', 'Hiligaynon,Ilonggo'),
+#     ('Ibaloi/Inibaloi', 'Ibaloi/Inibaloi'),
+#     ('Ibanag', 'Ibanag'),
+#     ('Ibontoc', 'Ibontoc'),
+#     ('Ifugao', 'Ifugao'),
+#     ('Kalanguya/Ikalahan', 'Kalanguya/Ikalahan'),
+#     ('Ilocano', 'Ilocano'),
+#     ('Iranon', 'Iranon'),
+#     ('Itneg', 'Itneg'),
+#     ('Kalinga', 'Kalinga'),
+#     ('Kankanai/Kankanaey', 'Kankanai/Kankanaey'),
+#     ('Kapampangan', 'Kapampangan'),
+#     ('Karao', 'Karao'),
+#     ('Kinalinga', 'Kinalinga'),
+#     ('Kiniray-a', 'Kiniray-a'),
+#     ('Maranao', 'Maranao'),
+#     ('Masbateno/Masbatean', 'Masbateno/Masbatean'),
+#     ('Pangasinan/Panggalato', 'Pangasinan/Panggalato'),
+#     ('Surigaonon', 'Surigaonon'),
+#     ('Tagalog', 'Tagalog'),
+#     ('Tausug', 'Tausug'),
+#     ('Waray', 'Waray'),
+# )
 barangay_choices = (
     ("Alapang", "Alapang"),
     ("Alno", "Alno"),
@@ -97,8 +93,9 @@ class PrimaryChild(models.Model):
     relationship = models.CharField(
         max_length=200, choices=relationship_choices, default='Not specified')
     ethnicity = models.CharField(
-        max_length=200, choices=ethnicity_choices, default='Not specified')
-   
+        max_length=200, default='Not specified')
+    # customEthnicity = models.CharField(
+    #     max_length=200, default='Not specified')
     barangay = models.CharField(
         max_length=200, choices=barangay_choices, default='Not specified')
     archive = models.BooleanField(default=False) 

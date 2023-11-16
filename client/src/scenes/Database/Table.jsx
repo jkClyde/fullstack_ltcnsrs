@@ -351,7 +351,7 @@ const Table = () => {
         aim: primaryChild.aim,
         parentName: primaryChild.parentName,
         occupation: primaryChild.occupation,
-        relationship: primaryChild.relationship,
+        // relationship: primaryChild.relationship,
         ethnicity: primaryChild.ethnicity,
         barangay: primaryChild.barangay,
         dow: matchingChildHealthInfo ? matchingChildHealthInfo.dow : "N/A",
@@ -521,7 +521,7 @@ const Table = () => {
     },
     {
       field: "gender",
-      headerName: "Gender",
+      headerName: "Sex",
       flex: 2,
       renderCell: renderWrappedCell,
       headerAlign: "center",

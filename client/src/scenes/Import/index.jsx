@@ -135,6 +135,7 @@ function ExcelToJSON() {
       "Address": "address",
       "P/T": "pt",
       "NAME OF FATHER/ MOTHER": "parentName",
+      "ETHNICITY OF FATHER/ MOTHER": "ethnicity",
       "OCCUPATION OF FATHER/MOTHER": "occupation",
       "HT" : "height",
       "WT" : "weight",

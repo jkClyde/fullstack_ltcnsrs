@@ -122,7 +122,7 @@ const Form = () => {
       birthdate: formattedBirthdate,
       parentName: values.parentName,
       occupation: values.occupation,
-      relationship: values.relationship,
+      // relationship: values.relationship,
       ethnicity: values.ethnicity,
       barangay: values.barangay,
     };
@@ -262,7 +262,7 @@ const Form = () => {
                 required={true} // Set required to true for this DateInput
               />
               <MenuSelect
-                label="Gender"
+                label="Sex"
                 name="gender"
                 value={values.gender}
                 onChange={(name, value) => {
@@ -317,15 +317,15 @@ const Form = () => {
                 ]}
                 sx={{ gridColumn: "span 1" }}
               />
-              {/* Parent/Guradian Information */}
+              {/* Caregiver/Guradian Information */}
               <Box sx={{ gridColumn: "span 4" }}>
-                <Header subtitle="Parent/Guradian Information" />
+                <Header subtitle="Caregiver Information" />
               </Box>
               <TextInput
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Parent Name"
+                label="Caregiver Name"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.parentName}
@@ -337,7 +337,7 @@ const Form = () => {
                 className="textInput"
                 sx={{ gridColumn: "span 1" }}
               />
-              <MenuSelect
+              {/* <MenuSelect
                 label="Relationship"
                 name="relationship"
                 value={values.relationship}
@@ -353,8 +353,8 @@ const Form = () => {
                   { value: "Guardian", label: "Guardian" },
                 ]}
                 sx={{ gridColumn: "span 1" }}
-              />
-              <MenuInput
+              /> */}
+              {/* <MenuInput
                 label="Ethnicity"
                 name="ethnicity"
                 value={values.ethnicity}
@@ -363,6 +363,44 @@ const Form = () => {
                 helperText={touched.ethnicity && errors.ethnicity}
                 options={ethnicityOptions}
                 sx={{ gridColumn: "span 1" }}
+              /> */}
+              {/* <MenuInput
+                label="Ethnicity"
+                name="ethnicity"
+                value={values.ethnicity}
+                onChange={(name, value) => {
+                  // If "Others" is selected, set a different field value
+                  if (value === 'Others') {
+                    setFieldValue('customEthnicity', ''); // You may want to clear any previous value
+                  }
+                  setFieldValue(name, value);
+                }}
+                error={!!touched.ethnicity && !!errors.ethnicity}
+                helperText={touched.ethnicity && errors.ethnicity}
+                options={ethnicityOptions}
+                sx={{ gridColumn: 'span 1' }}
+              />
+
+              {values.ethnicity === 'Others' && (
+                <TextInput
+                  label="Custom Ethnicity"
+                  name="customEthnicity"
+                  value={values.customEthnicity}
+                  onChange={(e) => setFieldValue('customEthnicity', e.target.value)}
+                  sx={{ gridColumn: 'span 1' }}
+                />
+              )}               */}
+              <TextInput
+                fullWidth
+                id="ethnicity"
+                name="ethnicity"
+                label="Ethnicity"
+                value={values.ethnicity}
+                onChange={(e) => setFieldValue("ethnicity", e.target.value)}
+                error={!!touched.ethnicity && !!errors.ethnicity}
+                helperText={touched.ethnicity && errors.ethnicity}
+                sx={{ gridColumn: "span 1" }}
+                variant="outlined"
               />
               <TextInput
                 fullWidth
@@ -558,9 +596,9 @@ const checkoutSchema = yup.object().shape({
       /^[A-Za-z\s]{2,16},[A-Za-z\s]{2,16}$/, // Add a comma between two name parts
       "Should be in the format 'Last Name, First Name'"
     ),
-  gender: yup.string().required("Gender is required"),
-  relationship: yup.string().required("Relationship is required"),
-  ethnicity: yup.string().required("Ethnicity is required"),
+  gender: yup.string().required("Sex is required"),
+  // relationship: yup.string().required("Relationship is required"),
+  // ethnicity: yup.string().required("Ethnicity is required"),
   address: yup
     .string()
     .required("required")
@@ -606,7 +644,7 @@ const initialValues = {
   disability: "",
   parentName: "",
   occupation: "",
-  relationship: "",
+  // relationship: "",
   ethnicity: "",
   dow: "",
   weight: "",

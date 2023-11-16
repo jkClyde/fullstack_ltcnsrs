@@ -1,4 +1,5 @@
 const ethnicityOptions =[
+    'Others',
     'Aggay',
     'Akeanon/Aklanon',
     'Apayao/Yapayao',
@@ -31,11 +32,7 @@ const ethnicityOptions =[
     'Tagalog',
     'Tausug',
     'Waray',
-    'Other Local Ethnicity',
-    'Chinese',
-    'American/English',
-    'Other Foreign Ethnicity',
-    'Not Reported',
   ];
+  const uppercaseEthnicityOptions = ethnicityOptions.map(option => option.toUpperCase());
 
-  export default ethnicityOptions;
+  export default uppercaseEthnicityOptions;
