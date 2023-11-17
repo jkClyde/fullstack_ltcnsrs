@@ -51,7 +51,7 @@ const Form = () => {
   const handleFormSubmit = (values, { resetForm }) => {
     const isDuplicate = existingEntries.some(
       (entry) =>
-        entry.fullName === values.fullName &&
+        // entry.fullName === values.fullName &&
         dayjs(entry.birthdate).format("YYYY-MM-DD") ===
           dayjs(selectedBirthdate).format("YYYY-MM-DD")
     );

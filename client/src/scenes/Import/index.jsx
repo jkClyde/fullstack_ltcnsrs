@@ -39,7 +39,6 @@ function mapGender(gender) {
   return gender;
 }
 
-
 function mapPT(input){
     if (input === 'P'){
       return 'Permanent';
@@ -190,9 +189,23 @@ function ExcelToJSON() {
               
               return response.json(); // Parse the response body as JSON
             } else {
+              const payload = {
+                full_name:  item.SEX,
+                first_barangay: item.barangay,
+                second_barangay : item.barangay
+              };
+
               console.error('Failed to send data to the server.');
               setFailed((prevFailed) => prevFailed + 1); 
 
+              return fetch('http://127.0.0.1:8000/duplicateChild/', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+              });
+            
             }
           })
           .then((data) => {

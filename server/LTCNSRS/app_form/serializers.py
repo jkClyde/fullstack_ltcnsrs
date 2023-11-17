@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PrimaryChild, ChildHealthInfo
+from .models import PrimaryChild, ChildHealthInfo, DuplicateChild
 
 class PrimaryChildSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,4 +9,9 @@ class PrimaryChildSerializer(serializers.ModelSerializer):
 class ChildHealthInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChildHealthInfo
+        fields = '__all__'
+
+class DuplicateChildSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DuplicateChild
         fields = '__all__'

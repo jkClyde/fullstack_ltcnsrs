@@ -109,7 +109,6 @@ class PrimaryChild(models.Model):
         duplicates = PrimaryChild.objects.filter(
             fullName=self.fullName,
             birthdate=self.birthdate,
-            barangay=self.barangay,
         ).exclude(id=self.id)
 
         if duplicates.exists():
@@ -161,6 +160,12 @@ class ChildHealthInfo(models.Model):
                 birth_year = self.child.birthdate.year
                 self.year = birth_year
 
-            
-
         super(ChildHealthInfo, self).save(*args, **kwargs)
+
+class DuplicateChild(models.Model):
+    id = models.AutoField(primary_key=True)
+    full_name = models.CharField(max_length=255)
+    first_barangay = models.CharField(max_length=255)
+    second_barangay = models.CharField(max_length=255)
+
+    

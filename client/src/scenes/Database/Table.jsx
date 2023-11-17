@@ -11,6 +11,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import barangayOptions from "./../form/barangayOptions.js";
+import DuplicateTable from "./DuplicatesTable.jsx";
 
 import ExcelToJSON from "../Import/index.jsx";
 import ExportToExcel from "../export/index.jsx";
