@@ -1,15 +1,20 @@
 import {createBrowserRouter, Navigate} from "react-router-dom";
 import React, { useState , useEffect} from "react"; // Import React and useState
-import GuestLayout from './components/GuestLayout';
+// import GuestLayout from './components/layouts/GuestLayout';
+// import UserLayout from "./components/layouts/UserView";
+// import DefaultLayout from './components/layouts/DefaultLayout';
+
+import GuestLayout from "./components/Layouts/GuestLayout";
+import UserLayout from "./components/Layouts/UserView";
+import  DefaultLayout from "./components/Layouts/DefaultLayout";
+
 import Login from "./scenes/account/Login";
 import Signup from "./scenes/account/Signup";
 
-import DefaultLayout from './components/DefaultLayout';
 import Dashboard from "./scenes/Dashboard";
 import Table from "./scenes/Database/Table";
 import Form from "./scenes/form/Form";
 import Calendar from "./scenes/calendar/Calendar";
-import Geography from "./scenes/Charts/Geography";
 import BarChart from "./scenes/charts/BarChart/index";
 import Pie from "./scenes/Charts/PieChart";
 import Line from "./scenes/charts/Line/index";
@@ -18,7 +23,7 @@ import Users from "./scenes/users";
 import PatientProfile from './scenes/patient_profile/index'
 import VerificationNotice from "./components/registration/verificationNotice";
 import Verify from "./components/registration/verify";
-import UserLayout from "./components/UserView";
+
 import UserDrawer from "./scenes/global/UserDrawer";
 import ExcelTester from "./scenes/Import/ExcelTester";
 import ExcelToJSON from "./scenes/Import"
@@ -27,6 +32,7 @@ import { useStateContext } from "./contexts/ContextProvider";
 import jwtDecode from 'jwt-decode';
 
 import Statistics from "./scenes/Database/Calculations/Statistics";
+import LoadingPage from "./components/LoadingPage";
 
 
 
@@ -43,7 +49,7 @@ if(storedToken){
 }
 
 
- 
+
 
 const admin_route = [
       {
@@ -79,10 +85,6 @@ const admin_route = [
         element: <Line/>
       },
       {
-        path: '/geography',
-        element: <Geography/>
-      },
-      {
         path: '/profile',
         element: <UserProfile/>
       },
@@ -114,6 +116,7 @@ const admin_route = [
         path: '/tester',
         element: <ExcelTester />
       },
+    
       
 ]
 
@@ -151,13 +154,10 @@ const user_route = [
         element: <Line/>
       },
       {
-        path: '/geography',
-        element: <Geography/>
-      },
-      {
         path: '/profile',
         element: <UserProfile/>
       },
+    
 ]
 
 
@@ -191,8 +191,11 @@ const MyRoutes = createBrowserRouter([
       {
         path:'/activate/:uid/:token',
         element: <Verify/>
-      }
-      
+      },
+      {
+        path: '/loading',
+        element: <LoadingPage />
+      },
     ]
   },
 ])

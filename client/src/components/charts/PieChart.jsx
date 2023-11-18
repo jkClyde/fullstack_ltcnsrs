@@ -1,8 +1,7 @@
 import { ResponsivePie } from "@nivo/pie";
-import { tokens } from "../theme";
+import { tokens } from "../../theme";
 import { useTheme } from "@mui/material";
-import { mockPieData as data } from "../data/mockData";
-import Statistics from "../scenes/Database/Calculations/Statistics";
+import Statistics from "../../scenes/Database/Calculations/Statistics";
 
 const PieChart = ({ isDashboard = false }) => {
   const theme = useTheme();

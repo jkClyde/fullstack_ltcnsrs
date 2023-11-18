@@ -5,8 +5,8 @@ import { tokens } from "../../theme";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import ConfirmationPrompt from "../../components/DeleteConfirm";
-import Header from "../../components/Header";
+import ConfirmationPrompt from "../../components/dashboard_components/DeleteConfirm";
+import Header from "../../components/dashboard_components/Header";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

@@ -1,21 +1,25 @@
 import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Outlet } from 'react-router-dom'
-
-import Topbar from "./../scenes/global/Topbar"
-import Drawer from "./../scenes/global/Drawer";
-import UserDrawer from "../scenes/global/UserDrawer";
-
 import { CssBaseline, ThemeProvider, Box } from "@mui/material";
-import { ColorModeContext, useMode } from "./../theme";
-import { useStateContext } from "../contexts/ContextProvider"; 
+import Topbar from "../../scenes/global/Topbar"
+import Drawer from "../../scenes/global/Drawer";
+import { ColorModeContext, useMode } from "../../theme";
+import { useStateContext } from "../../contexts/ContextProvider"; 
+import { useSelector } from "react-redux";
 
-function UserLayout() {
+
+function DefaultLayout() {
   const {user, token} = useStateContext();
-  
+
+  // console.log(isAdmin, "--------------------------")
+ 
+
   if (!token){
     return <Navigate to='/login'/>
   }
+
+  
 
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(false);
@@ -25,7 +29,7 @@ function UserLayout() {
        <ThemeProvider theme={theme}>
           <CssBaseline />
             <section className="flex app overflow-hidden">
-                <UserDrawer isSidebar={isSidebar} />
+                <Drawer isSidebar={isSidebar} />
                 <div className="content">
                      <Topbar setIsSidebar={setIsSidebar}  />
                 <div className=" h-screen    overflow-scroll ">
@@ -40,4 +44,4 @@ function UserLayout() {
   )
 }
 
-export default UserLayout
+export default DefaultLayout

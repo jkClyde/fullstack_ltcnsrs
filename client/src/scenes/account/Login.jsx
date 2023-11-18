@@ -12,12 +12,17 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
-import Axios from "axios"; // Import Axios
-import jwt_decode from "jwt-decode";
 import lt_logo from "./../../assets/lt_logo.ico";
-import { useStateContext } from "../../contexts/ContextProvider"; // Import the useStateContext hook
-import { useNavigate } from "react-router-dom"; // Import useHistory
+
+import Axios from "axios";
+import jwt_decode from "jwt-decode";
+import { useStateContext } from "../../contexts/ContextProvider"; 
+import { useNavigate } from "react-router-dom"; 
+import { useDispatch } from 'react-redux';
+import { setAdmin} from "./../../redux/actions"
+import store from "./../../redux/store"
 import jwtDecode from 'jwt-decode';
+
 
 function Copyright(props) {
   return (
@@ -47,6 +52,8 @@ function SignInSide() {
   const navigate = useNavigate(); // Initialize useHistory
   const { setUser } = useStateContext();
   const { user, token} = useStateContext(); // Access user, token, setToken, and setUser from context
+  const dispatch = useDispatch();
+
   
 
   useEffect(() => {
@@ -78,7 +85,20 @@ function SignInSide() {
         setUser(jwt_decode(loginResponse.data.access));
         localStorage.setItem("ACCESS_TOKEN", JSON.stringify(loginResponse));
         
-        navigate("/dashboard")
+      //REDUX
+      const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+      console.log('Before dispatch:', store.getState());
+      if(storedToken){
+        const decodedToken = jwtDecode(storedToken.data.access);
+        if (decodedToken.is_admin) {
+          dispatch(setAdmin(true));
+        } else {
+          dispatch(setAdmin(false));
+        }
+      }
+      console.log('After dispatch:', store.getState());
+
+        navigate("/loading")
         window.location.reload(); 
 
     
