@@ -3,6 +3,7 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import Statistics from "../../scenes/Database/Calculations/Statistics";
 
+
 const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);

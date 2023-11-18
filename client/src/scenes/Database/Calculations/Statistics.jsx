@@ -743,3 +743,4 @@ const BarData = [
   };
 };
 
+export default Statistics;
