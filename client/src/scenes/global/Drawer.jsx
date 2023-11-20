@@ -15,6 +15,9 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
+import RestoreIcon from '@mui/icons-material/Restore';
+import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
+import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -170,7 +173,27 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              System
+            </Typography>
+            <Item
+              title="Backup & Restore"
+              to="/backupRestore"
+              icon={<CloudDownloadOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Audit Logs"
+              to="/auditLogs"
+              icon={<TableRowsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             
           </Box>
         </Menu>

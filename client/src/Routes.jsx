@@ -33,6 +33,7 @@ import jwtDecode from 'jwt-decode';
 
 import Statistics from "./scenes/Database/Calculations/Statistics";
 import LoadingPage from "./components/LoadingPage";
+import BackupRestore from "./scenes/backupRestore";
 
 
 
@@ -116,6 +117,14 @@ const admin_route = [
         path: '/tester',
         element: <ExcelTester />
       },
+      {
+        path: '/backupRestore',
+        element: <BackupRestore />
+      },
+      // {
+      //   path: '/auditLogs',
+      //   element: <AuditLogs />
+      // },
     
       
 ]
