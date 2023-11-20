@@ -295,22 +295,16 @@ const ChildProfile = ({ child, updateChildData }) => {
       )
       .then((primaryChildResponse) => {
         console.log("Primarychild data updated:", primaryChildResponse.data);
-
-        // Now, fetch the related ChildHealthInfo record based on the foreign key, quarter, and year
         axios
           .get(
-            `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&childHealth_id=${editedChild.childHealth_id}`
+            `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&childHealth_id=${editedChild.childHealthInfo.childHealth_id}`
           )
           .then((childHealthInfoResponse) => {
-            // Find the ChildHealthInfo record for the desired quarter
             const childHealthInfo = childHealthInfoResponse.data.find(
-              (item) =>
-                item.quarter === selectedQuarter &&
-                item.child === editedChild.childHealthInfo.childHealth_id
+              (item) => item.quarter === selectedQuarter
             );
 
             if (childHealthInfo) {
-              // Update the ChildHealthInfo record for the specific quarter
               const updatedChildData = {
                 weight: editedChild.weight,
                 height: editedChild.height,
@@ -319,15 +313,15 @@ const ChildProfile = ({ child, updateChildData }) => {
                 dow: editedChild.dow,
                 vac: editedChild.vac,
                 purga: editedChild.purga,
-                weightForAge: editedChild.weightForAge,
-                lengthForAge: editedChild.lengthForAge,
-                weightForLength: editedChild.weightForLength,
+                // weightForAge: editedChild.weightForAge,
+                // lengthForAge: editedChild.lengthForAge,
+                // weightForLength: editedChild.weightForLength,
                 child: child.id,
               };
 
               axios
                 .put(
-                  `http://127.0.0.1:8000/childhealthinfo/${childHealthInfo.childHealth_id}/`,
+                  `http://127.0.0.1:8000/childhealthinfo/${editedChild.childHealthInfo.childHealth_id}/`,
                   updatedChildData
                 )
                 .then((response) => {
@@ -500,28 +494,28 @@ const ChildProfile = ({ child, updateChildData }) => {
             weightForAge: childHealthInfo.weightForAge || "",
             lengthForAge: childHealthInfo.lengthForAge || "",
             weightForLength: childHealthInfo.weightForLength || "",
-            // weightForAge:
-            //   childHealthInfo.weightForAge ||
-            //   weightForAgeStatus(
-            //     prevChild.birthdate,
-            //     childHealthInfo.weight,
-            //     prevChild.gender
-            //   ),
-            // lengthForAge:
-            //   childHealthInfo.lengthForAge ||
-            //   lengthForAgeStatus(
-            //     prevChild.birthdate,
-            //     childHealthInfo.height,
-            //     prevChild.gender
-            //   ),
-            // weightForLength:
-            //   childHealthInfo.weightForLength ||
-            //   weightForLengthStatus(
-            //     prevChild.birthdate,
-            //     childHealthInfo.height,
-            //     childHealthInfo.weight,
-            //     prevChild.gender
-            //   ),
+            weightForAge:
+              childHealthInfo.weightForAge ||
+              weightForAgeStatus(
+                prevChild.birthdate,
+                childHealthInfo.weight,
+                prevChild.gender
+              ),
+            lengthForAge:
+              childHealthInfo.lengthForAge ||
+              lengthForAgeStatus(
+                prevChild.birthdate,
+                childHealthInfo.height,
+                prevChild.gender
+              ),
+            weightForLength:
+              childHealthInfo.weightForLength ||
+              weightForLengthStatus(
+                prevChild.birthdate,
+                childHealthInfo.height,
+                childHealthInfo.weight,
+                prevChild.gender
+              ),
           }));
         } else {
           // No data found for the selected quarter and year

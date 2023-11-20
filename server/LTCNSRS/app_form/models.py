@@ -108,7 +108,7 @@ class ChildHealthInfo(models.Model):
     getYear = models.IntegerField(null=True, blank=True)  
     weightForAge = models.CharField(max_length=50, blank=True, default='')
     weightForLength = models.CharField(max_length=50, blank=True, default='')
-    lengthforAge = models.CharField(max_length=50, blank=True, default='')
+    lengthForAge = models.CharField(max_length=50, blank=True, default='')
     def save(self, *args, **kwargs):
         # Calculate the quarter based on the dow field
         if self.dow:
