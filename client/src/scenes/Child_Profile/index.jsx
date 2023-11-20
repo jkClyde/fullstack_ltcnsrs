@@ -271,81 +271,72 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   //{Update Button}//
   const handleUpdateClick = async () => {
-    console.log("Edited Child Data:", editedChild);
-    // Update the table data in gridData with the updated information immediately
-    const updatedPrimaryChildData = {
-      fullName: editedChild.fullName,
-      address: editedChild.address,
-      pt: editedChild.pt,
-      muac: editedChild.muac,
-      gender: editedChild.gender,
-      birthdate: editedChild.birthdate,
-      aim: editedChild.aim,
-      parentName: editedChild.parentName,
-      occupation: editedChild.occupation,
-      relationship: editedChild.relationship,
-      ethnicity: editedChild.ethnicity,
-      barangay: editedChild.barangay,
-    };
+    try {
+      // Update the primary child data
+      const updatedPrimaryChildData = {
+        fullName: editedChild.fullName,
+        address: editedChild.address,
+        pt: editedChild.pt,
+        muac: editedChild.muac,
+        gender: editedChild.gender,
+        birthdate: editedChild.birthdate,
+        aim: editedChild.aim,
+        parentName: editedChild.parentName,
+        occupation: editedChild.occupation,
+        relationship: editedChild.relationship,
+        ethnicity: editedChild.ethnicity,
+        barangay: editedChild.barangay,
+      };
 
-    axios
-      .put(
+      const primaryChildResponse = await axios.put(
         `http://127.0.0.1:8000/primarychild/${child.id}/`,
         updatedPrimaryChildData
-      )
-      .then((primaryChildResponse) => {
-        console.log("Primarychild data updated:", primaryChildResponse.data);
-        axios
-          .get(
-            `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&childHealth_id=${editedChild.childHealthInfo.childHealth_id}`
-          )
-          .then((childHealthInfoResponse) => {
-            const childHealthInfo = childHealthInfoResponse.data.find(
-              (item) => item.quarter === selectedQuarter
-            );
+      );
 
-            if (childHealthInfo) {
-              const updatedChildData = {
-                weight: editedChild.weight,
-                height: editedChild.height,
-                muac: editedChild.muac,
-                disability: editedChild.disability,
-                dow: editedChild.dow,
-                vac: editedChild.vac,
-                purga: editedChild.purga,
-                // weightForAge: editedChild.weightForAge,
-                // lengthForAge: editedChild.lengthForAge,
-                // weightForLength: editedChild.weightForLength,
-                child: child.id,
-              };
+      console.log("Primarychild data updated:", primaryChildResponse.data);
 
-              axios
-                .put(
-                  `http://127.0.0.1:8000/childhealthinfo/${editedChild.childHealthInfo.childHealth_id}/`,
-                  updatedChildData
-                )
-                .then((response) => {
-                  console.log("Childhealthinfo data updated:", response.data);
-                })
-                .catch((error) => {
-                  console.error("Error updating childhealthinfo data:", error);
-                });
-            }
-          })
-          .catch((childHealthInfoError) => {
-            console.error(
-              "Error fetching ChildHealthInfo data:",
-              childHealthInfoError
-            );
-          });
+      // Fetch all ChildHealthInfo records for the selected child
+      const childHealthInfoResponse = await axios.get(
+        `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&quarter=${selectedQuarter}`
+      );
 
-        setIsEditing(false);
+      const childHealthInfo = childHealthInfoResponse.data.find(
+        (info) => info.quarter === selectedQuarter && info.child === child.id
+      );
 
-        setIsSnackbarOpen(true);
-      })
-      .catch((primaryChildError) => {
-        console.error("Error updating primarychild data:", primaryChildError);
-      });
+      // Loop through each quarter's ChildHealthInfo entry and update
+      if (childHealthInfo) {
+        // Update the child health information for each quarter
+        const updatedChildData = {
+          weight: editedChild.weight,
+          height: editedChild.height,
+          muac: editedChild.muac,
+          disability: editedChild.disability,
+          dow: editedChild.dow,
+          vac: editedChild.vac,
+          purga: editedChild.purga,
+          weightForAge: editedChild.weightForAge,
+          lengthForAge: editedChild.lengthForAge,
+          weightForLength: editedChild.weightForLength,
+          child: child.id,
+        };
+
+        const updateChildHealthInfoResponse = await axios.put(
+          `http://127.0.0.1:8000/childhealthinfo/${childHealthInfo.childHealth_id}/`,
+          updatedChildData
+        );
+
+        console.log(
+          `Childhealthinfo data updated for quarter ${childHealthInfo.quarter}:`,
+          updateChildHealthInfoResponse.data
+        );
+      }
+
+      setIsEditing(false);
+      setIsSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
   };
 
   const handleEditClick = () => {
