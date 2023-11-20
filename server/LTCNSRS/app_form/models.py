@@ -19,7 +19,11 @@ bpe_choices = (
     ('Yes', 'Yes'),
     ('No', 'No')
 )
-fic_choices = (
+vac_choices = (
+    ('Yes', 'Yes'),
+    ('No', 'No')
+)
+deworming_choices = (
     ('Yes', 'Yes'),
     ('No', 'No')
 )
@@ -29,41 +33,6 @@ relationship_choices = (
     ('Guardian', 'Guardian'),
     ('', 'not specified')
 )
-# ethnicity_choices = (
-#     ('Others', 'Other'),
-#     ('Aggay', 'Aggay'),
-#     ('Akeanon/Aklanon', 'Akeanon/Aklanon'),
-#     ('Apayao/Yapayao', 'Apayao/Yapayao'),
-#     ('Ayangan', 'Ayangan'),
-#     ('Balangao/Baliwon', 'Balangao/Baliwon'),
-#     ('Bikol/Bicol', 'Bikol/Bicol'),
-#     ('Bisaya/Binisaya', 'Bisaya/Binisaya'),
-#     ('Bontok/Binontok', 'Bontok/Binontok'),
-#     ('Cebuano', 'Cebuano'),
-#     ('Hamtikanon', 'Hamtikanon'),
-#     ('Hiligaynon,Ilonggo', 'Hiligaynon,Ilonggo'),
-#     ('Ibaloi/Inibaloi', 'Ibaloi/Inibaloi'),
-#     ('Ibanag', 'Ibanag'),
-#     ('Ibontoc', 'Ibontoc'),
-#     ('Ifugao', 'Ifugao'),
-#     ('Kalanguya/Ikalahan', 'Kalanguya/Ikalahan'),
-#     ('Ilocano', 'Ilocano'),
-#     ('Iranon', 'Iranon'),
-#     ('Itneg', 'Itneg'),
-#     ('Kalinga', 'Kalinga'),
-#     ('Kankanai/Kankanaey', 'Kankanai/Kankanaey'),
-#     ('Kapampangan', 'Kapampangan'),
-#     ('Karao', 'Karao'),
-#     ('Kinalinga', 'Kinalinga'),
-#     ('Kiniray-a', 'Kiniray-a'),
-#     ('Maranao', 'Maranao'),
-#     ('Masbateno/Masbatean', 'Masbateno/Masbatean'),
-#     ('Pangasinan/Panggalato', 'Pangasinan/Panggalato'),
-#     ('Surigaonon', 'Surigaonon'),
-#     ('Tagalog', 'Tagalog'),
-#     ('Tausug', 'Tausug'),
-#     ('Waray', 'Waray'),
-# )
 barangay_choices = (
     ("Alapang", "Alapang"),
     ("Alno", "Alno"),
@@ -98,8 +67,6 @@ class PrimaryChild(models.Model):
         max_length=200, choices=relationship_choices, default='Not specified')
     ethnicity = models.CharField(
         max_length=200, default='Not specified')
-    # customEthnicity = models.CharField(
-    #     max_length=200, default='Not specified')
     barangay = models.CharField(
         max_length=200, choices=barangay_choices, default='Not specified')
     archive = models.BooleanField(default=False) 
@@ -131,15 +98,17 @@ class ChildHealthInfo(models.Model):
     weight = models.FloatField(default=0)
     height = models.FloatField(default=0)
     muac = models.FloatField(default=0)
-    deworming1 = models.DateField(null=True, blank=True)
-    deworming2 = models.DateField(null=True, blank=True)
-    fic = models.CharField(max_length=10, choices=fic_choices, default='no')
+    vac = models.CharField(max_length=10, choices=vac_choices, default='no')
+    deworming = models.CharField(max_length=10, choices=deworming_choices, default='no')
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='no')
     disability = models.CharField(max_length=50, blank=True, default='')
     child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
     quarter = models.CharField(max_length=20, default='1st Quarter')
     year = models.IntegerField(null=True, blank=True)  # Add a year field
     getYear = models.IntegerField(null=True, blank=True)  
+    weightForAge = models.CharField(max_length=50, blank=True, default='')
+    weightForLength = models.CharField(max_length=50, blank=True, default='')
+    weightForLength = models.CharField(max_length=50, blank=True, default='')
     def save(self, *args, **kwargs):
         # Calculate the quarter based on the dow field
         if self.dow:

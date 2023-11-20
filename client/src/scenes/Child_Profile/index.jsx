@@ -201,6 +201,11 @@ const ChildProfile = ({ child, updateChildData }) => {
           dowMonth <= 12 &&
           dowYear === selectedYear)
       ) {
+
+        // Calculate weightForAge, lengthForAge, and weightForLength
+        const weightForAge = weightForAgeStatus(editedChild.birthdate, editedChild.weight, editedChild.gender);
+        const lengthForAge = lengthForAgeStatus(editedChild.birthdate, editedChild.length, editedChild.gender);
+        const weightForLength = weightForLengthStatus(editedChild.birthdate, editedChild.length, editedChild.weight, editedChild.gender);
         // Create new child data
         const newChildData = {
           child: child.id,
@@ -211,12 +216,11 @@ const ChildProfile = ({ child, updateChildData }) => {
           muac: editedChild.muac || null,
           disability: editedChild.disability || null,
           dow: editedChild.dow || null,
-          fic: editedChild.fic || null,
-          deworming1: editedChild.deworming1 || null,
-          deworming2: editedChild.deworming2 || null,
-          weightForAge: editedChild.weightForAge || null,
-          lengthForAge: editedChild.lengthForAge || null,
-          weightForLength: editedChild.weightForLength || null,
+          vac: editedChild.vac || null,
+          deworming: editedChild.deworming || null,
+          weightForAge: weightForAge,
+          lengthForAge: lengthForAge,
+          weightForLength: weightForLength,
         };
 
         // Now, send a POST request to create the new child data
@@ -290,6 +294,11 @@ const ChildProfile = ({ child, updateChildData }) => {
             );
 
             if (childHealthInfo) {
+               // Calculate weightForAge, lengthForAge, and weightForLength
+              const weightForAge = weightForAgeStatus(editedChild.birthdate, editedChild.weight, editedChild.gender);
+              const lengthForAge = lengthForAgeStatus(editedChild.birthdate, editedChild.length, editedChild.gender);
+              const weightForLength = weightForLengthStatus(editedChild.birthdate, editedChild.length, editedChild.weight, editedChild.gender);
+              
               // Update the ChildHealthInfo record for the specific quarter
               const updatedChildData = {
                 weight: editedChild.weight,
@@ -297,12 +306,14 @@ const ChildProfile = ({ child, updateChildData }) => {
                 muac: editedChild.muac,
                 disability: editedChild.disability,
                 dow: editedChild.dow,
-                fic: editedChild.fic,
-                deworming1: editedChild.deworming1,
-                deworming2: editedChild.deworming2,
+                vac: editedChild.vac,
+                deworming: editedChild.deworming,
                 weightForAge: editedChild.weightForAge,
                 lengthForAge: editedChild.lengthForAge,
                 weightForLength: editedChild.weightForLength,
+                weightForAge,
+                lengthForAge,
+                weightForLength,
                 child: child.id,
               };
 
@@ -475,34 +486,33 @@ const ChildProfile = ({ child, updateChildData }) => {
             muac: childHealthInfo.muac || "",
             disability: childHealthInfo.disability || "",
             dow: childHealthInfo.dow || "",
-            fic: childHealthInfo.fic,
-            deworming1: childHealthInfo.deworming1 || "",
-            deworming2: childHealthInfo.deworming2 || "",
+            vac: childHealthInfo.vac,
+            deworming: childHealthInfo.deworming || "",
             weightForAge: childHealthInfo.weightForAge || "",
             lengthForAge: childHealthInfo.lengthForAge || "",
             weightForLength: childHealthInfo.weightForLength || "",
-            weightForAge:
-              childHealthInfo.weightForAge ||
-              weightForAgeStatus(
-                prevChild.birthdate,
-                childHealthInfo.weight,
-                prevChild.gender
-              ),
-            lengthForAge:
-              childHealthInfo.lengthForAge ||
-              lengthForAgeStatus(
-                prevChild.birthdate,
-                childHealthInfo.height,
-                prevChild.gender
-              ),
-            weightForLength:
-              childHealthInfo.weightForLength ||
-              weightForLengthStatus(
-                prevChild.birthdate,
-                childHealthInfo.height,
-                childHealthInfo.weight,
-                prevChild.gender
-              ),
+            // weightForAge:
+            //   childHealthInfo.weightForAge ||
+            //   weightForAgeStatus(
+            //     prevChild.birthdate,
+            //     childHealthInfo.weight,
+            //     prevChild.gender
+            //   ),
+            // lengthForAge:
+            //   childHealthInfo.lengthForAge ||
+            //   lengthForAgeStatus(
+            //     prevChild.birthdate,
+            //     childHealthInfo.height,
+            //     prevChild.gender
+            //   ),
+            // weightForLength:
+            //   childHealthInfo.weightForLength ||
+            //   weightForLengthStatus(
+            //     prevChild.birthdate,
+            //     childHealthInfo.height,
+            //     childHealthInfo.weight,
+            //     prevChild.gender
+            //   ),
           }));
         } else {
           // No data found for the selected quarter and year
@@ -520,9 +530,8 @@ const ChildProfile = ({ child, updateChildData }) => {
             muac: "N/A",
             disability: "N/A",
             dow: "N/A",
-            fic: "N/A",
-            deworming1: "N/A",
-            deworming2: "N/A",
+            vac: "N/A",
+            deworming: "N/A",
             weightForAge: "N/A",
             lengthForAge: "N/A",
             weightForLength: "N/A",
@@ -686,7 +695,7 @@ const ChildProfile = ({ child, updateChildData }) => {
             </FormControl>
           </Box>
         ) : (
-          // Display gender information when not editing
+          // Display bpe information when not editing
           <Grid item xs={12}>
             <Box>
               <Box padding="10px" borderRadius="5px" border="1px solid grey">
@@ -702,45 +711,69 @@ const ChildProfile = ({ child, updateChildData }) => {
 
       <Grid item xs={4}>
         {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
-        {/* {renderTextField("Fully Immunized Child", "fic", editedChild.fic)} */}
-        {isEditing && isChildMoreThan12Months ? (
-  // Render the FIC field only when editing and child is more than 12 months old
-  <Box mt="10px">
-    <FormControl fullWidth>
-      <InputLabel id="fic-select-label">Fully Immunized Child</InputLabel>
-      <Select
-        labelId="fic-select-label"
-        label="Fully Immunized Child"
-        id="fic-select"
-        name="fic"
-        value={editedChild.fic}
-        onChange={handleInputChange}
-      >
-        <MenuItem value="Yes">Yes</MenuItem>
-        <MenuItem value="No">No</MenuItem>
-      </Select>
-    </FormControl>
-  </Box>
-) : !isEditing && isChildMoreThan12Months ? (
-  // Display FIC information when not editing
-  <Grid item xs={12}>
-    <Box>
-      <Box padding="10px" borderRadius="5px" border="1px solid grey">
-        <Typography variant="h6">Fully Immunized Child</Typography>
-        <Typography variant="body1" style={{ fontWeight: "bold" }}>
-          {editedChild.fic}
-        </Typography>
-      </Box>
-    </Box>
-  </Grid>
-) : null}
-
-{isChildMoreThan12Months && (
-  <>
-    {renderTextField("1st Deworming", "deworming1", editedChild.deworming1)}
-    {renderTextField("2nd Deworming", "deworming2", editedChild.deworming2)}
-  </>
-)}
+        {isEditing ? (
+          // Render the vac field only when editing
+          <Box mt="10px">
+            <FormControl fullWidth>
+              <InputLabel id="vac-select-label">Vaccination</InputLabel>
+              <Select
+                labelId="vac-select-label"
+                label="Vaccination"
+                id="vac-select"
+                name="vac"
+                value={editedChild.vac}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        ) : (
+          // Display vac information when not editing
+          <Grid item xs={12}>
+            <Box>
+              <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                <Typography variant="h6">Vaccination</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild.vac}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        )}
+        {isEditing ? (
+          // Render the deworming field only when editing
+          <Box mt="10px">
+            <FormControl fullWidth>
+              <InputLabel id="deworming-select-label">Deworming</InputLabel>
+              <Select
+                labelId="deworming-select-label"
+                label="Deworming"
+                id="deworming-select"
+                name="deworming"
+                value={editedChild.deworming}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        ) : (
+          // Display deworming information when not editing
+          <Grid item xs={12}>
+            <Box mt="10px">
+              <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                <Typography variant="h6">Deworming</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild.deworming}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        )}
+        
 
 </Grid>
 

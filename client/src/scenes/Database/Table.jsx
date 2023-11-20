@@ -354,16 +354,14 @@ const Table = () => {
         aim: primaryChild.aim,
         parentName: primaryChild.parentName,
         occupation: primaryChild.occupation,
-        // relationship: primaryChild.relationship,
         ethnicity: primaryChild.ethnicity,
         barangay: primaryChild.barangay,
         dow: matchingChildHealthInfo ? matchingChildHealthInfo.dow : "N/A",
         weight: matchingChildHealthInfo ? matchingChildHealthInfo.weight : 0,
         height: matchingChildHealthInfo ? matchingChildHealthInfo.height : 0,
         muac: matchingChildHealthInfo ? matchingChildHealthInfo.muac : 0,
-        deworming1: matchingChildHealthInfo ? matchingChildHealthInfo.deworming1 : "N/A",
-        deworming2: matchingChildHealthInfo ? matchingChildHealthInfo.deworming2 : "N/A",
-        fic: matchingChildHealthInfo ? matchingChildHealthInfo.fic : "N/A",
+        deworming: matchingChildHealthInfo ? matchingChildHealthInfo.deworming : "N/A",
+        vac: matchingChildHealthInfo ? matchingChildHealthInfo.vac : "N/A",
         bpe: matchingChildHealthInfo ? matchingChildHealthInfo.bpe : "N/A",
         disability: matchingChildHealthInfo
           ? matchingChildHealthInfo.disability
@@ -531,50 +529,20 @@ const Table = () => {
       cellClassName: "centered-cell",
     },
     {
-      field: "fic",
-      headerName: "FIC",
-      flex: 1,
+      field: "vac",
+      headerName: "Vaccination",
+      flex: 2,
       renderCell: renderWrappedCell,
       headerAlign: "center",
       cellClassName: "centered-cell",
     },
     {
-      field: "deworming1",
-      headerName: "1st Deworming",
-      type: "number", //need to identify if value is text/number
-      flex: 3,
+      field: "deworming",
+      headerName: "Deworming",
+      flex: 2,
+      renderCell: renderWrappedCell,
       headerAlign: "center",
       cellClassName: "centered-cell",
-      renderCell: (params) => {
-        if (params.value) {
-          const date = new Date(params.value);
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDate().toString().padStart(2, "0");
-          const year = date.getFullYear().toString();
-          return `${month}/${day}/${year}`;
-        } else {
-          return ""; // Return an empty string if there's no value
-        }
-      },
-    },
-    {
-      field: "deworming2",
-      headerName: "2nd Deworming",
-      type: "number", //need to identify if value is text/number
-      flex: 3,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-      renderCell: (params) => {
-        if (params.value) {
-          const date = new Date(params.value);
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDate().toString().padStart(2, "0");
-          const year = date.getFullYear().toString();
-          return `${month}/${day}/${year}`;
-        } else {
-          return ""; // Return an empty string if there's no value
-        }
-      },
     },
     {
       field: "weightForAge",
@@ -844,50 +812,20 @@ const Table = () => {
       cellClassName: "centered-cell",
     },
     {
-      field: "fic",
-      headerName: "FIC",
-      flex: 1,
+      field: "vac",
+      headerName: "Vaccination",
+      flex: 2,
       renderCell: renderWrappedCell,
       headerAlign: "center",
       cellClassName: "centered-cell",
     },
     {
-      field: "deworming1",
-      headerName: "1st Deworming",
-      type: "number", //need to identify if value is text/number
-      flex: 3,
+      field: "deworming",
+      headerName: "Deworming",
+      flex: 2,
+      renderCell: renderWrappedCell,
       headerAlign: "center",
       cellClassName: "centered-cell",
-      renderCell: (params) => {
-        if (params.value) {
-          const date = new Date(params.value);
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDate().toString().padStart(2, "0");
-          const year = date.getFullYear().toString();
-          return `${month}/${day}/${year}`;
-        } else {
-          return ""; // Return an empty string if there's no value
-        }
-      },
-    },
-    {
-      field: "deworming2",
-      headerName: "2nd Deworming",
-      type: "number", //need to identify if value is text/number
-      flex: 3,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-      renderCell: (params) => {
-        if (params.value) {
-          const date = new Date(params.value);
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDate().toString().padStart(2, "0");
-          const year = date.getFullYear().toString();
-          return `${month}/${day}/${year}`;
-        } else {
-          return ""; // Return an empty string if there's no value
-        }
-      },
     },
     {
       field: "weightForAge",
@@ -1043,50 +981,20 @@ const Table = () => {
       cellClassName: "centered-cell",
     },
     {
-      field: "fic",
-      headerName: "FIC",
-      flex: 1,
+      field: "vac",
+      headerName: "Vaccination",
+      flex: 2,
       renderCell: renderWrappedCell,
       headerAlign: "center",
       cellClassName: "centered-cell",
     },
     {
-      field: "deworming1",
-      headerName: "1st Deworming",
-      type: "number", //need to identify if value is text/number
-      flex: 3,
+      field: "deworming",
+      headerName: "Deworming",
+      flex: 2,
+      renderCell: renderWrappedCell,
       headerAlign: "center",
       cellClassName: "centered-cell",
-      renderCell: (params) => {
-        if (params.value) {
-          const date = new Date(params.value);
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDate().toString().padStart(2, "0");
-          const year = date.getFullYear().toString();
-          return `${month}/${day}/${year}`;
-        } else {
-          return ""; // Return an empty string if there's no value
-        }
-      },
-    },
-    {
-      field: "deworming2",
-      headerName: "2nd Deworming",
-      type: "number", //need to identify if value is text/number
-      flex: 3,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-      renderCell: (params) => {
-        if (params.value) {
-          const date = new Date(params.value);
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDate().toString().padStart(2, "0");
-          const year = date.getFullYear().toString();
-          return `${month}/${day}/${year}`;
-        } else {
-          return ""; // Return an empty string if there's no value
-        }
-      },
     },
     {
       field: "weightForAge",

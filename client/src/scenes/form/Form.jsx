@@ -38,7 +38,7 @@ const Form = () => {
     // }
     else if (dateType === "dow") {
       setSelectedDOW(formattedDate);
-    } else if (dateType === "deworming1") {
+    } else if (dateType === "deworming") {
       setselectedDewormingDate1(formattedDate);
     } else if (dateType === "deworming2") {
       setselectedDewormingDate2(formattedDate);
@@ -106,9 +106,8 @@ const Form = () => {
       weight: values.weight,
       height: values.height,
       muac: values.muac,
-      fic: values.fic,
-      deworming1: formattedDewormingDate1,
-      deworming2: formattedDewormingDate2,
+      vac: values.vac,
+      deworming: formattedDewormingDate1,
       bpe: values.bpe,
       disability: values.disability,
     };
@@ -192,10 +191,10 @@ const Form = () => {
       setselectedDewormingDate1(null);
       setselectedDewormingDate2(null);
 
-      // Show success notification
+      // Show success notivacation
       toast.success("Form cleared successfully!", {
         position: "top-right",
-        autoClose: 3000, // Notification will automatically close after 3000 milliseconds (3 seconds)
+        autoClose: 3000, // Notivacation will automatically close after 3000 milliseconds (3 seconds)
       });
     }
   }, []);
@@ -517,14 +516,14 @@ const Form = () => {
                 selectedDate={selectedDate} // Pass the selectedDate prop here
               /> */}
               <MenuSelect
-                label="Fully Immunized Child (FIC)"
-                name="fic"
-                value={values.fic}
+                label="Vaccination"
+                name="vac"
+                value={values.vac}
                 onChange={(name, value) => {
                   setFieldValue(name, value);
                 }}
-                error={!!touched.fic && !!errors.fic}
-                helperText={touched.fic && errors.fic}
+                error={!!touched.vac && !!errors.vac}
+                helperText={touched.vac && errors.vac}
                 options={[
                   { value: "", label: "Select", isDisabled: true }, // Add a null option
                   { value: "Yes", label: "Yes" },
@@ -532,31 +531,21 @@ const Form = () => {
                 ]}
                 sx={{ gridColumn: "span 1" }}
               />
-              <DateInput
-                label="1st Deworming"
-                name="deworming1"
-                value={selectedDewormingDate1}
-                onChange={(name, date) =>
-                  handleDateChange(name, date, "deworming1")
-                }
-                error={!!touched.deworming1 && !!errors.deworming1}
-                helperText={touched.deworming1 && errors.deworming1}
-                className="dateInput" // You can add custom CSS classes if needed
+              <MenuSelect
+                label="Deworming"
+                name="deworming"
+                value={values.deworming}
+                onChange={(name, value) => {
+                  setFieldValue(name, value);
+                }}
+                error={!!touched.deworming && !!errors.deworming}
+                helperText={touched.deworming && errors.deworming}
+                options={[
+                  { value: "", label: "Select", isDisabled: true }, // Add a null option
+                  { value: "Yes", label: "Yes" },
+                  { value: "No", label: "No" },
+                ]}
                 sx={{ gridColumn: "span 1" }}
-                selectedDate={selectedDate} // Pass the selectedDate prop here
-              />
-              <DateInput
-                label="2nd Deworming"
-                name="deworming2"
-                value={selectedDewormingDate2}
-                onChange={(name, date) =>
-                  handleDateChange(name, date, "deworming2")
-                }
-                error={!!touched.deworming2 && !!errors.deworming2}
-                helperText={touched.deworming2 && errors.deworming2}
-                className="dateInput" // You can add custom CSS classes if needed
-                sx={{ gridColumn: "span 1" }}
-                selectedDate={selectedDate} // Pass the selectedDate prop here
               />
             </Box>
 
@@ -598,14 +587,14 @@ const checkoutSchema = yup.object().shape({
     ),
   gender: yup.string().required("Sex is required"),
   // relationship: yup.string().required("Relationship is required"),
-  // ethnicity: yup.string().required("Ethnicity is required"),
+  ethnicity: yup.string().notRequired(),
   address: yup
-    .string()
-    .required("required")
-    .matches(
-      /^[A-Za-z\s0-9]{2,50}$/,
-      "Should contain only 2-20 letters (no special characters)"
-    ),
+  .string()
+  .required("required")
+  .matches(
+    /^[A-Za-z\d\s\-]{2,50}$/, 
+    "Should contain only 2-50 letters, numbers, spaces, or dashes"
+  ),
   pt: yup.string().required("Required"),
   parentName: yup
     .string()
@@ -616,7 +605,7 @@ const checkoutSchema = yup.object().shape({
     ),
   occupation: yup
     .string()
-    .required("Required")
+    .notRequired()
     .matches(
       /^[A-Za-z\s]{2,16}$/,
       "Should contain only 2-16 letters (no special characters)"
@@ -629,8 +618,8 @@ const checkoutSchema = yup.object().shape({
     .number()
     .required("Required")
     .typeError("Height must be a number"),
-  muac: yup.number().required("Required").typeError("MUAC must be a number"),
-  bpe: yup.string().required("BPE is required"),
+  muac: yup.number().typeError("MUAC must be a number"),
+  bpe: yup.string().notRequired(),
   disability: yup.string().notRequired(),
 });
 
