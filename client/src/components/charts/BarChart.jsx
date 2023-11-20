@@ -1,8 +1,7 @@
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
-import { tokens } from "../theme";
-import { mockBarangayData as data } from "../data/mockData";
-import Statistics from "../scenes/Database/Calculations/Statistics";
+import { tokens } from "../../theme";
+import Statistics from "../../scenes/Database/Calculations/Statistics";
 
 
  // Define a custom color for the "normal" category

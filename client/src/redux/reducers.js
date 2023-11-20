@@ -1,12 +1,15 @@
-// src/redux/reducers.js
+import { SET_ADMIN } from "./actions";
+
 const initialState = {
-    childData: [],
-  };
+  isAdmin: false,
+};
   
   const rootReducer = (state = initialState, action) => {
     switch (action.type) {
-      case 'SET_CHILD_DATA':
-        return { ...state, childData: action.payload };
+      case SET_ADMIN:
+        return {
+           ...state,  
+           isAdmin: action.payload };
       default:
         return state;
     }

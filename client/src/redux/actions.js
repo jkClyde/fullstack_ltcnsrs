@@ -1,6 +1,9 @@
-// src/redux/actions.js
-export const setChildData = (data) => ({
-    type: 'SET_CHILD_DATA',
-    payload: data,
-  });
-  
+// authActions.js
+export const SET_ADMIN = 'SET_ADMIN';
+
+export const setAdmin = (isAdmin) => {
+  return {
+    type: SET_ADMIN,
+    payload: isAdmin,
+  };
+};

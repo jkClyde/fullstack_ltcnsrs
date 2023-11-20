@@ -446,7 +446,7 @@ const Table = () => {
       cellClassName: "fname-column--cell",
       renderCell: renderWrappedCell,
       headerAlign: "center",
-      cellClassName: "centered-cell",
+      cellClassName: "name-column--cell",
     },
     {
       field: "birthdate",
@@ -898,7 +898,7 @@ const Table = () => {
       cellClassName: "fname-column--cell",
       renderCell: renderWrappedCell,
       headerAlign: "center",
-      cellClassName: "centered-cell",
+      cellClassName: "centered-cell", 
     },
     {
       field: "birthdate",
@@ -1160,6 +1160,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab1}
         columns={columnsTab1}
+        sx={{height: '70vh'}}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1269,6 +1270,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab2}
         columns={columnsTab2}
+        sx={{height: '70vh'}}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1350,6 +1352,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab3}
         columns={columnsTab3}
+        sx={{height: '70vh'}}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1368,6 +1371,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab4}
         columns={columnsTab4}
+        sx={{height: '70vh'}}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1427,7 +1431,7 @@ const Table = () => {
             backgroundColor:
               activeTab === 0 ? colors.blueAccent[700] : "initial",
             color: activeTab === 0 ? colors.grey[100] : colors.grey[100],
-            borderRadius: "20px 20px 0 0",
+            borderRadius: "20px 20px 0 0", 
           }}
         />
         <Tab

@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Outlet } from 'react-router-dom'
-
-import Topbar from "./../scenes/global/Topbar"
-import Drawer from "./../scenes/global/Drawer";
-
 import { CssBaseline, ThemeProvider, Box } from "@mui/material";
-import { ColorModeContext, useMode } from "./../theme";
-import { useStateContext } from "../contexts/ContextProvider"; 
 
-function DefaultLayout() {
+import { ColorModeContext, useMode } from "../../theme";
+import { useStateContext } from "../../contexts/ContextProvider"; 
+import Topbar from "../../scenes/global/Topbar"
+import UserDrawer from "../../scenes/global/UserDrawer";
+
+function UserLayout() {
   const {user, token} = useStateContext();
   
   if (!token){
@@ -24,7 +23,7 @@ function DefaultLayout() {
        <ThemeProvider theme={theme}>
           <CssBaseline />
             <section className="flex app overflow-hidden">
-                <Drawer isSidebar={isSidebar} />
+                <UserDrawer isSidebar={isSidebar} />
                 <div className="content">
                      <Topbar setIsSidebar={setIsSidebar}  />
                 <div className=" h-screen    overflow-scroll ">
@@ -39,4 +38,4 @@ function DefaultLayout() {
   )
 }
 
-export default DefaultLayout
+export default UserLayout

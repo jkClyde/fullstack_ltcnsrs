@@ -29,10 +29,10 @@ function mapGender(gender) {
   // Trim the input to remove leading and trailing whitespaces
   gender = gender.trim();
 
-  if (gender === 'M') {
+  if (gender === 'M' || gender === "m") {
     return 'Male';
   } 
-  else if (gender === 'F') {
+  else if (gender === 'F' || gender === "f") {
     return 'Female';
   }
   // Handle other cases if needed

@@ -10,7 +10,7 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import lt_logo from '../../assets/lt_logo.ico'
 
-import {AccountItem, SettingsItem} from "../../components/MenuListComposition";
+import {AccountItem, SettingsItem} from "../../components/dashboard_components/MenuListComposition";
 import Button from '@mui/material/Button';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';

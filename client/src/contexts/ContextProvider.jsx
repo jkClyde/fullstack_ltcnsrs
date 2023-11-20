@@ -1,6 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import jwt_decode from "jwt-decode";
-
+import { createContext, useContext, useState, useEffect  } from "react";
 import Axios from "axios"; // Import Axios
 
 const StateContext = createContext({
@@ -12,42 +10,42 @@ const StateContext = createContext({
   setToken: () => {},
   setNotification: () => {},
   logout: () => {}, // Add a logout function
-  fetchEvents: () => {},
   activateUser: () => {},
 });
 
 export const ContextProvider = ({ children }) => {
+  //States -----------------------------------------------------
+  const [refresher, setRefresher] = useState(1);
+  const [is_admin, setIsAdmin] = useState(false); 
   const [user, setUser] = useState({});
   const [token, _setToken] = useState(() => {
     const storedToken = localStorage.getItem("ACCESS_TOKEN");
     return storedToken ? JSON.parse(storedToken) : null;
   });
   const [notification, _setNotification] = useState("");
-  let [loading, setLoading] = useState(true);
+  const [refreshToken, _setRefreshToken] = useState(() => {
+    const storedRefreshToken = localStorage.getItem("REFRESH_TOKEN");
+    return storedRefreshToken ? JSON.parse(storedRefreshToken) : null;
+  });
 
-  const [refresher, setRefresher] = useState(1);
+ //FunCtion -----------------------------------------------------
 
-  const [is_admin, setIsAdmin] = useState(false); // Initialize is_admin state
-
-
-
+  //Token Manager
   const setToken = (token) => {
     _setToken(token);
 
     if (token) {
       localStorage.setItem("ACCESS_TOKEN", JSON.stringify(token));
-      // Store user-related data in local storage
       localStorage.setItem("USER_DATA", JSON.stringify(user));
     } else {
       localStorage.removeItem("ACCESS_TOKEN");
-      // Remove user-related data from local storage when logging out
       localStorage.removeItem("USER_DATA");
     }
   };
 
+  //Getting User Information || checking user roles
   const fetchUserData = () => {
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-    // Replace with your actual API endpoint
     fetch('http://127.0.0.1:8000/auth/users/me/', {
       method: 'GET',
       headers: {
@@ -57,19 +55,14 @@ export const ContextProvider = ({ children }) => {
       .then((response) => response.json())
       .then((data) => {
         setUser(data);
-        setIsAdmin(data.is_admin); // Set is_admin after user state is updated
-        console.log(data.is_admin, "-----aaaaaaaaaaaaaaah")
+        setIsAdmin(data.is_admin);
       })
       .catch((error) => {
         console.error('Error fetching user data:', error);
       });
   };
 
-  const [refreshToken, _setRefreshToken] = useState(() => {
-    const storedRefreshToken = localStorage.getItem("REFRESH_TOKEN");
-    return storedRefreshToken ? JSON.parse(storedRefreshToken) : null;
-  });
-
+  //Setting Notications and Mesasges
   const setNotification = (message) => {
     _setNotification(message);
 
@@ -79,10 +72,9 @@ export const ContextProvider = ({ children }) => {
   };
 
 
-
+// Activating Usrese
   const activateUser = async (uid, token) => {
     try {
-      // Send a POST request to your activation endpoint with the UID and token
       const response = await Axios.post(
         `http://127.0.0.1:8000/auth/users/activation/`,
         { uid, token }
@@ -90,11 +82,8 @@ export const ContextProvider = ({ children }) => {
   
       // Handle the response from the backend
       if (response.status === 200) {
-        // User activated successfully
         setNotification("User activated successfully.");
-        // Optionally, you can perform additional actions after successful activation
       } else {
-        // Handle other response statuses as needed
         console.error("Activation failed:", response.statusText);
         setNotification("User activation failed.");
       }
@@ -104,73 +93,34 @@ export const ContextProvider = ({ children }) => {
     }
   };
   
-
-
-  
-
-  
+//logout function
   const logout = () => {
     localStorage.removeItem("ACCESS_TOKEN")
     setToken(null); // Clear the token
     setRefresher(refresher + 1);
-    
 };
 
 
   
 
-
+//USE EFFECTS -----------------------------------------------------------
   useEffect(() => {
     const storedToken = localStorage.getItem("ACCESS_TOKEN");
     try{
       fetchUserData();
     }catch{
-      console.log("ERRRRRRRRRRRRRRRRRRRRRRRRRROR");
+      console.log("Error : Failed fetching user data ");
     }
-    
     if (storedToken) {
-      console.log("Token retrieved:", JSON.parse(storedToken));
       setToken(JSON.parse(storedToken));
       const storedUser = localStorage.getItem("USER_DATA");
-     
       if (storedUser) {
-        console.log("User data retrieved:", JSON.parse(storedUser));
         setUser(JSON.parse(storedUser));
       }
     }
   }, []);
   
   
-
-  const fetchEvents = (setCurrentEvents) => {
-    if (!token) {
-      // Handle the case where the user is not authenticated or the token is missing
-      console.error("User is not authenticated. Handle accordingly.");
-      return;
-    }
-  
-    Axios
-      .get('http://127.0.0.1:8000/api/events/', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          const events = response.data;
-          setCurrentEvents(events);
-        } else if (response.status === 401) {
-          // Handle unauthorized response (e.g., log out the user or redirect to login)
-          console.error("User is not authorized. Handle accordingly.");
-        } else {
-          // Handle other response statuses as needed
-          console.error("Other error occurred:", response.statusText);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
-  };
 
   return (
     <StateContext.Provider
@@ -182,7 +132,6 @@ export const ContextProvider = ({ children }) => {
         notification,
         setNotification,
         logout,
-        fetchEvents,
         activateUser,
         is_admin,
       }}

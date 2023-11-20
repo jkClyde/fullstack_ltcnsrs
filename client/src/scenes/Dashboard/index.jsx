@@ -1,24 +1,18 @@
 import { Box, Button,Select, MenuItem, IconButton, Typography, useTheme } from "@mui/material";
 import React, {useEffect, useState} from 'react';
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
-import Header from "../../components/Header";
-import LineChart from "../../components/LineChart";
-import GeographyChart from "../../components/GeographyChart";
-import PieChart from "../../components/PieChart";
-import BarChart from "../../components/BarChart";
-import StatBox from "../../components/StatBox";
-import ProgressCircle from "../../components/ProgressCircle";
-import EventsList from './../../components/Upcoming Events';
+
+import Header from "../../components/dashboard_components/Header";
+import LineChart from "../../components/charts/LineChart";
+import PieChart from "../../components/charts/PieChart";
+import BarChart from "../../components/charts/BarChart";
+import StatBox from "../../components/dashboard_components/StatBox";
+import ProgressCircle from "../../components/dashboard_components/ProgressCircle";
+import EventsList from '../../components/dashboard_components/Upcoming Events';
 import { useStateContext } from "../../contexts/ContextProvider";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import jwtDecode from 'jwt-decode';
 import Statistics from "../Database/Calculations/Statistics";
 
 
@@ -124,25 +118,24 @@ const Dashboard = () => {
         gridAutoRows="140px"
         gap="20px"
       >
-        {data[selectedCategory].map((item, index) => (
-        <Box
-          gridColumn="span 3"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          borderRadius={2}
-          sx={colorsOption[index % colorsOption.length]} // looping through the colors array
-        >   
-          <StatBox
-            key={index}
-            title={item.name}
-            subtitle={item.subtitle}
-            progress={item.progress}
-            number = {item.number}
-          />
-        </Box>
-        ))}
-
+       {data[selectedCategory].map((item, index) => (
+  <Box
+    key={index} // Set the key prop here
+    gridColumn="span 3"
+    display="flex"
+    alignItems="center"
+    justifyContent="center"
+    borderRadius={2}
+    sx={colorsOption[index % colorsOption.length]}
+  >   
+    <StatBox
+      title={item.name}
+      subtitle={item.subtitle}
+      progress={item.progress}
+      number={item.number}
+    />
+  </Box>
+))}
 
 
         {/* ROW 2 */}

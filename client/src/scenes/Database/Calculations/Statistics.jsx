@@ -49,7 +49,7 @@ const Statistics = () => {
   const latestQuarter = getLatestQuarter();
   const [dataProcessed, setDataProcessed] = useState(false);
   const [population, setPopulation] = useState(0)
-//----------------------------------------------------------------------------------------------------
+// Getting Barangay Stats----------------------------------------------------------------------------------------------------
   const [barangayData, setBarangayData] = useState({});
   const categoryValues = {
     severe: 0,
@@ -58,6 +58,8 @@ const Statistics = () => {
     overweight: 0,
   };
 
+
+ 
   const updateBarangayData = (barangay, category, incrementBy = 1) => {
   try {
     setBarangayData((prev) => ({
@@ -87,8 +89,7 @@ const Statistics = () => {
   }, []); 
 
   
-  //-------------------------------------------------------------------------------------------------
-
+//Fetching Data-------------------------------------------------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -109,10 +110,9 @@ const Statistics = () => {
     fetchData();
   }, []);
 
+ // Tallying 
   useEffect(() => {
     if (data) {
-      console.log('Fetched Data:', data);
-
       if (!dataProcessed) {
         data.forEach((patient) => {
           const latestQuarter = getLatestQuarter();
@@ -209,10 +209,10 @@ const Statistics = () => {
                   set_WFL_obese((prev) => prev + 1);
                   break;
                 case 'Height not found':
-                  console.log('Height not found');
+                  // console.log('Height not found');
                   break;
                 default:
-                  console.log(wfl_status);
+                  // console.log(wfl_status);
                   break;
               }
             } catch (error) {

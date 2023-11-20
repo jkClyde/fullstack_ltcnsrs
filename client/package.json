@@ -29,6 +29,7 @@
     "@nivo/geo": "^0.83.0",
     "@nivo/line": "^0.83.0",
     "@nivo/pie": "^0.83.0",
+    "@reduxjs/toolkit": "^1.9.7",
     "@syncfusion/ej2-react-spreadsheet": "^23.1.44",
     "axios": "^1.5.1",
     "casual": "^1.6.2",
