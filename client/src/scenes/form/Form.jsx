@@ -23,8 +23,6 @@ const Form = () => {
   const [selectedBirthdate, setSelectedBirthdate] = useState(null);
   // const [selectedVaccinationDate, setSelectedVaccinationDate] = useState(null);
   const [selectedDOW, setSelectedDOW] = useState(null);
-  const [selectedDewormingDate1, setselectedDewormingDate1] = useState(null);
-  const [selectedDewormingDate2, setselectedDewormingDate2] = useState(null);
   const notify = () => toast.success("Child Data added successfully!");
   const [existingEntries, setExistingEntries] = useState([]);
 
@@ -38,10 +36,6 @@ const Form = () => {
     // }
     else if (dateType === "dow") {
       setSelectedDOW(formattedDate);
-    } else if (dateType === "deworming") {
-      setselectedDewormingDate1(formattedDate);
-    } else if (dateType === "deworming2") {
-      setselectedDewormingDate2(formattedDate);
     } else if (dateType === "current_date") {
       setSelectedCurrentDate(formattedDate);
     }
@@ -51,13 +45,17 @@ const Form = () => {
   const handleFormSubmit = (values, { resetForm }) => {
     const isDuplicate = existingEntries.some(
       (entry) =>
-        // entry.fullName === values.fullName &&
+        entry.fullName === values.fullName &&
         dayjs(entry.birthdate).format("YYYY-MM-DD") ===
           dayjs(selectedBirthdate).format("YYYY-MM-DD")
     );
 
     if (isDuplicate) {
-      alert("Duplicate entry found: This child already exists.");
+      // Use Snackbar for the duplicate entry notification
+      toast.error("Duplicate entry found: This child already exists!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
@@ -68,12 +66,6 @@ const Form = () => {
     const formattedBirthdate = dayjs(selectedBirthdate).format("YYYY-MM-DD");
     const formattedDOW = selectedDOW
       ? dayjs(selectedDOW).format("YYYY-MM-DD")
-      : null;
-    const formattedDewormingDate1 = selectedDewormingDate1
-      ? dayjs(selectedDewormingDate1).format("YYYY-MM-DD")
-      : null;
-    const formattedDewormingDate2 = selectedDewormingDate2
-      ? dayjs(selectedDewormingDate2).format("YYYY-MM-DD")
       : null;
 
     const dowDate = new Date(selectedDOW);
@@ -107,7 +99,7 @@ const Form = () => {
       height: values.height,
       muac: values.muac,
       vac: values.vac,
-      deworming: formattedDewormingDate1,
+      deworming: values.deworming,
       bpe: values.bpe,
       disability: values.disability,
     };
@@ -164,9 +156,6 @@ const Form = () => {
           resetForm();
           setSelectedBirthdate(null);
           setSelectedDOW(null);
-          // setSelectedVaccinationDate(null);
-          setselectedDewormingDate1(null);
-          setselectedDewormingDate2(null);
           setSelectedDate(null);
         } else {
           alert("Failed to save quarter data.");
@@ -188,8 +177,6 @@ const Form = () => {
       setSelectedBirthdate(null);
       // setSelectedVaccinationDate(null);
       setSelectedDOW(null);
-      setselectedDewormingDate1(null);
-      setselectedDewormingDate2(null);
 
       // Show success notivacation
       toast.success("Form cleared successfully!", {
@@ -589,12 +576,12 @@ const checkoutSchema = yup.object().shape({
   // relationship: yup.string().required("Relationship is required"),
   ethnicity: yup.string().notRequired(),
   address: yup
-  .string()
-  .required("required")
-  .matches(
-    /^[A-Za-z\d\s\-]{2,50}$/, 
-    "Should contain only 2-50 letters, numbers, spaces, or dashes"
-  ),
+    .string()
+    .required("required")
+    .matches(
+      /^[A-Za-z\d\s\-]{2,50}$/,
+      "Should contain only 2-50 letters, numbers, spaces, or dashes"
+    ),
   pt: yup.string().required("Required"),
   parentName: yup
     .string()

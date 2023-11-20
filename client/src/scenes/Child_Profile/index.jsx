@@ -201,11 +201,23 @@ const ChildProfile = ({ child, updateChildData }) => {
           dowMonth <= 12 &&
           dowYear === selectedYear)
       ) {
-
         // Calculate weightForAge, lengthForAge, and weightForLength
-        const weightForAge = weightForAgeStatus(editedChild.birthdate, editedChild.weight, editedChild.gender);
-        const lengthForAge = lengthForAgeStatus(editedChild.birthdate, editedChild.length, editedChild.gender);
-        const weightForLength = weightForLengthStatus(editedChild.birthdate, editedChild.length, editedChild.weight, editedChild.gender);
+        const weightForAge = weightForAgeStatus(
+          editedChild.birthdate,
+          editedChild.weight,
+          editedChild.gender
+        );
+        const lengthForAge = lengthForAgeStatus(
+          editedChild.birthdate,
+          editedChild.length,
+          editedChild.gender
+        );
+        const weightForLength = weightForLengthStatus(
+          editedChild.birthdate,
+          editedChild.length,
+          editedChild.weight,
+          editedChild.gender
+        );
         // Create new child data
         const newChildData = {
           child: child.id,
@@ -258,7 +270,9 @@ const ChildProfile = ({ child, updateChildData }) => {
   };
 
   //{Update Button}//
-  const handleUpdateClick = () => {
+  const handleUpdateClick = async () => {
+    console.log("Edited Child Data:", editedChild);
+    // Update the table data in gridData with the updated information immediately
     const updatedPrimaryChildData = {
       fullName: editedChild.fullName,
       address: editedChild.address,
@@ -269,7 +283,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       aim: editedChild.aim,
       parentName: editedChild.parentName,
       occupation: editedChild.occupation,
-      // relationship: editedChild.relationship,
+      relationship: editedChild.relationship,
       ethnicity: editedChild.ethnicity,
       barangay: editedChild.barangay,
     };
@@ -290,15 +304,12 @@ const ChildProfile = ({ child, updateChildData }) => {
           .then((childHealthInfoResponse) => {
             // Find the ChildHealthInfo record for the desired quarter
             const childHealthInfo = childHealthInfoResponse.data.find(
-              (item) => item.quarter === selectedQuarter
+              (item) =>
+                item.quarter === selectedQuarter &&
+                item.child === editedChild.childHealthInfo.childHealth_id
             );
 
             if (childHealthInfo) {
-               // Calculate weightForAge, lengthForAge, and weightForLength
-              const weightForAge = weightForAgeStatus(editedChild.birthdate, editedChild.weight, editedChild.gender);
-              const lengthForAge = lengthForAgeStatus(editedChild.birthdate, editedChild.length, editedChild.gender);
-              const weightForLength = weightForLengthStatus(editedChild.birthdate, editedChild.length, editedChild.weight, editedChild.gender);
-              
               // Update the ChildHealthInfo record for the specific quarter
               const updatedChildData = {
                 weight: editedChild.weight,
@@ -307,13 +318,10 @@ const ChildProfile = ({ child, updateChildData }) => {
                 disability: editedChild.disability,
                 dow: editedChild.dow,
                 vac: editedChild.vac,
-                deworming: editedChild.deworming,
+                purga: editedChild.purga,
                 weightForAge: editedChild.weightForAge,
                 lengthForAge: editedChild.lengthForAge,
                 weightForLength: editedChild.weightForLength,
-                weightForAge,
-                lengthForAge,
-                weightForLength,
                 child: child.id,
               };
 
@@ -345,6 +353,7 @@ const ChildProfile = ({ child, updateChildData }) => {
         console.error("Error updating primarychild data:", primaryChildError);
       });
   };
+
   const handleEditClick = () => {
     setIsEditing(true);
     const buttonLabel = dataExists ? "Save" : "Create";
@@ -563,35 +572,37 @@ const ChildProfile = ({ child, updateChildData }) => {
     <Box mt="10px">
       {/* Add this line for debugging */}
       {isEditing ? (
-  name === "birthdate" ||
-  name === "dow" || name === "deworming1" || name === "deworming2"? (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <DatePicker
-        label={label}
-        value={value ? new Date(value) : null}
-        onChange={(newValue) => {
-          const formattedDate = newValue
-            ? format(newValue, "yyyy-MM-dd")
-            : "";
-          const fakeEvent = { target: { name, value: formattedDate } };
-          handleInputChange(fakeEvent);
-        }}
-        renderInput={(params) => (
-          <OutlinedInput {...params} fullWidth label={label} />
-        )}
-      />
-    </LocalizationProvider>
-  ) : (
-    <TextField
-      fullWidth
-      variant="outlined"
-      name={name}
-      label={label}
-      value={value || ""} // Handle undefined or empty values
-      onChange={handleInputChange}
-      required={name !== "deworming1" && name !== "deworming2"} // Add this line
-    />
-  )
+        name === "birthdate" ||
+        name === "dow" ||
+        name === "deworming1" ||
+        name === "deworming2" ? (
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              label={label}
+              value={value ? new Date(value) : null}
+              onChange={(newValue) => {
+                const formattedDate = newValue
+                  ? format(newValue, "yyyy-MM-dd")
+                  : "";
+                const fakeEvent = { target: { name, value: formattedDate } };
+                handleInputChange(fakeEvent);
+              }}
+              renderInput={(params) => (
+                <OutlinedInput {...params} fullWidth label={label} />
+              )}
+            />
+          </LocalizationProvider>
+        ) : (
+          <TextField
+            fullWidth
+            variant="outlined"
+            name={name}
+            label={label}
+            value={value || ""} // Handle undefined or empty values
+            onChange={handleInputChange}
+            required={name !== "deworming1" && name !== "deworming2"} // Add this line
+          />
+        )
       ) : (
         // Show the updated value from editedChild when not editing
         <>
@@ -680,7 +691,9 @@ const ChildProfile = ({ child, updateChildData }) => {
           // Render the bpe field only when editing
           <Box mt="10px">
             <FormControl fullWidth>
-              <InputLabel id="bpe-select-label">Bilateral Pitting Edema</InputLabel>
+              <InputLabel id="bpe-select-label">
+                Bilateral Pitting Edema
+              </InputLabel>
               <Select
                 labelId="bpe-select-label"
                 label="Bilateral Pitting Edema"
@@ -773,36 +786,34 @@ const ChildProfile = ({ child, updateChildData }) => {
             </Box>
           </Grid>
         )}
-        
+      </Grid>
 
-</Grid>
+      <Divider
+        orientation="vertical"
+        variant="middle"
+        flexItem
+        style={{ margin: "0px 20px 0px 40px" }}
+      />
 
-<Divider
-  orientation="vertical"
-  variant="middle"
-  flexItem
-  style={{ margin: "0px 20px 0px 40px" }}
-/>
-
-<Grid item xs={3}>
-  {!isEditing &&
-    renderTextField(
-      "Weight For Age",
-      "weightForAge",
-      editedChild.weightForAge
-    )}
-  {!isEditing &&
-    renderTextField(
-      "Length For Age",
-      "lengthForAge",
-      editedChild.lengthForAge
-    )}
-  {!isEditing &&
-    renderTextField(
-      "Weight For Length",
-      "weightForLength",
-      editedChild.weightForLength
-    )}
+      <Grid item xs={3}>
+        {!isEditing &&
+          renderTextField(
+            "Weight For Age",
+            "weightForAge",
+            editedChild.weightForAge
+          )}
+        {!isEditing &&
+          renderTextField(
+            "Length For Age",
+            "lengthForAge",
+            editedChild.lengthForAge
+          )}
+        {!isEditing &&
+          renderTextField(
+            "Weight For Length",
+            "weightForLength",
+            editedChild.weightForLength
+          )}
       </Grid>
     </Grid>
   );
@@ -884,35 +895,34 @@ const ChildProfile = ({ child, updateChildData }) => {
           </Box>
         )} */}
         {isEditing ? (
-        // Render the ethnicity field as TextField when editing
-        <Box mt="16px">
-          <TextField
-            fullWidth
-            id="ethnicity"
-            name="ethnicity"
-            label="Ethnicity"
-            value={editedChild.ethnicity}
-            onChange={handleInputChange}
-            variant="outlined"
-          />
-        </Box>
-      ) : (
-        // Display ethnicity information when not editing
-        <Box>
-          <Box
-            mt="10px"
-            padding="10px"
-            borderRadius="5px"
-            border="1px solid grey"
-          >
-            <Typography variant="h6">Ethnicity:</Typography>
-            <Typography variant="body1" style={{ fontWeight: "bold" }}>
-              {editedChild.ethnicity}
-            </Typography>
+          // Render the ethnicity field as TextField when editing
+          <Box mt="16px">
+            <TextField
+              fullWidth
+              id="ethnicity"
+              name="ethnicity"
+              label="Ethnicity"
+              value={editedChild.ethnicity}
+              onChange={handleInputChange}
+              variant="outlined"
+            />
           </Box>
-        </Box>
-      )}
-
+        ) : (
+          // Display ethnicity information when not editing
+          <Box>
+            <Box
+              mt="10px"
+              padding="10px"
+              borderRadius="5px"
+              border="1px solid grey"
+            >
+              <Typography variant="h6">Ethnicity:</Typography>
+              <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                {editedChild.ethnicity}
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </Grid>
 
       <Grid item xs={4}>
