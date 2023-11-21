@@ -1,135 +1,63 @@
-import React, { useState } from 'react';
-import { format, parse } from 'date-fns'; // Import the required functions
+import React, { useState, useEffect } from 'react';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { tokens } from '../../theme';
+import { useTheme } from "@mui/material";
 
-import * as XLSX from 'xlsx';
+import { useNavigate } from 'react-router-dom';
+import MessagePopup from './components/MessagePop';
+import { mapPT, mapGender, formatDateToYYYYMMDD, swapDayMonth } from './components/functions';
+import keyMapping from './components/keyMapping';
+import LoadingPage from '../../components/SmallLoading';
 
+//REDUX
+import { connect } from 'react-redux';
+import { mapState } from './../../redux/global_variables';
+import { useDispatch, useSelector  } from 'react-redux';
+import { setRefresher } from '../../redux/actions';
 
-function formatDateToYYYYMMDD(excelDate) {
-  const date = new Date(1900, 0, excelDate - 1); // Subtract 1 because Excel counts from 1/0/1900
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because months are zero-based
-  const day = date.getDate().toString().padStart(2, '0');
+const LoadingDots = () => {
+  const [dots, setDots] = useState(1);
 
-  
-  return `${year}-${month}-${day}`;
-}
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setDots((prevDots) => (prevDots % 5) + 1);
+    }, 1000);
 
-const swapDayMonth = (originalDate) => {
-  const [year, month, day] = originalDate.split('-');
+    return () => clearInterval(intervalId);
+  }, []);
 
-  const temp = day
-  const newDay = month;
-  const newMonth = temp;
-
-  return `${year}-${newDay}-${newMonth}`;
-};
-
-
-function mapGender(gender) {
-  // Trim the input to remove leading and trailing whitespaces
-  gender = gender.trim();
-
-  if (gender === 'M' || gender === "m") {
-    return 'Male';
-  } 
-  else if (gender === 'F' || gender === "f") {
-    return 'Female';
-  }
-  // Handle other cases if needed
-  return gender;
-}
-
-function mapPT(input){
-    if (input === 'P'){
-      return 'Permanent';
-    }else if (input === "T"){
-      return 'Transient'
-    }
-}
-
-// New component for displaying success or failure message
-const MessagePopup = ({ successCount, failureCount }) => {
-  const successStyle = {
-    marginBottom: '10px',
-    padding: '10px',
-    borderRadius: '5px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    backgroundColor: '#DFF2BF',
-    color: 'green',
-  };
-
-  const failureStyle = {
-    padding: '10px',
-    borderRadius: '5px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    backgroundColor: '#FFBABA',
-    color: 'red',
-  };
-
-  return (
-    <div>
-      {successCount > 0 && (
-        <div style={successStyle}>
-          {`Success: ${successCount} item${successCount !== 1 ? 's have been added to the database' : ''}.`}
-        </div>
-      )}
-      {failureCount > 0 && (
-        <div style={failureStyle}>
-          {`Failed/Duplicate: ${failureCount} item${failureCount !== 1 ? 's' : ''}.`}
-        </div>
-      )}
-    </div>
-  );
+  return '.'.repeat(dots);
 };
 
 
 
 
-
-
-
-function ExcelToJSON() {
+const ExcelToJSON = ({population}) => {
   const [jsonData, setJsonData] = useState(null);
   const [success, setSuccess] = useState(0);
   const [failed, setFailed] = useState(-1);
-  
+  const [isImporting, setImporting] = useState(true);
+  const [loadingChilfInfo, setLoadingChilfInfo] = useState(false);
+  const [cuurentBarangay, setBarangay] = useState('');
+  const [isFile, setFile] = useState(false)
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const navigate = useNavigate(); // Initialize useHistory
 
-   const handleFileUpload = (e) => {
+  const success2 = useSelector((state) => state.refresher.success); // Assuming you have set up the Redux store correctly
+  const dispatch = useDispatch();
+
+
+
+  const [fileName , setFileName] = useState("");
+  const handleFileUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
+    setFile(true)
+    setFileName(file.name);
 
-    
-    const keyMapping = {
-   
-      "NAME OF CHILD": "fullName",
-      "SEX": "gender",
-      "DOB": "birthdate",
-      "DOW": "dow",
-      "Address": "address",
-      "P/T": "pt",
-      "NAME OF FATHER/ MOTHER": "parentName",
-      "ETHNICITY OF FATHER/ MOTHER": "ethnicity",
-      "OCCUPATION OF FATHER/MOTHER": "occupation",
-      "HT" : "height",
-      "WT" : "weight",
-      "ADDRESS" : "address",
-      "AIM": "aim",
-      "barangay" : "barangay",
-
-     //Poblacion
-      "__EMPTY_1": "fullName",
-      "__EMPTY_2": "gender",
-      "__EMPTY_3": "birthdate",
-      "__EMPTY_4": "dow",
-      "__EMPTY_5": "weight",
-      "__EMPTY_6" : 'height',
-      "__EMPTY_11" : "address",
-      "__EMPTY_12" : "pt",
-      "__EMPTY_15" : "parentName",
-      "__EMPTY_16": "ethnicity",
-      "__EMPTY_17": "occupation",
-
-    };
 
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
@@ -138,126 +66,176 @@ function ExcelToJSON() {
       const sheet = workbook.Sheets[sheetName];
       const line7Value = sheet['A7'].v;
       const barangayName = line7Value.split(':')[1].trim();
-      const formattedBarangayName = barangayName.charAt(0).toUpperCase() + barangayName.slice(1).toLowerCase();
+      const formattedBarangayName =
+        barangayName.charAt(0).toUpperCase() + barangayName.slice(1).toLowerCase();
       const barangayJSON = {
-        barangay: formattedBarangayName
+        barangay: formattedBarangayName,
       };
 
-      const json = XLSX.utils.sheet_to_json(sheet, { range: 8 }) ; 
-      json.forEach(item => {
+      const json = XLSX.utils.sheet_to_json(sheet, { range: 8 });
+      json.forEach((item) => {
         Object.assign(item, barangayJSON);
       });
 
-     
-      // Transform the JSON data using the key mapping and date formatting
       const transformedData = json.map((item) => {
         const transformedItem = {};
         for (const sourceKey in item) {
           if (keyMapping[sourceKey]) {
-            if (sourceKey === "DOB" || sourceKey ===  "DOW"  || sourceKey === "__EMPTY_4"|| sourceKey === "__EMPTY_3") {
-              transformedItem[keyMapping[sourceKey]] = swapDayMonth(formatDateToYYYYMMDD(item[sourceKey]));
-            } else if (sourceKey === "SEX" || sourceKey === "__EMPTY_2") {
+            if (
+              sourceKey === 'DOB' ||
+              sourceKey === 'DOW' ||
+              sourceKey === '__EMPTY_4' ||
+              sourceKey === '__EMPTY_3'
+            ) {
+              transformedItem[keyMapping[sourceKey]] = swapDayMonth(
+                formatDateToYYYYMMDD(item[sourceKey])
+              );
+            } else if (sourceKey === 'SEX' || sourceKey === '__EMPTY_2') {
               transformedItem[keyMapping[sourceKey]] = mapGender(item[sourceKey]);
-            }else if(sourceKey == "P/T" || sourceKey === "__EMPTY_12"){
+            } else if (sourceKey === 'P/T' || sourceKey === '__EMPTY_12') {
               transformedItem[keyMapping[sourceKey]] = mapPT(item[sourceKey]);
-            }
-              else {
+            } else {
               transformedItem[keyMapping[sourceKey]] = item[sourceKey];
             }
           }
         }
-        console.log(transformedItem)
         return transformedItem;
       });
 
       setJsonData(transformedData);
 
-      // Send the transformed JSON data to the server
-      transformedData.forEach((item) => {
-        fetch('http://127.0.0.1:8000/primarychild/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-
-          body: JSON.stringify(item), // Send each item individually
-        })
-          .then((response) => {
-            if (response.status === 200 || response.status === 201) {
-              console.log('Data sent successfully to the server.');
-              setSuccess((prevSuccess) => prevSuccess + 1); 
-              
-              return response.json(); // Parse the response body as JSON
-            } else {
-              const payload = {
-                full_name:  item.SEX,
-                first_barangay: item.barangay,
-                second_barangay : item.barangay
+      // Use Promise.all to wait for all fetch requests to complete
+      Promise.all(
+        transformedData.map((item) =>
+          fetch('http://127.0.0.1:8000/primarychild/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item),
+          })
+            .then((response) => {
+              if (response.status === 200 || response.status === 201) {
+                // Data sent successfully to the server.
+                setSuccess((prevSuccess) => prevSuccess + 1);
+                setBarangay(item.barangay);
+                return response.json();
+              } else {
+                console.error('Failed to send data to the server.');
+                setFailed((prevFailed) => prevFailed + 1);
+              }
+            })
+            .then((data) => {
+              const userID = data.id;
+              const healthInfoItem = {
+                child: userID,
+                dow: item.dow,
+                height: item.height,
+                weight: item.weight,
+                purga: item.purga,
+                vac: item.vac,
               };
-
-              console.error('Failed to send data to the server.');
-              setFailed((prevFailed) => prevFailed + 1); 
-
-              return fetch('http://127.0.0.1:8000/duplicateChild/', {
+              return fetch('http://127.0.0.1:8000/childhealthinfo/', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(payload),
+                body: JSON.stringify(healthInfoItem),
               });
-            
-            }
-          })
-          .then((data) => {
-            const userID = data.id;
-
-            const healthInfoItem = {
-              child : userID,
-              dow : item.dow,
-              height : item.height,
-              weight : item.weight,
-              purga : item.purga,
-              vac : item.vac
-            };
-
-            console.log(healthInfoItem)
-          
-
-            // Now send a POST request to http://127.0.0.1:8000/childhealthinfo/ with the id of userID
-            return fetch('http://127.0.0.1:8000/childhealthinfo/', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(healthInfoItem), // Assuming the server expects an object with 'id' property
-            });
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
-      });
+             
+            })
+            .then((response) => {
+              setLoadingChilfInfo(true);
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+            })
+        )
+      )
+        .then(() => {
+          dispatch(setRefresher({ success: success2 + 1 }));
+          setLoadingChilfInfo(false);
+          setImporting(false);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
     };
 
     reader.readAsArrayBuffer(file);
-  };  
+  };
 
+  
+ 
   return (
     <div style={{ margin: '1%' }}>
-      <input type="file" onChange={handleFileUpload} />
-      {jsonData && (
-        <div>
-          {/* <h2>JSON Data:</h2>
-          <pre>{JSON.stringify(jsonData, null, 2)}</pre> */}
-          <pre style={{ marginTop: '10px' }}>
-            {(success > 0 || failed > 0) && (
-              <MessagePopup successCount={success} failureCount={failed} />
-              
-            )}
-          </pre>
+      {!isImporting ? (
+         <Box display="flex" flexDirection="column" alignItems="center">
+            <Typography variant="h2" gutterBottom style={{ color: colors.primary[100] }}>
+              Barangay : {cuurentBarangay}
+            </Typography>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="h4" gutterBottom style={{ color: colors.greenAccent[300] }}>
+                  Data Added    
+                </Typography>
+                <Typography variant="h4" gutterBottom  style={{ marginLeft: '10px' ,color: colors.greenAccent[300]}}>
+                  : {success}
+                </Typography>
+            </div>  
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="h4" gutterBottom  style={{ color: colors.redAccent[300] }}>
+              Failed Import  
+              </Typography>
+              <Typography variant="h4" gutterBottom  style={{ marginLeft: '10px',  color: colors.redAccent[300] }}>
+                : {failed}
+              </Typography>
+            </div>  
+            {/* <Button variant="contained" color="primary" style={{marginTop : '30px'}}>
+              OK
+            </Button> */}
+          </Box>
+      ) : (
+        <div style={{padding:'2%'}}>
+          {!isFile ? (
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <input type="file" onChange={handleFileUpload} />
+            </Box>
+          ) : 
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="h4" gutterBottom>
+              Importing Data from   
+            </Typography>
+            <Typography variant="h4" gutterBottom style={{ color: 'blue' }}>
+              :     {fileName}.
+            </Typography>
+          </div>
+          }
+          {jsonData && (
+            <div>
+              <pre style={{ marginTop: '10px' }}>
+                {(success > 0 || failed > 0) && (
+                  <MessagePopup successCount={success} failureCount={failed} />
+                )}
+              </pre>
+              {loadingChilfInfo ? 
+              (  
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h4" gutterBottom style={{ color: colors.greenAccent, marginTop: '5%', marginRight: 'auto' }}>
+                  Finalizing Import, please wait<LoadingDots />
+                </Typography>
+                {/* Your other components or loading indicators */}
+              </div>
+         
+            )  :
+             null  
+            }  
+            </div>
+          )}
         </div>
       )}
     </div>
+ 
   );
 }
 
-export default ExcelToJSON;
+export default connect(mapState)(ExcelToJSON);

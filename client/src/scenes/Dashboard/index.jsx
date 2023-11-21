@@ -1,5 +1,5 @@
 import { Box, Button,Select, MenuItem, IconButton, Typography, useTheme } from "@mui/material";
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 
@@ -10,30 +10,30 @@ import BarChart from "../../components/charts/BarChart";
 import StatBox from "../../components/dashboard_components/StatBox";
 import ProgressCircle from "../../components/dashboard_components/ProgressCircle";
 import EventsList from '../../components/dashboard_components/Upcoming Events';
-import { useStateContext } from "../../contexts/ContextProvider";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Statistics from "../Database/Calculations/Statistics";
 
 
+import Statistics from "../Database/Calculations/Statistics/Statistics";
+import { connect } from 'react-redux';
+import Loader from "../../components/SmallLoading";
+import {mapState} from "./../../redux/global_variables"
 
+ 
 
-
-const Dashboard = () => {
-  const { token } = useStateContext(); // Get the token from your context
-  const [user, setUser] = useState({});
+const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe, wfa_underweight, wfa_normal, wfa_overweight,
+                    population}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const statsData = Statistics();
+  console.log(statsData.barangayData);
 
-
-    // Categories and corresponding subtitles and progress values
     const data = {
       "Length for Age": [
-        {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: statsData.lfa_severe},
-        {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: statsData.lfa_stunted},
-        {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: statsData.lfa_normal},
-        {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: statsData.lfa_tall}
+        {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: lfa_severe},
+        {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: lfa_stunted},
+        {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: lfa_normal},
+        {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: lfa_tall}
       ],
       "Weight for Length": [
         {name: 'Severly Wasted', progress: Math.round((statsData.wfl_severe / statsData.population) * 100), number: statsData.wfl_severe},
@@ -43,10 +43,10 @@ const Dashboard = () => {
         {name: 'Obese', progress: Math.round((statsData.wfl_obese / statsData.population) * 100), number: statsData.wfl_obese}
       ],
       "Weight for Age": [
-        {name: 'Severly Underweight', progress: Math.round((statsData.wfa_severe / statsData.population) * 100), number: statsData.wfa_severe},
-        {name: 'Underweight', progress: Math.round((statsData.wfa_underweight / statsData.population) * 100), number: statsData.wfa_underweight},
-        {name: 'Normal', progress: Math.round((statsData.wfa_normal / statsData.population) * 100), number: statsData.wfa_normal},
-        {name: 'Overweight', progress: Math.round((statsData.wfa_overweight / statsData.population) * 100), number: statsData.wfa_overweight}
+        {name: 'Severly Underweight', progress: Math.round((statsData.wfa_severe / statsData.population) * 100), number: wfa_severe},
+        {name: 'Underweight', progress: Math.round((statsData.wfa_underweight / statsData.population) * 100), number: wfa_underweight},
+        {name: 'Normal', progress: Math.round((statsData.wfa_normal / statsData.population) * 100), number: wfa_normal},
+        {name: 'Overweight', progress: Math.round((statsData.wfa_overweight / statsData.population) * 100), number: wfa_overweight}
       ],
     };
 
@@ -64,20 +64,6 @@ const Dashboard = () => {
   const handleCategoryChange = (event) => {
       setSelectedCategory(event.target.value);
   };
-
-
-  
-  
- 
-
-
- 
-
- 
- 
-
-
-
   return (
     
     <Box m="20px">
@@ -129,14 +115,14 @@ const Dashboard = () => {
     sx={colorsOption[index % colorsOption.length]}
   >   
     <StatBox
-      title={item.name}
+      title={ item.name}
       subtitle={item.subtitle}
-      progress={item.progress}
-      number={item.number}
+      progress={isNaN(item.progress) ? 0 : item.progress}
+      number={item.number === 0 ? <Loader/> : item.number}
     />
+
   </Box>
 ))}
-
 
         {/* ROW 2 */}
         <Box
@@ -226,7 +212,7 @@ const Dashboard = () => {
               color={colors.greenAccent[500]}
               sx={{ mt: "15px" }}
             >
-              {statsData.population} total children monitored
+              {population} total children monitored
             </Typography>
             <Typography>For the 16 Barangays of La Trinidad</Typography>
           </Box>
@@ -271,4 +257,4 @@ const Dashboard = () => {
 };
 
 
-export default Dashboard;
+export default connect(mapState) (Dashboard);

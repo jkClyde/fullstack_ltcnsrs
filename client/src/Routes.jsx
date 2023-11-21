@@ -25,13 +25,13 @@ import VerificationNotice from "./components/registration/verificationNotice";
 import Verify from "./components/registration/verify";
 
 import UserDrawer from "./scenes/global/UserDrawer";
-import ExcelTester from "./scenes/Import/ExcelTester";
+import ExcelTester from "./scenes/Import/components/ExcelTester";
 import ExcelToJSON from "./scenes/Import"
 import ExcelDataTransfer from "./scenes/export";
 import { useStateContext } from "./contexts/ContextProvider";
 import jwtDecode from 'jwt-decode';
 
-import Statistics from "./scenes/Database/Calculations/Statistics";
+import Statistics from "./scenes/Database/Calculations/Statistics/Statistics";
 import LoadingPage from "./components/LoadingPage";
 
 
@@ -113,8 +113,8 @@ const admin_route = [
         element: <Statistics />
       },
        {
-        path: '/tester',
-        element: <ExcelTester />
+        path: '/loading',
+        element: <LoadingPage />
       },
     
       

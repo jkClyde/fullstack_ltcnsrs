@@ -1,7 +1,7 @@
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import Statistics from "../../scenes/Database/Calculations/Statistics";
+import Statistics from "../../scenes/Database/Calculations/Statistics/Statistics";
 
 
 const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {

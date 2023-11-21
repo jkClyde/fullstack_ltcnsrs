@@ -114,22 +114,35 @@ const exportToExcel = (childData) => {
   }
 
   // Define key mapping
-  const keyMapping = {
-    "No": "id", // Assuming "id" is an auto-incremented property
-    "Name of Child": "fullName",
-    "DoB": "birthdate",
-    "Sex": "gender",
-    "DoW": "dow",
-    "AIM": "aim",
-    "Height": "height",
-    "Weight": "weight",
-    "Barangay": "barangay",
+ const keyMapping = {
+    "NAME OF CHILD": "fullName",
+    "SEX": "gender",
+    "DOB": "birthdate",
+    "DOW": "dow",
+    "Address": "address",
     "P/T": "pt",
-    "Name of Mothe/Father": "parentName",
-    "Ethnicity": "ethnicity",
-    "Occupation": "occupation",
-    "VAC": "vac", // Map "Given" to "VAC"
-    "Purga": "purga",
+    "NAME OF FATHER/ MOTHER": "parentName",
+    "ETHNICITY OF FATHER/ MOTHER": "ethnicity",
+    "OCCUPATION OF FATHER/MOTHER": "occupation",
+    "HT" : "height",
+    "WT" : "weight",
+    "ADDRESS" : "address",
+    "AIM": "aim",
+    "barangay" : "barangay",
+
+   //Poblacion
+    // "__EMPTY_1": "fullName",
+    // "__EMPTY_2": "gender",
+    // "__EMPTY_3": "birthdate",
+    // "__EMPTY_4": "dow",
+    // "__EMPTY_5": "weight",
+    // "__EMPTY_6" : 'height',
+    // "__EMPTY_11" : "address",
+    // "__EMPTY_12" : "pt",
+    // "__EMPTY_15" : "parentName",
+    // "__EMPTY_16": "ethnicity",
+    // "__EMPTY_17": "occupation",
+
   };
 
   // Map keys and format data
@@ -173,26 +186,26 @@ const exportToExcel = (childData) => {
           formattedItem[excelKey] = item[dataKey] === 'Male' ? 'M' : 'F';
         } else if (dataKey === 'pt') {
           formattedItem[excelKey] = item[dataKey] === 'Permanent' ? 'P' : 'T';
-        } else if (dataKey === 'birthdate'  ) {
-           // Reformat date from YYYY-MM-DD to DD-MM-YYYY
-          const dobParts = item[dataKey].split('-');
-          formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
-        }
-        else if (dataKey === 'dow' && item[dataKey]) {
-          // Reformat date from YYYY-MM-DD to DD-MM-YYYY
-          const dobParts = item[dataKey].split('-');
-          formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
-        }
-        else if (dataKey === 'vac' && item[dataKey]) {
-          // Reformat date from YYYY-MM-DD to DD-MM-YYYY
-          const dobParts = item[dataKey].split('-');
-          formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
-        }
-        else if (dataKey === 'purga' && item[dataKey]) {
-          // Reformat date from YYYY-MM-DD to DD-MM-YYYY
-          console.log([excelKey] = item[dataKey])
-          const dobParts = item[dataKey].split('-');
-          formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
+        // } else if (dataKey === 'birthdate'  ) {
+        //    // Reformat date from YYYY-MM-DD to DD-MM-YYYY
+        //   const dobParts = item[dataKey].split('-');
+        //   formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
+        // }
+        // else if (dataKey === 'dow' && item[dataKey]) {
+        //   // Reformat date from YYYY-MM-DD to DD-MM-YYYY
+        //   const dobParts = item[dataKey].split('-');
+        //   formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
+        // }
+        // else if (dataKey === 'vac' && item[dataKey]) {
+        //   // Reformat date from YYYY-MM-DD to DD-MM-YYYY
+        //   const dobParts = item[dataKey].split('-');
+        //   formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
+        // }
+        // else if (dataKey === 'purga' && item[dataKey]) {
+        //   // Reformat date from YYYY-MM-DD to DD-MM-YYYY
+        //   console.log([excelKey] = item[dataKey])
+        //   const dobParts = item[dataKey].split('-');
+        //   formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
           
         }
         else {

@@ -12,6 +12,10 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import barangayOptions from "./../form/barangayOptions.js";
 import DuplicateTable from "./DuplicatesTable.jsx";
+import { connect } from 'react-redux';
+import {mapState} from "./../../redux/global_variables";
+import {  useSelector  } from 'react-redux';
+
 
 import ExcelToJSON from "../Import/index.jsx";
 import ExportToExcel from "../export/index.jsx";
@@ -44,7 +48,9 @@ import {
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 
+
 const Table = () => {
+  const success = useSelector((state) => state.refresher.success); 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [gridData, setGridData] = useState([]);
@@ -58,6 +64,13 @@ const Table = () => {
   const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
   const [yearInput, setYearInput] = useState("");
   const [isYearInputValid, setIsYearInputValid] = useState(true);
+
+  useEffect(() => {
+    console.log("HERE AGAIN", success)
+    setIsDialogOpen(closed);
+    // console.log("HHHEEEEEEEERE", closeImport)
+  }, [closed]);
+
   const validateYear = (year) => {
     const yearPattern = /^\d{4}$/;
     return yearPattern.test(year);
@@ -81,7 +94,7 @@ const Table = () => {
     // fetchTab4Data();
   }, []);
 
-  const [exportDialogue, setExportDialogue] = useState(false);
+
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -89,6 +102,8 @@ const Table = () => {
     }
     setSnackbarOpen(false);
   };
+
+
 
   // Function to show Snackbar
   const showSnackbar = (message, severity) => {
@@ -123,7 +138,7 @@ const Table = () => {
     );
     fetchTab1Data();
     fetchTab2Data();
-  }, [selectedBarangay, selectedQuarter]);
+  }, [selectedBarangay, selectedQuarter, success]);
 
   const fetchTab1Data = async () => {
     try {
@@ -1585,7 +1600,7 @@ const Table = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isDialogOpen} onClose={closeDialog} maxWidth="sm" fullWidth>
+      <Dialog open={isDialogOpen} onClose={closeDialog} fullWidth>
         <ExcelToJSON closeDialog={closeDialog} />
       </Dialog>
 
@@ -1616,4 +1631,4 @@ const Table = () => {
   );
 };
 
-export default Table;
+export default connect(mapState)(Table);

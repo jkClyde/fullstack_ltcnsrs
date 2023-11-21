@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import lengthForAgeStatus from './lengthForAgeStatus';
-import weightForAgeStatus from './weightForAgeStatus';
-import weigthForLengthStatus from './weightForLengthStatus';
+import lengthForAgeStatus from '../lengthForAgeStatus';
+import weightForAgeStatus from '../weightForAgeStatus';
+import weigthForLengthStatus from '../weightForLengthStatus';
 import axios from 'axios';
-import { tokens } from '../../../theme';
+import { tokens } from '../../../../theme';
+
+//REDUX
+import { useDispatch } from 'react-redux';
+import { setStats, setBarangayData } from '../../../../redux/actions';
 
 const getLatestQuarter = () => {
   const currentDate = new Date();
@@ -26,6 +30,7 @@ const getLatestQuarter = () => {
 };
 
 const Statistics = () => {
+  const dispatch = useDispatch();
   const [lfa_severe, set_LFA_severe] = useState(0);
   const [lfa_stunted, set_LFA_stunted] = useState(0);
   const [lfa_normal, set_LFA_normal] = useState(0);
@@ -41,6 +46,8 @@ const Statistics = () => {
   const [wfl_normal, set_WFL_normal] = useState(0);
   const [wfl_overweight, set_WFL_overweight] = useState(0);
   const [wfl_obese, set_WFL_obese] = useState(0);
+
+ 
 
   
  
@@ -222,12 +229,18 @@ const Statistics = () => {
           }
         });
 
+    
         setDataProcessed(true);
       }
     }
-  }, [data]);
 
-
+    dispatch(setStats({ lfa_severe: lfa_severe, lfa_normal : lfa_normal, lfa_stunted:lfa_stunted, lfa_tall:lfa_tall ,
+      wfa_severe : wfa_severe,  wfa_underweight : wfa_underweight, wfa_normal : wfa_normal,  wfa_overweight : wfa_overweight,
+      wfl_severe : wfl_severe , wfl_wasted : wfl_wasted, wfl_normal : wfl_normal, wfl_overweight : wfl_overweight, wfl_obese : wfl_obese,
+      population : population}),
+      ); 
+  }, [data, dispatch]);
+  
 
   const LineData = [
     {
@@ -712,14 +725,7 @@ const BarData = [
     },
   ];
   
-  
-  
-  
-  
-  
-  
 
-  // Return the relevant data
   return {
     lfa_severe,
     lfa_stunted,

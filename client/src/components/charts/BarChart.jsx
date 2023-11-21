@@ -1,7 +1,7 @@
 import { useTheme } from "@mui/material";
 import { ResponsiveBar } from "@nivo/bar";
 import { tokens } from "../../theme";
-import Statistics from "../../scenes/Database/Calculations/Statistics";
+import Statistics from "../../scenes/Database/Calculations/Statistics/Statistics";
 
 
  // Define a custom color for the "normal" category

@@ -1,19 +1,13 @@
-import { SET_ADMIN } from "./actions";
+import statsReducer from "./reducers/stats_reducer";
+import barangayDataReducer from "./reducers/barangay_reducer";
+import refresherReducer from "./reducers/refresher_reducer";
+import { combineReducers } from "redux";
 
-const initialState = {
-  isAdmin: false,
-};
-  
-  const rootReducer = (state = initialState, action) => {
-    switch (action.type) {
-      case SET_ADMIN:
-        return {
-           ...state,  
-           isAdmin: action.payload };
-      default:
-        return state;
-    }
-  };
+const rootReducer = combineReducers({
+  stats : statsReducer,
+  brgy : barangayDataReducer,
+  refresher : refresherReducer,
+});
   
   export default rootReducer;
   
