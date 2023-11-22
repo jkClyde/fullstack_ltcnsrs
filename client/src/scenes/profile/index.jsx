@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import profileImage from '../../assets/nurse_1.jpg';
+// import profileImage from '../../assets/nurse_1.jpg';
 import { tokens } from '../../theme';
 import { useStateContext } from '../../contexts/ContextProvider';
 import { Box, Typography, useTheme, Input, Select, MenuItem, Button } from '@mui/material';
@@ -72,11 +72,11 @@ const UserProfile = () => {
           <Typography variant="h4" color={colors.grey[100]} sx={{ marginBottom: 3 }} className="text-center">
             PERSONEL INFORMATION
           </Typography>
-          <img
+          {/* <img
             className="w-48 h-48 mx-auto rounded-full mb-4 border-4 border-customGreen"
             src={profileImage}
             alt="Profile"
-          />
+          /> */}
            <Typography variant="h4" color={colors.grey[100]} sx={{ marginBottom: 1 }} className="mb-4 text-center text-primary">
             {user.first_name}  {user.last_name}
           </Typography>

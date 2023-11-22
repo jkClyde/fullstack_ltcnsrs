@@ -20,7 +20,7 @@ import Pie from "./scenes/Charts/PieChart";
 import Line from "./scenes/charts/Line/index";
 import UserProfile from "./scenes/profile";
 import Users from "./scenes/users";
-import PatientProfile from './scenes/patient_profile/index'
+// import PatientProfile from './scenes/patient_profile/index'
 import VerificationNotice from "./components/registration/verificationNotice";
 import Verify from "./components/registration/verify";
 
@@ -33,8 +33,8 @@ import jwtDecode from 'jwt-decode';
 
 import Statistics from "./scenes/Database/Calculations/Statistics/Statistics";
 import LoadingPage from "./components/LoadingPage";
-
-
+import BackupRestore from "./scenes/backupRestore";
+import AuditLogs from "./scenes/auditLogs";
 
 
 
@@ -92,10 +92,10 @@ const admin_route = [
         path: '/users',
         element: <Users/>
       },
-      {
-        path: '/profile2',
-        element: <PatientProfile/>
-      },
+      // {
+      //   path: '/profile2',
+      //   element: <PatientProfile/>
+      // },
       {
         path: '/ul',
         element: <UserLayout/>
@@ -115,6 +115,14 @@ const admin_route = [
        {
         path: '/loading',
         element: <LoadingPage />
+      },
+      {
+        path: '/backupRestore',
+        element: <BackupRestore />
+      },
+      {
+        path: '/auditLogs',
+        element: <AuditLogs />
       },
     
       

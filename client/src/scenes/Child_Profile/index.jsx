@@ -201,6 +201,23 @@ const ChildProfile = ({ child, updateChildData }) => {
           dowMonth <= 12 &&
           dowYear === selectedYear)
       ) {
+        // Calculate weightForAge, lengthForAge, and weightForLength
+        const weightForAge = weightForAgeStatus(
+          editedChild.birthdate,
+          editedChild.weight,
+          editedChild.gender
+        );
+        const lengthForAge = lengthForAgeStatus(
+          editedChild.birthdate,
+          editedChild.length,
+          editedChild.gender
+        );
+        const weightForLength = weightForLengthStatus(
+          editedChild.birthdate,
+          editedChild.length,
+          editedChild.weight,
+          editedChild.gender
+        );
         // Create new child data
         const newChildData = {
           child: child.id,
@@ -211,12 +228,11 @@ const ChildProfile = ({ child, updateChildData }) => {
           muac: editedChild.muac || null,
           disability: editedChild.disability || null,
           dow: editedChild.dow || null,
-          fic: editedChild.fic || null,
-          deworming1: editedChild.deworming1 || null,
-          deworming2: editedChild.deworming2 || null,
-          weightForAge: editedChild.weightForAge || null,
-          lengthForAge: editedChild.lengthForAge || null,
-          weightForLength: editedChild.weightForLength || null,
+          vac: editedChild.vac || null,
+          deworming: editedChild.deworming || null,
+          weightForAge: weightForAge,
+          lengthForAge: lengthForAge,
+          weightForLength: weightForLength,
         };
 
         // Now, send a POST request to create the new child data
@@ -254,86 +270,75 @@ const ChildProfile = ({ child, updateChildData }) => {
   };
 
   //{Update Button}//
-  const handleUpdateClick = () => {
-    const updatedPrimaryChildData = {
-      fullName: editedChild.fullName,
-      address: editedChild.address,
-      pt: editedChild.pt,
-      muac: editedChild.muac,
-      gender: editedChild.gender,
-      birthdate: editedChild.birthdate,
-      aim: editedChild.aim,
-      parentName: editedChild.parentName,
-      occupation: editedChild.occupation,
-      // relationship: editedChild.relationship,
-      ethnicity: editedChild.ethnicity,
-      barangay: editedChild.barangay,
-    };
+  const handleUpdateClick = async () => {
+    try {
+      // Update the primary child data
+      const updatedPrimaryChildData = {
+        fullName: editedChild.fullName,
+        address: editedChild.address,
+        pt: editedChild.pt,
+        muac: editedChild.muac,
+        gender: editedChild.gender,
+        birthdate: editedChild.birthdate,
+        aim: editedChild.aim,
+        parentName: editedChild.parentName,
+        occupation: editedChild.occupation,
+        relationship: editedChild.relationship,
+        ethnicity: editedChild.ethnicity,
+        barangay: editedChild.barangay,
+      };
 
-    axios
-      .put(
+      const primaryChildResponse = await axios.put(
         `http://127.0.0.1:8000/primarychild/${child.id}/`,
         updatedPrimaryChildData
-      )
-      .then((primaryChildResponse) => {
-        console.log("Primarychild data updated:", primaryChildResponse.data);
+      );
 
-        // Now, fetch the related ChildHealthInfo record based on the foreign key, quarter, and year
-        axios
-          .get(
-            `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&childHealth_id=${editedChild.childHealth_id}`
-          )
-          .then((childHealthInfoResponse) => {
-            // Find the ChildHealthInfo record for the desired quarter
-            const childHealthInfo = childHealthInfoResponse.data.find(
-              (item) => item.quarter === selectedQuarter
-            );
+      console.log("Primarychild data updated:", primaryChildResponse.data);
 
-            if (childHealthInfo) {
-              // Update the ChildHealthInfo record for the specific quarter
-              const updatedChildData = {
-                weight: editedChild.weight,
-                height: editedChild.height,
-                muac: editedChild.muac,
-                disability: editedChild.disability,
-                dow: editedChild.dow,
-                fic: editedChild.fic,
-                deworming1: editedChild.deworming1,
-                deworming2: editedChild.deworming2,
-                weightForAge: editedChild.weightForAge,
-                lengthForAge: editedChild.lengthForAge,
-                weightForLength: editedChild.weightForLength,
-                child: child.id,
-              };
+      // Fetch all ChildHealthInfo records for the selected child
+      const childHealthInfoResponse = await axios.get(
+        `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&quarter=${selectedQuarter}`
+      );
 
-              axios
-                .put(
-                  `http://127.0.0.1:8000/childhealthinfo/${childHealthInfo.childHealth_id}/`,
-                  updatedChildData
-                )
-                .then((response) => {
-                  console.log("Childhealthinfo data updated:", response.data);
-                })
-                .catch((error) => {
-                  console.error("Error updating childhealthinfo data:", error);
-                });
-            }
-          })
-          .catch((childHealthInfoError) => {
-            console.error(
-              "Error fetching ChildHealthInfo data:",
-              childHealthInfoError
-            );
-          });
+      const childHealthInfo = childHealthInfoResponse.data.find(
+        (info) => info.quarter === selectedQuarter && info.child === child.id
+      );
 
-        setIsEditing(false);
+      // Loop through each quarter's ChildHealthInfo entry and update
+      if (childHealthInfo) {
+        // Update the child health information for each quarter
+        const updatedChildData = {
+          weight: editedChild.weight,
+          height: editedChild.height,
+          muac: editedChild.muac,
+          disability: editedChild.disability,
+          dow: editedChild.dow,
+          vac: editedChild.vac,
+          purga: editedChild.purga,
+          weightForAge: editedChild.weightForAge,
+          lengthForAge: editedChild.lengthForAge,
+          weightForLength: editedChild.weightForLength,
+          child: child.id,
+        };
 
-        setIsSnackbarOpen(true);
-      })
-      .catch((primaryChildError) => {
-        console.error("Error updating primarychild data:", primaryChildError);
-      });
+        const updateChildHealthInfoResponse = await axios.put(
+          `http://127.0.0.1:8000/childhealthinfo/${childHealthInfo.childHealth_id}/`,
+          updatedChildData
+        );
+
+        console.log(
+          `Childhealthinfo data updated for quarter ${childHealthInfo.quarter}:`,
+          updateChildHealthInfoResponse.data
+        );
+      }
+
+      setIsEditing(false);
+      setIsSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
   };
+
   const handleEditClick = () => {
     setIsEditing(true);
     const buttonLabel = dataExists ? "Save" : "Create";
@@ -475,9 +480,8 @@ const ChildProfile = ({ child, updateChildData }) => {
             muac: childHealthInfo.muac || "",
             disability: childHealthInfo.disability || "",
             dow: childHealthInfo.dow || "",
-            fic: childHealthInfo.fic,
-            deworming1: childHealthInfo.deworming1 || "",
-            deworming2: childHealthInfo.deworming2 || "",
+            vac: childHealthInfo.vac,
+            deworming: childHealthInfo.deworming || "",
             weightForAge: childHealthInfo.weightForAge || "",
             lengthForAge: childHealthInfo.lengthForAge || "",
             weightForLength: childHealthInfo.weightForLength || "",
@@ -520,9 +524,8 @@ const ChildProfile = ({ child, updateChildData }) => {
             muac: "N/A",
             disability: "N/A",
             dow: "N/A",
-            fic: "N/A",
-            deworming1: "N/A",
-            deworming2: "N/A",
+            vac: "N/A",
+            deworming: "N/A",
             weightForAge: "N/A",
             lengthForAge: "N/A",
             weightForLength: "N/A",
@@ -554,35 +557,37 @@ const ChildProfile = ({ child, updateChildData }) => {
     <Box mt="10px">
       {/* Add this line for debugging */}
       {isEditing ? (
-  name === "birthdate" ||
-  name === "dow" || name === "deworming1" || name === "deworming2"? (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <DatePicker
-        label={label}
-        value={value ? new Date(value) : null}
-        onChange={(newValue) => {
-          const formattedDate = newValue
-            ? format(newValue, "yyyy-MM-dd")
-            : "";
-          const fakeEvent = { target: { name, value: formattedDate } };
-          handleInputChange(fakeEvent);
-        }}
-        renderInput={(params) => (
-          <OutlinedInput {...params} fullWidth label={label} />
-        )}
-      />
-    </LocalizationProvider>
-  ) : (
-    <TextField
-      fullWidth
-      variant="outlined"
-      name={name}
-      label={label}
-      value={value || ""} // Handle undefined or empty values
-      onChange={handleInputChange}
-      required={name !== "deworming1" && name !== "deworming2"} // Add this line
-    />
-  )
+        name === "birthdate" ||
+        name === "dow" ||
+        name === "deworming1" ||
+        name === "deworming2" ? (
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              label={label}
+              value={value ? new Date(value) : null}
+              onChange={(newValue) => {
+                const formattedDate = newValue
+                  ? format(newValue, "yyyy-MM-dd")
+                  : "";
+                const fakeEvent = { target: { name, value: formattedDate } };
+                handleInputChange(fakeEvent);
+              }}
+              renderInput={(params) => (
+                <OutlinedInput {...params} fullWidth label={label} />
+              )}
+            />
+          </LocalizationProvider>
+        ) : (
+          <TextField
+            fullWidth
+            variant="outlined"
+            name={name}
+            label={label}
+            value={value || ""} // Handle undefined or empty values
+            onChange={handleInputChange}
+            required={name !== "deworming1" && name !== "deworming2"} // Add this line
+          />
+        )
       ) : (
         // Show the updated value from editedChild when not editing
         <>
@@ -671,7 +676,9 @@ const ChildProfile = ({ child, updateChildData }) => {
           // Render the bpe field only when editing
           <Box mt="10px">
             <FormControl fullWidth>
-              <InputLabel id="bpe-select-label">Bilateral Pitting Edema</InputLabel>
+              <InputLabel id="bpe-select-label">
+                Bilateral Pitting Edema
+              </InputLabel>
               <Select
                 labelId="bpe-select-label"
                 label="Bilateral Pitting Edema"
@@ -686,7 +693,7 @@ const ChildProfile = ({ child, updateChildData }) => {
             </FormControl>
           </Box>
         ) : (
-          // Display gender information when not editing
+          // Display bpe information when not editing
           <Grid item xs={12}>
             <Box>
               <Box padding="10px" borderRadius="5px" border="1px solid grey">
@@ -702,74 +709,96 @@ const ChildProfile = ({ child, updateChildData }) => {
 
       <Grid item xs={4}>
         {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
-        {/* {renderTextField("Fully Immunized Child", "fic", editedChild.fic)} */}
-        {isEditing && isChildMoreThan12Months ? (
-  // Render the FIC field only when editing and child is more than 12 months old
-  <Box mt="10px">
-    <FormControl fullWidth>
-      <InputLabel id="fic-select-label">Fully Immunized Child</InputLabel>
-      <Select
-        labelId="fic-select-label"
-        label="Fully Immunized Child"
-        id="fic-select"
-        name="fic"
-        value={editedChild.fic}
-        onChange={handleInputChange}
-      >
-        <MenuItem value="Yes">Yes</MenuItem>
-        <MenuItem value="No">No</MenuItem>
-      </Select>
-    </FormControl>
-  </Box>
-) : !isEditing && isChildMoreThan12Months ? (
-  // Display FIC information when not editing
-  <Grid item xs={12}>
-    <Box>
-      <Box padding="10px" borderRadius="5px" border="1px solid grey">
-        <Typography variant="h6">Fully Immunized Child</Typography>
-        <Typography variant="body1" style={{ fontWeight: "bold" }}>
-          {editedChild.fic}
-        </Typography>
-      </Box>
-    </Box>
-  </Grid>
-) : null}
+        {isEditing ? (
+          // Render the vac field only when editing
+          <Box mt="10px">
+            <FormControl fullWidth>
+              <InputLabel id="vac-select-label">Vaccination</InputLabel>
+              <Select
+                labelId="vac-select-label"
+                label="Vaccination"
+                id="vac-select"
+                name="vac"
+                value={editedChild.vac}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        ) : (
+          // Display vac information when not editing
+          <Grid item xs={12}>
+            <Box>
+              <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                <Typography variant="h6">Vaccination</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild.vac}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        )}
+        {isEditing ? (
+          // Render the deworming field only when editing
+          <Box mt="10px">
+            <FormControl fullWidth>
+              <InputLabel id="deworming-select-label">Deworming</InputLabel>
+              <Select
+                labelId="deworming-select-label"
+                label="Deworming"
+                id="deworming-select"
+                name="deworming"
+                value={editedChild.deworming}
+                onChange={handleInputChange}
+              >
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        ) : (
+          // Display deworming information when not editing
+          <Grid item xs={12}>
+            <Box mt="10px">
+              <Box padding="10px" borderRadius="5px" border="1px solid grey">
+                <Typography variant="h6">Deworming</Typography>
+                <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                  {editedChild.deworming}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        )}
+      </Grid>
 
-{isChildMoreThan12Months && (
-  <>
-    {renderTextField("1st Deworming", "deworming1", editedChild.deworming1)}
-    {renderTextField("2nd Deworming", "deworming2", editedChild.deworming2)}
-  </>
-)}
+      <Divider
+        orientation="vertical"
+        variant="middle"
+        flexItem
+        style={{ margin: "0px 20px 0px 40px" }}
+      />
 
-</Grid>
-
-<Divider
-  orientation="vertical"
-  variant="middle"
-  flexItem
-  style={{ margin: "0px 20px 0px 40px" }}
-/>
-
-<Grid item xs={3}>
-  {!isEditing &&
-    renderTextField(
-      "Weight For Age",
-      "weightForAge",
-      editedChild.weightForAge
-    )}
-  {!isEditing &&
-    renderTextField(
-      "Length For Age",
-      "lengthForAge",
-      editedChild.lengthForAge
-    )}
-  {!isEditing &&
-    renderTextField(
-      "Weight For Length",
-      "weightForLength",
-      editedChild.weightForLength
-    )}
+      <Grid item xs={3}>
+        {!isEditing &&
+          renderTextField(
+            "Weight For Age",
+            "weightForAge",
+            editedChild.weightForAge
+          )}
+        {!isEditing &&
+          renderTextField(
+            "Length For Age",
+            "lengthForAge",
+            editedChild.lengthForAge
+          )}
+        {!isEditing &&
+          renderTextField(
+            "Weight For Length",
+            "weightForLength",
+            editedChild.weightForLength
+          )}
       </Grid>
     </Grid>
   );
@@ -851,35 +880,34 @@ const ChildProfile = ({ child, updateChildData }) => {
           </Box>
         )} */}
         {isEditing ? (
-        // Render the ethnicity field as TextField when editing
-        <Box mt="16px">
-          <TextField
-            fullWidth
-            id="ethnicity"
-            name="ethnicity"
-            label="Ethnicity"
-            value={editedChild.ethnicity}
-            onChange={handleInputChange}
-            variant="outlined"
-          />
-        </Box>
-      ) : (
-        // Display ethnicity information when not editing
-        <Box>
-          <Box
-            mt="10px"
-            padding="10px"
-            borderRadius="5px"
-            border="1px solid grey"
-          >
-            <Typography variant="h6">Ethnicity:</Typography>
-            <Typography variant="body1" style={{ fontWeight: "bold" }}>
-              {editedChild.ethnicity}
-            </Typography>
+          // Render the ethnicity field as TextField when editing
+          <Box mt="16px">
+            <TextField
+              fullWidth
+              id="ethnicity"
+              name="ethnicity"
+              label="Ethnicity"
+              value={editedChild.ethnicity}
+              onChange={handleInputChange}
+              variant="outlined"
+            />
           </Box>
-        </Box>
-      )}
-
+        ) : (
+          // Display ethnicity information when not editing
+          <Box>
+            <Box
+              mt="10px"
+              padding="10px"
+              borderRadius="5px"
+              border="1px solid grey"
+            >
+              <Typography variant="h6">Ethnicity:</Typography>
+              <Typography variant="body1" style={{ fontWeight: "bold" }}>
+                {editedChild.ethnicity}
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </Grid>
 
       <Grid item xs={4}>

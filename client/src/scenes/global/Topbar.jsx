@@ -1,32 +1,26 @@
-import React from "react";
+// TopBar.jsx
+import React, { useState, useContext } from "react";
 import { Box, IconButton, useTheme, Typography, useMediaQuery } from "@mui/material";
-import { useContext, useState } from "react";
-import { ColorModeContext, tokens } from "../../theme";
-import InputBase from "@mui/material/InputBase";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import SearchIcon from "@mui/icons-material/Search";
-import lt_logo from '../../assets/lt_logo.ico'
+import lt_logo from "../../assets/lt_logo.ico";
+import { AccountItem } from "../../components/dashboard_components/MenuListComposition";
+import HelpModalContent from "./HelpModalContent";
+import { ColorModeContext, tokens } from "../../theme";
 
-import {AccountItem, SettingsItem} from "../../components/dashboard_components/MenuListComposition";
-import Button from '@mui/material/Button';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
-import Stack from '@mui/material/Stack';
+
 
 const Topbar = () => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
-  
-  // Use a media query to check if the screen size is small
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [helpModalOpen, setHelpModalOpen] = useState(false);
+
+  const handleHelpButtonClick = () => {
+    setHelpModalOpen(!helpModalOpen);
+  };
 
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center" pt={2} pl={2} pr={2}>
@@ -40,11 +34,16 @@ const Topbar = () => {
         </Box>
       )}
 
-      {/* SEARCH BAR */}
-    
-
       {/* ICONS */}
-      <Box display="flex"  className=" z-10">
+      <Box display="flex" className="z-10">
+        {/* Help IconButton */}
+        <IconButton onClick={handleHelpButtonClick}>
+          <HelpOutlineIcon />
+        </IconButton>
+
+        {/* Help Modal */}
+        {helpModalOpen && <HelpModalContent />}
+
         <IconButton onClick={colorMode.toggleColorMode}>
           {theme.palette.mode === "dark" ? (
             <DarkModeOutlinedIcon />
@@ -53,8 +52,6 @@ const Topbar = () => {
           )}
         </IconButton>
         <AccountItem />
-
-
       </Box>
     </Box>
   );

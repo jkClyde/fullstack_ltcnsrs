@@ -15,6 +15,9 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
+import RestoreIcon from '@mui/icons-material/Restore';
+import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
+import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -99,13 +102,13 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
 
-            <Typography
+            {/* <Typography
               variant="h6"
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
               Data
-            </Typography>
+            </Typography> */}
             <Item
               title="Children Table"
               to="/database"
@@ -113,20 +116,14 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Manage Users"
-              to="/users"
-              icon={<PeopleOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Typography
+            
+            {/* <Typography
               variant="h6"
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
               Features
-            </Typography>
+            </Typography> */}
             <Item
               title="Profile Form"
               to="/form"
@@ -145,7 +142,7 @@ const Sidebar = () => {
              <Typography
               variant="h6"
               color={colors.grey[300]}
-              sx={{ m: "15px 0 5px 20px" }}
+              sx={{ m: "0px 0 0px 20px" }}
             >
               Charts
             </Typography>
@@ -170,7 +167,34 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "0px 0 0px 20px" }}
+            >
+              Manage
+            </Typography>
+            <Item
+              title="Manage Users"
+              to="/users"
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Backup & Restore"
+              to="/backupRestore"
+              icon={<CloudDownloadOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Audit Logs"
+              to="/auditLogs"
+              icon={<TableRowsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             
           </Box>
         </Menu>
