@@ -101,7 +101,7 @@ class ChildHealthInfo(models.Model):
     vac = models.CharField(max_length=10, choices=vac_choices, default='No')
     deworming = models.CharField(max_length=10, choices=deworming_choices, default='No')
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='No')
-    disability = models.CharField(max_length=50, blank=True, default='')
+    disability = models.CharField(max_length=50, blank=True, default='none')
     child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
     quarter = models.CharField(max_length=20, default='1st Quarter')
     year = models.IntegerField(null=True, blank=True)  # Add a year field

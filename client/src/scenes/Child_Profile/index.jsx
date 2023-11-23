@@ -372,7 +372,7 @@ const ChildProfile = ({ child, updateChildData }) => {
 
     setEditedChild((prevChild) => {
       let updatedChild;
-
+  
       if (name === "birthdate") {
         const birthdate = format(new Date(value), "yyyy-MM-dd");
         const aim = calculateAgeInMonths(birthdate);
@@ -386,20 +386,9 @@ const ChildProfile = ({ child, updateChildData }) => {
           ...prevChild,
           [name]: value,
         };
-      } else if (
-        name === "dow" ||
-        name === "deworming1" ||
-        name === "deworming2"
-      ) {
-        updatedChild = {
-          ...prevChild,
-          [name]: value,
-        };
       } else {
-        updatedChild = {
-          ...prevChild,
-          [name]: value,
-        };
+        // Only update these fields if they have values when editing
+        updatedChild = isEditing ? { ...prevChild, [name]: value } : { ...prevChild };
       }
 
       // Calculate weightForAge, lengthForAge, and weightForLength based on updated data
@@ -558,9 +547,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       {/* Add this line for debugging */}
       {isEditing ? (
         name === "birthdate" ||
-        name === "dow" ||
-        name === "deworming1" ||
-        name === "deworming2" ? (
+        name === "dow" ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={label}
@@ -585,7 +572,6 @@ const ChildProfile = ({ child, updateChildData }) => {
             label={label}
             value={value || ""} // Handle undefined or empty values
             onChange={handleInputChange}
-            required={name !== "deworming1" && name !== "deworming2"} // Add this line
           />
         )
       ) : (
