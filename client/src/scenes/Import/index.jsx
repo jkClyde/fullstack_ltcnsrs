@@ -37,7 +37,7 @@ const LoadingDots = () => {
 const ExcelToJSON = ({population}) => {
   const [jsonData, setJsonData] = useState(null);
   const [success, setSuccess] = useState(0);
-  const [failed, setFailed] = useState(-1);
+  const [failed, setFailed] = useState(0);
   const [isImporting, setImporting] = useState(true);
   const [loadingChilfInfo, setLoadingChilfInfo] = useState(false);
   const [cuurentBarangay, setBarangay] = useState('');
@@ -48,6 +48,8 @@ const ExcelToJSON = ({population}) => {
 
   const success2 = useSelector((state) => state.refresher.success); // Assuming you have set up the Redux store correctly
   const dispatch = useDispatch();
+  const failedPayloads = [];
+  const failedPayloadObjects = [];
 
 
 
@@ -57,7 +59,7 @@ const ExcelToJSON = ({population}) => {
     const reader = new FileReader();
     setFile(true)
     setFileName(file.name);
-
+    
 
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
@@ -116,14 +118,70 @@ const ExcelToJSON = ({population}) => {
           })
             .then((response) => {
               if (response.status === 200 || response.status === 201) {
-                // Data sent successfully to the server.
                 setSuccess((prevSuccess) => prevSuccess + 1);
                 setBarangay(item.barangay);
                 return response.json();
-              } else {
-                console.error('Failed to send data to the server.');
-                setFailed((prevFailed) => prevFailed + 1);
-              }
+
+              // IF IMPORT FAILED ---------------------------------------------------------------------------  
+              }else {
+                // Search for data in primaryChild similar to item.name
+               
+                //FOR DUPLICATES | ERROR 500
+                if(response.status === 500){
+                  setFailed((prevFailed) => prevFailed + 1);
+
+                  fetch(`http://127.0.0.1:8000/primarychild/?fullName=${encodeURIComponent(item.fullName)}`)
+                  .then((searchResponse) => {
+                    if (searchResponse.status === 200) {
+                      return searchResponse.json();
+                    } else {
+                      console.error('Failed to search data in primaryChild.');
+                      throw new Error('Search failed');
+                    }
+                  })
+                  .then((searchData) => {
+                    // const primaryChildBarangay = searchData.length > 0 ? searchData[0].barangay : null;
+                    const primaryChildBarangay = searchData[0].fullName;
+
+                    // Create payload for duplicateChild -----------------------------------------------------------
+                    const duplicateChildPayload = {
+                      full_name: item.fullName,
+                      first_barangay: primaryChildBarangay ,
+                      second_barangay: item.barangay,
+                    };
+              
+                    // Send POST request to duplicateChild endpoint
+                    fetch('http://127.0.0.1:8000/duplicateChild/', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify(duplicateChildPayload),
+                    })
+                      .then((duplicateChildResponse) => {
+                        if (duplicateChildResponse.status === 200 || duplicateChildResponse.status === 201) {
+                          // Handle success if needed
+                          console.log('Duplicate Child data sent successfully.');
+                        } else {
+                          console.error('Failed to send data to the duplicateChild server.');
+              
+                          // Check if the server returned an error status of 500
+                          if (duplicateChildResponse.status === 500) {
+                            console.error('Server error 500: An error occurred on the server.');
+                            // Handle additional actions for error 500 if needed
+                          }
+                        }
+                      })
+                      .catch((duplicateChildError) => {
+                        console.error('Error sending data to duplicateChild:', duplicateChildError);
+                      });
+                    // -------------------------------------------------------------------------------------------
+                  })
+                  .catch((searchError) => {
+                    console.error('Error searching data in primaryChild:', searchError);
+                  });
+                }
+              }       
             })
             .then((data) => {
               const userID = data.id;

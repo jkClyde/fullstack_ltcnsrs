@@ -10,7 +10,7 @@ function LoadingPage() {
     const timer = setTimeout(() => {
       setLoading(false);
       // Navigate to /dashboard after 3 seconds
-      navigate('/database');
+      navigate('/dashboard');
     }, 1000);
 
     // Clear the timer if the component unmounts before 3 seconds

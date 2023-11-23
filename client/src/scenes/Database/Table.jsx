@@ -64,6 +64,8 @@ const Table = () => {
   const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
   const [yearInput, setYearInput] = useState("");
   const [isYearInputValid, setIsYearInputValid] = useState(true);
+  const [duplicateChildren, setDuplicateChildren] = useState([]);
+
 
   useEffect(() => {
     console.log("HERE AGAIN", success)
@@ -452,6 +454,25 @@ const Table = () => {
     setselectedChild(child);
     setIsProfileOpen(true);
   };
+
+
+  // USE EFFECT FOR DUPLICATED TABLE -------------------------------------------------
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/duplicateChild/');
+        const data = await response.json();
+        setDuplicateChildren(data);
+      } catch (error) {
+        console.error('Error fetching duplicate children:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 
   // Table columns on Master table or Tab 1
   const columnsTab1 = [
@@ -1384,7 +1405,7 @@ const Table = () => {
   const dataGridTab4 = (
     <Box>
 
-      <DataGrid
+      {/* <DataGrid
         rows={gridDataTab4}
         columns={columnsTab4}
         sx={{height: '70vh'}}
@@ -1396,8 +1417,12 @@ const Table = () => {
               <GridToolbarFilterButton />
             </div>
           ),
-        }}
-      />
+        }} */}
+      {/* /> */}
+
+      <div>
+        <DuplicateTable/>
+    </div>
     </Box>
   );
 

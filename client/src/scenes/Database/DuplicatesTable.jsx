@@ -1,53 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
-const DuplicateTable = ({ data }) => {
+const DuplicateTable = () => {
   const [duplicates, setDuplicates] = useState([]);
 
-  const findDuplicates = () => {
-    const duplicateMap = {};
-    const duplicatesList = [];
-
-    data.forEach((item, index) => {
-      const key = `${item.name}-${item.birthdate}-${item.firstBarangay}-${item.secondBarangay}`;
-
-      if (duplicateMap[key]) {
-        duplicatesList.push({
-          index1: duplicateMap[key],
-          index2: index,
-          name: item.name,
-          birthdate: item.birthdate,
-          firstBarangay: item.firstBarangay,
-          secondBarangay: item.secondBarangay,
-        });
-      } else {
-        duplicateMap[key] = index;
-      }
-    });
-
-    setDuplicates(duplicatesList);
-  };
+  useEffect(() => {
+    // Fetch data from the server
+    fetch('http://127.0.0.1:8000/duplicateChild/')
+      .then(response => response.json())
+      .then(data => setDuplicates(data))
+      .catch(error => console.error('Error fetching data:', error));
+  }, []); // The empty dependency array ensures that this effect runs once when the component mounts
 
   return (
-    <div style={{margin : '1%'}}>
- 
+    <div style={{ margin: '1%' }}>
       <TableContainer component={Paper} style={{ marginTop: 20 }}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>Birthdate</TableCell>
-              <TableCell>First Barangay</TableCell>
-              <TableCell>Second Barangay</TableCell>
+              {/* <TableCell>First Barangay</TableCell> */}
+              <TableCell>Barangay</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {duplicates.map((duplicate, index) => (
               <TableRow key={index}>
-                <TableCell>{duplicate.name}</TableCell>
-                <TableCell>{duplicate.birthdate}</TableCell>
-                <TableCell>{duplicate.firstBarangay}</TableCell>
-                <TableCell>{duplicate.secondBarangay}</TableCell>
+                <TableCell>{duplicate.full_name}</TableCell>
+                {/* <TableCell>{duplicate.first_barangay}</TableCell> */}
+                <TableCell>{duplicate.second_barangay}</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -29,7 +29,7 @@ class ChildHealthInfoDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = []  # No authentication required
     permission_classes = [permissions.AllowAny]  # Allow access to everyone
 
-class DuplicateChildCreateView(generics.CreateAPIView):
+class DuplicateChildCreateView(generics.ListCreateAPIView):
     queryset = DuplicateChild.objects.all()
     serializer_class = DuplicateChildSerializer
     authentication_classes = []  # No authentication required

@@ -58,7 +58,7 @@ class PrimaryChild(models.Model):
     address = models.CharField(max_length=255, default='Not specified')
     pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
     gender = models.CharField(
-        max_length=10, choices=gender_choices, default='Not specified')
+        max_length=100, choices=gender_choices, default='Not specified')
     birthdate = models.DateField(null=True, blank=True)
     aim = models.IntegerField(default=0)
     parentName = models.CharField(max_length=255, default='Unknown')
