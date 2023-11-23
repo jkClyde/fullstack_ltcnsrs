@@ -6,6 +6,7 @@ import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
@@ -19,13 +20,24 @@ import jwt_decode from "jwt-decode";
 import { useStateContext } from "../../contexts/ContextProvider"; 
 import { useNavigate } from "react-router-dom"; 
 import { useDispatch } from 'react-redux';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 
 
 function SignInSide() {
   const [email, setEmail] = useState(""); // Define email state
   const [password, setPassword] = useState(""); // Define password state
+  const [passwordVisibility, setPasswordVisibility] = useState(false); // Track password visibility
   const [wrongCredentials, setWrongcredentials] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0); // Track login attempts
+  const maxAttempts = 4; // Maximum number of login attempts allowed
+  const attemptsLeft = maxAttempts - loginAttempts;
+  const showLoginFields = attemptsLeft > 0;
+  const [fieldsDisabled, setFieldsDisabled] = useState(false); // Track whether fields should be disabled
+  const [countdown, setCountdown] = useState(5); // Initial countdown value
+  const [countdownActive, setCountdownActive] = useState(false);
+  const [loginAttemptActive, setLoginAttemptActive] = useState(false);
   const { setToken } = useStateContext(); // Access setToken from context
   const navigate = useNavigate(); // Initialize useHistory
   const { setUser } = useStateContext();
@@ -33,6 +45,9 @@ function SignInSide() {
   const dispatch = useDispatch();
 
   
+  const handlePasswordVisibilityToggle = () => {
+    setPasswordVisibility((prevVisibility) => !prevVisibility);
+  };
 
   useEffect(() => {
     if (token) {
@@ -43,10 +58,53 @@ function SignInSide() {
   }, []);
 
 
+  useEffect(() => {
+    let timer;
+  
+    if (fieldsDisabled && loginAttempts < maxAttempts) {
+      setCountdownActive(true);
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => {
+          const newCountdown = prevCountdown - 1;
+  
+          if (newCountdown === 0) {
+            setLoginAttemptActive(false);
+            setCountdownActive(false);
+            setWrongcredentials(false); // Move this line inside the if block
+            return 5;
+          }
+  
+          return newCountdown;
+        });
+      }, 1000);
+    } else {
+      setCountdown(5);
+      setLoginAttemptActive(true);
+      setCountdownActive(false);
+    }
+  
+    return () => clearInterval(timer);
+  }, [fieldsDisabled, loginAttempts, maxAttempts]);
+  
+  
+
+  useEffect(() => {
+    const storedLoginAttempts = localStorage.getItem("LOGIN_ATTEMPTS");
+    if (storedLoginAttempts) {
+      const storedAttempts = parseInt(storedLoginAttempts, 4);
+      setLoginAttempts(storedAttempts);
+      if (storedAttempts >= maxAttempts) {
+        setFieldsDisabled(true);
+      }
+    }
+  }, [maxAttempts]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      // Create a payload containing email and password
+      // Disable fields for 5 seconds on login failure
+      if (fieldsDisabled) return;
+
       const payload = {
         email: email,
         password: password,
@@ -59,6 +117,14 @@ function SignInSide() {
   
       // Handle the login response from the backend
       if (loginResponse.status === 200) {
+        setLoginAttempts(0);
+        setLoginAttemptActive(false);
+        setFieldsDisabled(false);
+        setWrongcredentials(false);
+
+        setLoginAttempts((prevAttempts) => prevAttempts + 1);
+        localStorage.setItem("LOGIN_ATTEMPTS", loginAttempts + 1);
+
         setToken(loginResponse.data.access);
         setUser(jwt_decode(loginResponse.data.access));
         localStorage.setItem("ACCESS_TOKEN", JSON.stringify(loginResponse));
@@ -72,6 +138,21 @@ function SignInSide() {
     } catch (error) {
       console.error("Login failed:", error);
       setWrongcredentials(true);
+      setLoginAttemptActive(true);
+      // Increment the login attempts
+      setLoginAttempts((prevAttempts) => prevAttempts + 1);
+      // Store the login attempts in local storage
+      localStorage.setItem("LOGIN_ATTEMPTS", loginAttempts + 1);
+      if (loginAttempts + 1 >= maxAttempts) {
+        setFieldsDisabled(true);
+        setLoginAttemptActive(true);
+        setWrongcredentials(false);
+      } else {
+        setFieldsDisabled(true);
+        setTimeout(() => {
+          setFieldsDisabled(false);
+        }, 5000);
+      }
     }
   };
   
@@ -124,40 +205,69 @@ function SignInSide() {
               onSubmit={handleSubmit}
               sx={{ mt: 1 }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {wrongCredentials && (
+              {showLoginFields ? (
+                <>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={fieldsDisabled}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type={passwordVisibility ? 'text' : 'password'}
+                    id="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={fieldsDisabled}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handlePasswordVisibilityToggle}
+                          edge="end"
+                        >
+                          {passwordVisibility ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                        </IconButton>
+                      ),
+                    }}
+                  />
+                  {/* <FormControlLabel
+                    control={<Checkbox value="remember" color="primary" />}
+                    label="Remember me"
+                  /> */}
+                </>
+              ) : (
                 <Typography variant="body2" color="error">
-                  Wrong email or password. Please try again.
+                  You have been locked out because of too many failed login attempts. Check your email for confirmation.
+                </Typography>
+              )}
+              {wrongCredentials && loginAttemptActive && (
+                <Typography variant="body2" color="error">
+                  Wrong email or password. Attempts left: {attemptsLeft}.
+                  {countdownActive && ` Countdown: ${countdown}s`}
                 </Typography>
               )}
 
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              {/* {wrongCredentials && !loginAttemptActive && (
+                <Typography variant="body2" color="error">
+                  Wrong email or password.
+                </Typography>
+              )} */}
+
+              
               <Link to="/" style={{ textDecoration: "none" }}>
                 <Button
                   type="submit"
