@@ -927,175 +927,6 @@ const Table = () => {
       ),
     },
   ];
-  const columnsTab4 = [
-    {
-      field: "fullName",
-      headerName: "Name",
-      flex: 3,
-      cellClassName: "fname-column--cell",
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell", 
-    },
-    {
-      field: "birthdate",
-      headerName: "DOB",
-      flex: 3,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-      renderCell: (params) => {
-        if (params.value) {
-          const date = new Date(params.value);
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDate().toString().padStart(2, "0");
-          const year = date.getFullYear().toString();
-          return `${month}/${day}/${year}`;
-        } else {
-          return ""; // Return an empty string if there's no value
-        }
-      },
-    },
-    {
-      field: "dow",
-      headerName: "DOW",
-      flex: 3,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-      renderCell: (params) => {
-        if (params.value) {
-          const date = new Date(params.value);
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDate().toString().padStart(2, "0");
-          const year = date.getFullYear().toString();
-          return `${month}/${day}/${year}`;
-        } else {
-          return ""; // Return an empty string if there's no value
-        }
-      },
-    },
-    {
-      field: "aim",
-      headerName: "AIM",
-      type: "number",
-      flex: 1,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "weight",
-      headerName: "Wt.",
-      type: "number",
-      flex: 1.5,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "height",
-      headerName: "Ht.",
-      type: "number",
-      flex: 1.5,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "muac",
-      headerName: "MUAC",
-      type: "number",
-      flex: 1.5,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "gender",
-      headerName: "Sex",
-      flex: 2,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "vac",
-      headerName: "Vaccination",
-      flex: 2,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "deworming",
-      headerName: "Deworming",
-      flex: 2,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "weightForAge",
-      headerName: "WFA",
-      flex: 3,
-      cellClassName: getCellClassNameWFA,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-    },
-    {
-      field: "lengthForAge",
-      headerName: "LFA",
-      flex: 3,
-      cellClassName: getCellClassNameLFA,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-    },
-    {
-      field: "weightForLength",
-      headerName: "WFL",
-      flex: 3,
-      cellClassName: getCellClassNameWFL,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-    },
-    {
-      field: "profile",
-      headerName: "View",
-      headerAlign: "center",
-      flex: 2,
-      renderCell: (params) => (
-        <IconButton
-          variant="outlined"
-          color={theme.palette.secondary.main}
-          sx={
-            {
-              // Add additional styling here if needed
-            }
-          }
-          onClick={(e) => {
-            e.stopPropagation(); // Stop the event from propagating to the row
-            handleProfileButtonClick(params.row);
-          }}
-        >
-          <VisibilityIcon />
-        </IconButton>
-      ),
-    },
-    {
-      field: "delete",
-      headerName: "Delete",
-      headerAlign: "center",
-      flex: 2,
-      renderCell: (params) => (
-        <IconButton
-          variant="outlined"
-          color="error"
-          onClick={() => handleDeleteRow(params.row.id)}
-        >
-          <DeleteIcon />
-        </IconButton>
-      ),
-    },
-  ];
 
   // Define separate DataGrid components for each tab
   const dataGridTab1 = (
@@ -1197,7 +1028,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab1}
         columns={columnsTab1}
-        sx={{height: '70vh'}}
+        sx={{height: '65vh'}}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1307,7 +1138,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab2}
         columns={columnsTab2}
-        sx={{height: '70vh'}}
+        sx={{height: '65vh'}}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1389,7 +1220,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab3}
         columns={columnsTab3}
-        sx={{height: '70vh'}}
+        sx={{height: '65vh'}}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1402,28 +1233,8 @@ const Table = () => {
       />
     </Box>
   );
-  const dataGridTab4 = (
-    <Box>
-
-      {/* <DataGrid
-        rows={gridDataTab4}
-        columns={columnsTab4}
-        sx={{height: '70vh'}}
-        onRowClick={(params, event) => handleRowClick(params, event)}
-        components={{
-          Toolbar: () => (
-            <div>
-              <GridToolbarColumnsButton />
-              <GridToolbarFilterButton />
-            </div>
-          ),
-        }} */}
-      {/* /> */}
-
-      <div>
-        <DuplicateTable/>
-    </div>
-    </Box>
+  const dataGridTab4 = (     
+    <DuplicateTable/>
   );
 
   return (

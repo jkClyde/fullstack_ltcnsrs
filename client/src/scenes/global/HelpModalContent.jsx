@@ -29,8 +29,9 @@ const HelpModalContent = () => {
               <Typography variant="h6">How To View & Edit Children Records</Typography>
             </AccordionSummary>
             <AccordionDetails>
+              <Typography variant="body2"> You may click <MenuOutlinedIcon/> to expand or compress the side bar.</Typography>            
               <Typography variant="body1">Press this Option <StorageOutlinedIcon/> <strong>Children Table</strong> at the Side Bar. You can Individually edit the child's record by clicking the <VisibilityIcon /> icon.</Typography>
-              <Typography variant="body2"> You may click <MenuOutlinedIcon/> to expand or compress the side bar.</Typography>            </AccordionDetails>
+            </AccordionDetails>
           </Accordion>
           {/* Next */}
           <Accordion>
@@ -49,6 +50,18 @@ const HelpModalContent = () => {
             </AccordionSummary>
             <AccordionDetails>
               <Typography variant="body1">Press this Icon <LightModeOutlinedIcon/> at the Top Right Corner which will set the theme to light or dark. It will show a <DarkModeOutlinedIcon/> when you are already in dark mode</Typography>
+            </AccordionDetails>
+          </Accordion>
+          {/* Next */}
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+              <Typography variant="h6">Contact Help Center</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">Question not on this list? Reach us on any of the platforms listed below:</Typography>
+              <Typography variant="body1">Phone/Telegram: <strong>+639276282413</strong></Typography>
+              <Typography variant="body1">Email: <strong>antonio.cristine@gmail.com</strong></Typography>
+              <Typography variant="body1">Facebook: <strong>FBname/<a href="">link</a></strong></Typography>
             </AccordionDetails>
           </Accordion>
       </div>
