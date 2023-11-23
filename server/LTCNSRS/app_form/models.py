@@ -10,10 +10,6 @@ housing_CHOICES = (
 gender_choices = (
     ('Male', 'Male'),
     ('Female', 'Female'),
-    (' M', 'Male'),
-    ('M ', 'Male'),
-    (' F', 'Female'),
-    ('F ', 'Female'),
 )
 bpe_choices = (
     ('Yes', 'Yes'),
