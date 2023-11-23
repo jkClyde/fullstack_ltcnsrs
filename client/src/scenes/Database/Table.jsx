@@ -132,6 +132,7 @@ const Table = () => {
     );
     fetchTab1Data();
     fetchTab2Data();
+    fetchTab3Data();
   }, [selectedBarangay, selectedQuarter, success]);
 
   const fetchTab1Data = async () => {
@@ -266,6 +267,7 @@ const Table = () => {
       console.error("Error fetching data:", error);
     }
   };
+
   const fetchTab3Data = async () => {
     try {
       // Fetch primary child data
@@ -281,9 +283,9 @@ const Table = () => {
       }
       const primaryChildData = await primaryChildResponse.json();
 
-      // Filter out children with archive set to false
+      // Filter out children with archive set to true
       const filteredPrimaryChildData = primaryChildData.filter(
-        (child) => child.archive !== false
+        (child) => child.archive === true
       );
 
       // Fetch child health info data
@@ -306,24 +308,22 @@ const Table = () => {
       );
 
       // Filter data based on selected barangay and entered year
-      console.log("Entered Year:", parseInt(yearInput)); // Add this line to log the entered year
       let filteredData = mergedData.filter((child) => {
         const isAllQuartersSelected =
           selectedQuarter === "All Quarter" || selectedQuarter === "";
         const isAllBarangaySelected =
           selectedBarangay === "All Barangay" || selectedBarangay === "";
 
-        const childHealthInfo = child.childHealthInfo || {}; // Null/undefined check
+        const childHealthInfo = child.childHealthInfo || {};
 
         const yearMatches =
           !yearInput ||
-          (childHealthInfo.getYear && // Check if getYear exists within childHealthInfo
-            childHealthInfo.getYear === parseInt(yearInput, 10));
-
+          (childHealthInfo.getYear &&
+            childHealthInfo.getYear() === parseInt(yearInput));
         const quarterMatches =
           isAllQuartersSelected ||
           (selectedQuarter !== "All Quarter" &&
-            childHealthInfo.quarter === selectedQuarter); // Check if quarter exists within childHealthInfo
+            childHealthInfo.quarter === selectedQuarter);
 
         return (
           (isAllBarangaySelected || child.barangay === selectedBarangay) &&
@@ -473,7 +473,7 @@ const Table = () => {
     setselectedChild(child);
     setIsProfileOpen(true);
   };
-
+  const [loading, setLoading] = useState(true);
   // USE EFFECT FOR DUPLICATED TABLE -------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
