@@ -243,16 +243,24 @@ const Table = () => {
         const isAllBarangaySelected =
           selectedBarangay === "All Barangay" || selectedBarangay === "";
 
+        const childHealthInfo = child.childHealthInfo || {}; // Null/undefined check
+
+        const yearMatches =
+          !yearInput ||
+          (childHealthInfo.getYear && // Check if getYear exists within childHealthInfo
+            childHealthInfo.getYear === parseInt(yearInput, 10));
+
+        const quarterMatches =
+          isAllQuartersSelected ||
+          (selectedQuarter !== "All Quarter" &&
+            childHealthInfo.quarter === selectedQuarter); // Check if quarter exists within childHealthInfo
+
         return (
           (isAllBarangaySelected || child.barangay === selectedBarangay) &&
-          (!yearInput ||
-            child.childHealthInfo.getYear === parseInt(yearInput)) &&
-          (isAllQuartersSelected ||
-            (selectedQuarter !== "All Quarter" &&
-              child.childHealthInfo.quarter === selectedQuarter))
+          yearMatches &&
+          quarterMatches
         );
       });
-
       setGridDataTab2(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -305,13 +313,22 @@ const Table = () => {
         const isAllBarangaySelected =
           selectedBarangay === "All Barangay" || selectedBarangay === "";
 
+        const childHealthInfo = child.childHealthInfo || {}; // Null/undefined check
+
+        const yearMatches =
+          !yearInput ||
+          (childHealthInfo.getYear && // Check if getYear exists within childHealthInfo
+            childHealthInfo.getYear === parseInt(yearInput, 10));
+
+        const quarterMatches =
+          isAllQuartersSelected ||
+          (selectedQuarter !== "All Quarter" &&
+            childHealthInfo.quarter === selectedQuarter); // Check if quarter exists within childHealthInfo
+
         return (
           (isAllBarangaySelected || child.barangay === selectedBarangay) &&
-          (!yearInput ||
-            child.childHealthInfo.getYear === parseInt(yearInput)) &&
-          (isAllQuartersSelected ||
-            (selectedQuarter !== "All Quarter" &&
-              child.childHealthInfo.quarter === selectedQuarter))
+          yearMatches &&
+          quarterMatches
         );
       });
 
