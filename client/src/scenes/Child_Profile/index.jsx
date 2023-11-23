@@ -372,7 +372,7 @@ const ChildProfile = ({ child, updateChildData }) => {
 
     setEditedChild((prevChild) => {
       let updatedChild;
-  
+
       if (name === "birthdate") {
         const birthdate = format(new Date(value), "yyyy-MM-dd");
         const aim = calculateAgeInMonths(birthdate);
@@ -388,7 +388,9 @@ const ChildProfile = ({ child, updateChildData }) => {
         };
       } else {
         // Only update these fields if they have values when editing
-        updatedChild = isEditing ? { ...prevChild, [name]: value } : { ...prevChild };
+        updatedChild = isEditing
+          ? { ...prevChild, [name]: value }
+          : { ...prevChild };
       }
 
       // Calculate weightForAge, lengthForAge, and weightForLength based on updated data
@@ -546,8 +548,7 @@ const ChildProfile = ({ child, updateChildData }) => {
     <Box mt="10px">
       {/* Add this line for debugging */}
       {isEditing ? (
-        name === "birthdate" ||
-        name === "dow" ? (
+        name === "birthdate" || name === "dow" ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={label}
@@ -915,7 +916,7 @@ const ChildProfile = ({ child, updateChildData }) => {
                 variant="outlined"
               >
                 <MenuItem value="Permanent">Permanent</MenuItem>
-                <MenuItem value="Temporary">Temporary</MenuItem>
+                <MenuItem value="Transient">Transient</MenuItem>
               </Select>
             </FormControl>
           </Box>

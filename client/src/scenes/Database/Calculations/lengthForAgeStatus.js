@@ -2,10 +2,6 @@ import { calculateAgeInMonths } from "./calculateAgeInMonths";
 import lengthForAgeData from "../StatusReference/lengthForAge.json";
 import { useState } from "react";
 
-
-
-
-
 const lengthForAgeStatus = (birthdate, length, gender) => {
   const ageInMonths = calculateAgeInMonths(birthdate);
   const lengthForAgeGender = lengthForAgeData[gender];
