@@ -26,29 +26,36 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 
 function SignInSide() {
+  // Define state variables using the useState hook
   const [email, setEmail] = useState(""); // Define email state
+  const [emailExists, setEmailExists] = useState(false);
+  const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState(""); // Define password state
   const [passwordVisibility, setPasswordVisibility] = useState(false); // Track password visibility
   const [wrongCredentials, setWrongcredentials] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0); // Track login attempts
   const maxAttempts = 4; // Maximum number of login attempts allowed
   const attemptsLeft = maxAttempts - loginAttempts;
-  const showLoginFields = attemptsLeft > 0;
-  const [fieldsDisabled, setFieldsDisabled] = useState(false); // Track whether fields should be disabled
+  const [userData, setUserData] = useState([]); // Store the user data from the API
   const [countdown, setCountdown] = useState(5); // Initial countdown value
   const [countdownActive, setCountdownActive] = useState(false);
   const [loginAttemptActive, setLoginAttemptActive] = useState(false);
-  const { setToken } = useStateContext(); // Access setToken from context
-  const navigate = useNavigate(); // Initialize useHistory
-  const { setUser } = useStateContext();
-  const { user, token} = useStateContext(); // Access user, token, setToken, and setUser from context
+  
+  // Access setToken from context
+  const { setToken } = useStateContext();
+  // Initialize useHistory
+  const navigate = useNavigate();
+  // Access setUser, user, token, setToken from context
+  const { setUser, user, token } = useStateContext();
+  // Initialize useDispatch
   const dispatch = useDispatch();
 
-  
+  // Toggle password visibility
   const handlePasswordVisibilityToggle = () => {
     setPasswordVisibility((prevVisibility) => !prevVisibility);
   };
 
+  // Check if a token is present on component mount and clear it
   useEffect(() => {
     if (token) {
       setToken(null);
@@ -57,23 +64,54 @@ function SignInSide() {
     }
   }, []);
 
+  // Check if email format is valid
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
+  // Validate email existence
+  const validateEmail = async () => {
+    try {
+      // Make a GET request to retrieve user data
+      const response = await Axios.get("http://127.0.0.1:8000/api/users/");
+      console.log("User Data:", response.data);
+      // Store the user data from the API
+      setUserData(response.data);
+      // Remove the email existence check here
+      setEmailError("");
+    } catch (error) {
+      setEmailExists(false);
+      setEmailError("Error checking email existence.");
+    }
+  };
+
+  // Trigger the API call on component mount
+  useEffect(() => {
+    validateEmail();
+  }, []); // Empty dependency array ensures it runs only once on mount
+
+  // Check for email existence when userData changes
+  useEffect(() => {
+    const emailExists = userData.some((user) => user.email.trim().toLowerCase() === email.trim().toLowerCase() && !user.is_disabled); // Check if the email is not disabled
+    setEmailExists(emailExists);
+  }, [userData, email]);
+
+  // Set up countdown timer for login attempts
   useEffect(() => {
     let timer;
-  
-    if (fieldsDisabled && loginAttempts < maxAttempts) {
+    if (loginAttempts < maxAttempts) {
       setCountdownActive(true);
       timer = setInterval(() => {
         setCountdown((prevCountdown) => {
           const newCountdown = prevCountdown - 1;
-  
           if (newCountdown === 0) {
             setLoginAttemptActive(false);
             setCountdownActive(false);
-            setWrongcredentials(false); // Move this line inside the if block
+            setWrongcredentials(false);
+            clearInterval(timer); // Clear the interval
             return 5;
           }
-  
           return newCountdown;
         });
       }, 1000);
@@ -82,56 +120,89 @@ function SignInSide() {
       setLoginAttemptActive(true);
       setCountdownActive(false);
     }
-  
     return () => clearInterval(timer);
-  }, [fieldsDisabled, loginAttempts, maxAttempts]);
-  
-  
+  }, [loginAttempts, maxAttempts]);
 
+  // Retrieve stored login attempts and email on component mount
   useEffect(() => {
     const storedLoginAttempts = localStorage.getItem("LOGIN_ATTEMPTS");
-    if (storedLoginAttempts) {
+    const storedAttemptedEmail = localStorage.getItem("ATTEMPTED_EMAIL");
+    if (storedLoginAttempts && storedAttemptedEmail) {
       const storedAttempts = parseInt(storedLoginAttempts, 4);
       setLoginAttempts(storedAttempts);
-      if (storedAttempts >= maxAttempts) {
-        setFieldsDisabled(true);
-      }
+      setEmail(storedAttemptedEmail);
     }
   }, [maxAttempts]);
 
+  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       // Disable fields for 5 seconds on login failure
-      if (fieldsDisabled) return;
+      if (loginAttempts >= maxAttempts) {
+        setLoginAttemptActive(true);
+        setWrongcredentials(true);
 
+        // If the email is disabled, set appropriate error message
+        if (emailExists && userData.length > 0 && userData[0].is_disabled) {
+          setEmailError("Your account has been disabled. Check your email for instructions.");
+        } else {
+          // If the email is different, reset the login attempts and update the attempted email
+          localStorage.setItem("LOGIN_ATTEMPTS", 0);
+          setLoginAttempts(0);
+          setLoginAttemptActive(false);
+          setWrongcredentials(false);
+          setEmailError("");
+
+          // Update the attempted email in local storage
+          localStorage.setItem("ATTEMPTED_EMAIL", email);
+
+          // Check if is_disabled is false for the entered email and reset attempts
+          const enteredEmailData = userData.find(
+            (user) => user.email.trim().toLowerCase() === email.trim().toLowerCase()
+          );
+
+          if (enteredEmailData && !enteredEmailData.is_disabled) {
+            localStorage.setItem("LOGIN_ATTEMPTS", 0);
+          }
+        }
+
+        return;
+      }
+      // Check if the email exists
+      await validateEmail();
+
+      if (!emailExists) {
+        // Email does not exist, handle accordingly
+        setEmailError("Email does not exist.");
+        return;
+      }
+
+      // Prepare payload for login request
       const payload = {
         email: email,
         password: password,
       };
+
       // Send a POST request to your backend API to log in
       const loginResponse = await Axios.post(
         "http://127.0.0.1:8000/token/",
         payload
       );
-  
+
       // Handle the login response from the backend
       if (loginResponse.status === 200) {
         setLoginAttempts(0);
         setLoginAttemptActive(false);
-        setFieldsDisabled(false);
         setWrongcredentials(false);
-
-        setLoginAttempts((prevAttempts) => prevAttempts + 1);
-        localStorage.setItem("LOGIN_ATTEMPTS", loginAttempts + 1);
-
+        localStorage.setItem("LOGIN_ATTEMPTS", 0);
+        localStorage.setItem("ATTEMPTED_EMAIL", "");
         setToken(loginResponse.data.access);
         setUser(jwt_decode(loginResponse.data.access));
         localStorage.setItem("ACCESS_TOKEN", JSON.stringify(loginResponse));
-        navigate("/loading")
+        // Navigate to "/loading" and reload the page
+        navigate("/loading");
         window.location.reload(); 
-
-    
       } else {
         alert("Something went wrong!");
       }
@@ -141,18 +212,14 @@ function SignInSide() {
       setLoginAttemptActive(true);
       // Increment the login attempts
       setLoginAttempts((prevAttempts) => prevAttempts + 1);
-      // Store the login attempts in local storage
+      // Store the login attempts and attempted email in local storage
       localStorage.setItem("LOGIN_ATTEMPTS", loginAttempts + 1);
-      if (loginAttempts + 1 >= maxAttempts) {
-        setFieldsDisabled(true);
-        setLoginAttemptActive(true);
+      localStorage.setItem("ATTEMPTED_EMAIL", email);
+      // Reset error state and login attempt state after 5 seconds
+      setTimeout(() => {
         setWrongcredentials(false);
-      } else {
-        setFieldsDisabled(true);
-        setTimeout(() => {
-          setFieldsDisabled(false);
-        }, 5000);
-      }
+        setLoginAttemptActive(false);
+      }, 5000);
     }
   };
   
@@ -205,8 +272,7 @@ function SignInSide() {
               onSubmit={handleSubmit}
               sx={{ mt: 1 }}
             >
-              {showLoginFields ? (
-                <>
+              
                   <TextField
                     margin="normal"
                     required
@@ -218,7 +284,8 @@ function SignInSide() {
                     autoFocus
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    disabled={fieldsDisabled}
+                    error={email.length > 0 && !emailExists}
+                    helperText={emailError}
                   />
                   <TextField
                     margin="normal"
@@ -231,7 +298,6 @@ function SignInSide() {
                     autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    disabled={fieldsDisabled}
                     InputProps={{
                       endAdornment: (
                         <IconButton
@@ -248,16 +314,19 @@ function SignInSide() {
                     control={<Checkbox value="remember" color="primary" />}
                     label="Remember me"
                   /> */}
-                </>
-              ) : (
-                <Typography variant="body2" color="error">
+                
+              
+                {/* <Typography variant="body2" color="error">
                   You have been locked out because of too many failed login attempts. Check your email for confirmation.
                 </Typography>
-              )}
+               */}
               {wrongCredentials && loginAttemptActive && (
-                <Typography variant="body2" color="error">
-                  Wrong email or password. Attempts left: {attemptsLeft}.
-                  {countdownActive && ` Countdown: ${countdown}s`}
+                <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                  {loginAttempts >= maxAttempts 
+                    ? "Your account have been locked out/deactivated because of too many failed login attempts. Check your email for instructions."
+                    : `Wrong email or password. Attempts left: ${attemptsLeft}. ${
+                        countdownActive ? `Try again in ${countdown}s` : ""
+                      }`}
                 </Typography>
               )}
 
