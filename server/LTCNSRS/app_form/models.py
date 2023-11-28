@@ -4,7 +4,6 @@ from datetime import datetime
 housing_CHOICES = (
     ('Permanent', 'Permanent'),
     ('Transient', 'Transient'),
-
 )
 
 gender_choices = (
@@ -124,9 +123,9 @@ class ChildHealthInfo(models.Model):
             if self.child.birthdate:
                 birth_year = self.child.birthdate.year
                 self.year = birth_year
-
+    
         super(ChildHealthInfo, self).save(*args, **kwargs)
-
+    
 class DuplicateChild(models.Model):
     id = models.AutoField(primary_key=True)
     full_name = models.CharField(max_length=255)

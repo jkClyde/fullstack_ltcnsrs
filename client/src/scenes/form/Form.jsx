@@ -8,6 +8,10 @@ import MenuInput from "./formComponents/MenuInput";
 import ethnicityOptions from "./ethnicityOptions";
 import barangayOptions from "./barangayOptions";
 
+import lengthForAgeStatus from "../Database/Calculations/lengthForAgeStatus";
+import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
+import weightForLengthStatus from "../Database/Calculations/weightForLengthStatus";
+
 import { Box, Button } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -53,7 +57,7 @@ const Form = () => {
       (entry) =>
         // entry.fullName === values.fullName &&
         dayjs(entry.birthdate).format("YYYY-MM-DD") ===
-          dayjs(selectedBirthdate).format("YYYY-MM-DD")
+        dayjs(selectedBirthdate).format("YYYY-MM-DD")
     );
 
     if (isDuplicate) {
@@ -110,6 +114,22 @@ const Form = () => {
       deworming: values.deworming,
       bpe: values.bpe,
       disability: values.disability,
+      weightForAge: weightForAgeStatus(
+        formattedBirthdate,
+        values.weight,
+        values.gender
+      ),
+      lengthForAge: lengthForAgeStatus(
+        formattedBirthdate,
+        values.height,
+        values.gender
+      ),
+      weightForLength: weightForLengthStatus(
+        formattedBirthdate,
+        values.height,
+        values.weight,
+        values.gender
+      ),
     };
 
     // Create a data object for saving in the PrimaryChild table

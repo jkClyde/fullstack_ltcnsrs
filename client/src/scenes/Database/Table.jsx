@@ -12,10 +12,9 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import barangayOptions from "./../form/barangayOptions.js";
 import DuplicateTable from "./DuplicatesTable.jsx";
-import { connect } from 'react-redux';
-import {mapState} from "./../../redux/global_variables";
-import {  useSelector  } from 'react-redux';
-
+import { connect } from "react-redux";
+import { mapState } from "./../../redux/global_variables";
+import { useSelector } from "react-redux";
 
 import ExcelToJSON from "../Import/index.jsx";
 import ExportToExcel from "../export/index.jsx";
@@ -48,16 +47,14 @@ import {
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 
-
 const Table = () => {
-  const success = useSelector((state) => state.refresher.success); 
+  const success = useSelector((state) => state.refresher.success);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [gridData, setGridData] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
   const [snackbarSeverity, setSnackbarSeverity] = React.useState("success");
-  const [initialYear, setInitialYear] = useState(null);
   const [selectedChild, setselectedChild] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [selectedQuarter, setSelectedQuarter] = useState("All Quarter"); // Provide an initial value based on your requirements
@@ -66,9 +63,8 @@ const Table = () => {
   const [isYearInputValid, setIsYearInputValid] = useState(true);
   const [duplicateChildren, setDuplicateChildren] = useState([]);
 
-
   useEffect(() => {
-    console.log("HERE AGAIN", success)
+    console.log("HERE AGAIN", success);
     setIsDialogOpen(closed);
     // console.log("HHHEEEEEEEERE", closeImport)
   }, [closed]);
@@ -96,16 +92,12 @@ const Table = () => {
     // fetchTab4Data();
   }, []);
 
-
-
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setSnackbarOpen(false);
   };
-
-
 
   // Function to show Snackbar
   const showSnackbar = (message, severity) => {
@@ -140,6 +132,7 @@ const Table = () => {
     );
     fetchTab1Data();
     fetchTab2Data();
+    fetchTab3Data();
   }, [selectedBarangay, selectedQuarter, success]);
 
   const fetchTab1Data = async () => {
@@ -182,20 +175,28 @@ const Table = () => {
       );
 
       // Filter data based on selected barangay and entered year
-      console.log("Entered Year:", parseInt(yearInput)); // Add this line to log the entered year
       let filteredData = mergedData.filter((child) => {
         const isAllQuartersSelected =
           selectedQuarter === "All Quarter" || selectedQuarter === "";
         const isAllBarangaySelected =
           selectedBarangay === "All Barangay" || selectedBarangay === "";
 
+        const childHealthInfo = child.childHealthInfo || {}; // Null/undefined check
+
+        const yearMatches =
+          !yearInput ||
+          (childHealthInfo.getYear && // Check if getYear exists within childHealthInfo
+            childHealthInfo.getYear === parseInt(yearInput, 10));
+
+        const quarterMatches =
+          isAllQuartersSelected ||
+          (selectedQuarter !== "All Quarter" &&
+            childHealthInfo.quarter === selectedQuarter); // Check if quarter exists within childHealthInfo
+
         return (
           (isAllBarangaySelected || child.barangay === selectedBarangay) &&
-          (!yearInput ||
-            child.childHealthInfo.getYear === parseInt(yearInput)) &&
-          (isAllQuartersSelected ||
-            (selectedQuarter !== "All Quarter" &&
-              child.childHealthInfo.quarter === selectedQuarter))
+          yearMatches &&
+          quarterMatches
         );
       });
 
@@ -243,21 +244,30 @@ const Table = () => {
         const isAllBarangaySelected =
           selectedBarangay === "All Barangay" || selectedBarangay === "";
 
+        const childHealthInfo = child.childHealthInfo || {}; // Null/undefined check
+
+        const yearMatches =
+          !yearInput ||
+          (childHealthInfo.getYear && // Check if getYear exists within childHealthInfo
+            childHealthInfo.getYear === parseInt(yearInput, 10));
+
+        const quarterMatches =
+          isAllQuartersSelected ||
+          (selectedQuarter !== "All Quarter" &&
+            childHealthInfo.quarter === selectedQuarter); // Check if quarter exists within childHealthInfo
+
         return (
           (isAllBarangaySelected || child.barangay === selectedBarangay) &&
-          (!yearInput ||
-            child.childHealthInfo.getYear === parseInt(yearInput)) &&
-          (isAllQuartersSelected ||
-            (selectedQuarter !== "All Quarter" &&
-              child.childHealthInfo.quarter === selectedQuarter))
+          yearMatches &&
+          quarterMatches
         );
       });
-
       setGridDataTab2(filteredData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
   const fetchTab3Data = async () => {
     try {
       // Fetch primary child data
@@ -273,9 +283,9 @@ const Table = () => {
       }
       const primaryChildData = await primaryChildResponse.json();
 
-      // Filter out children with archive set to false
+      // Filter out children with archive set to true
       const filteredPrimaryChildData = primaryChildData.filter(
-        (child) => child.archive !== false
+        (child) => child.archive === true
       );
 
       // Fetch child health info data
@@ -298,20 +308,27 @@ const Table = () => {
       );
 
       // Filter data based on selected barangay and entered year
-      console.log("Entered Year:", parseInt(yearInput)); // Add this line to log the entered year
       let filteredData = mergedData.filter((child) => {
         const isAllQuartersSelected =
           selectedQuarter === "All Quarter" || selectedQuarter === "";
         const isAllBarangaySelected =
           selectedBarangay === "All Barangay" || selectedBarangay === "";
 
+        const childHealthInfo = child.childHealthInfo || {};
+
+        const yearMatches =
+          !yearInput ||
+          (childHealthInfo.getYear &&
+            childHealthInfo.getYear() === parseInt(yearInput));
+        const quarterMatches =
+          isAllQuartersSelected ||
+          (selectedQuarter !== "All Quarter" &&
+            childHealthInfo.quarter === selectedQuarter);
+
         return (
           (isAllBarangaySelected || child.barangay === selectedBarangay) &&
-          (!yearInput ||
-            child.childHealthInfo.getYear === parseInt(yearInput)) &&
-          (isAllQuartersSelected ||
-            (selectedQuarter !== "All Quarter" &&
-              child.childHealthInfo.quarter === selectedQuarter))
+          yearMatches &&
+          quarterMatches
         );
       });
 
@@ -378,7 +395,9 @@ const Table = () => {
         weight: matchingChildHealthInfo ? matchingChildHealthInfo.weight : 0,
         height: matchingChildHealthInfo ? matchingChildHealthInfo.height : 0,
         muac: matchingChildHealthInfo ? matchingChildHealthInfo.muac : 0,
-        deworming: matchingChildHealthInfo ? matchingChildHealthInfo.deworming : "N/A",
+        deworming: matchingChildHealthInfo
+          ? matchingChildHealthInfo.deworming
+          : "N/A",
         vac: matchingChildHealthInfo ? matchingChildHealthInfo.vac : "N/A",
         bpe: matchingChildHealthInfo ? matchingChildHealthInfo.bpe : "N/A",
         disability: matchingChildHealthInfo
@@ -454,17 +473,16 @@ const Table = () => {
     setselectedChild(child);
     setIsProfileOpen(true);
   };
-
-
+  const [loading, setLoading] = useState(true);
   // USE EFFECT FOR DUPLICATED TABLE -------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/duplicateChild/');
+        const response = await fetch("http://127.0.0.1:8000/duplicateChild/");
         const data = await response.json();
         setDuplicateChildren(data);
       } catch (error) {
-        console.error('Error fetching duplicate children:', error);
+        console.error("Error fetching duplicate children:", error);
       } finally {
         setLoading(false);
       }
@@ -472,7 +490,6 @@ const Table = () => {
 
     fetchData();
   }, []);
-
 
   // Table columns on Master table or Tab 1
   const columnsTab1 = [
@@ -1028,7 +1045,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab1}
         columns={columnsTab1}
-        sx={{height: '65vh'}}
+        sx={{ height: "65vh" }}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1138,7 +1155,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab2}
         columns={columnsTab2}
-        sx={{height: '65vh'}}
+        sx={{ height: "65vh" }}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1220,7 +1237,7 @@ const Table = () => {
       <DataGrid
         rows={gridDataTab3}
         columns={columnsTab3}
-        sx={{height: '65vh'}}
+        sx={{ height: "65vh" }}
         onRowClick={(params, event) => handleRowClick(params, event)}
         components={{
           Toolbar: () => (
@@ -1233,9 +1250,7 @@ const Table = () => {
       />
     </Box>
   );
-  const dataGridTab4 = (     
-    <DuplicateTable/>
-  );
+  const dataGridTab4 = <DuplicateTable />;
 
   return (
     <Box
@@ -1283,7 +1298,7 @@ const Table = () => {
             backgroundColor:
               activeTab === 0 ? colors.blueAccent[700] : "initial",
             color: activeTab === 0 ? colors.grey[100] : colors.grey[100],
-            borderRadius: "20px 20px 0 0", 
+            borderRadius: "20px 20px 0 0",
           }}
         />
         <Tab
@@ -1322,7 +1337,7 @@ const Table = () => {
         : activeTab === 1
         ? dataGridTab2
         : activeTab === 2
-        ? dataGridTab3 
+        ? dataGridTab3
         : dataGridTab4}
 
       {/* Profile Dialog */}
