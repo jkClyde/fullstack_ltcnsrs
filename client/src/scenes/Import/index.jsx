@@ -63,7 +63,7 @@ const ExcelToJSON = ({ population }) => {
       const lengthForAge = lengthForAgeStatus(
         item.birthdate,
         item.age,
-        item.length,
+        item.height,
         item.gender
       );
       const weightForAge = weightForAgeStatus(
@@ -74,17 +74,13 @@ const ExcelToJSON = ({ population }) => {
       );
       const weightForLength = weightForLengthStatus(
         item.birthdate,
-        item.length,
+        item.height,
         item.weight,
         item.gender
       );
-
-      // Log the calculated statuses for each item
-      console.log("Length for Age:", lengthForAge);
-      console.log("Weight for Age:", weightForAge);
-      console.log("Weight for Length:", weightForLength);
-
       // Add statuses to the item object
+      console.log("Gender", item.birthdate);
+
       item.lengthForAgeStatus = lengthForAge;
       item.weightForAgeStatus = weightForAge;
       item.weightForLengthStatus = weightForLength;
@@ -252,10 +248,10 @@ const ExcelToJSON = ({ population }) => {
                 weight: item.weight,
                 purga: item.purga,
                 vac: item.vac,
-                lengthForAgeStatus: item.lengthForAgeStatus,
-                weightForAgeStatus: item.weightForAgeStatus,
-                weightForLengthStatus: item.weightForLengthStatus,
-                // Other fields relevant to childhealthinfo
+                gender: item.gender,
+                lengthForAge: item.lengthForAgeStatus,
+                weightForAge: item.weightForAgeStatus,
+                weightForLength: item.weightForLengthStatus,
               };
               return fetch("http://127.0.0.1:8000/childhealthinfo/", {
                 method: "POST",
@@ -263,10 +259,7 @@ const ExcelToJSON = ({ population }) => {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  ...healthInfoItem, // Include all existing fields from the 'item' object
-                  lengthForAgeStatus: item.lengthForAgeStatus, // Include calculated status fields
-                  weightForAgeStatus: item.weightForAgeStatus,
-                  weightForLengthStatus: item.weightForLengthStatus,
+                  ...healthInfoItem,
                 }),
               });
             })

@@ -87,6 +87,9 @@ class PrimaryChild(models.Model):
 
         super(PrimaryChild, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return self.fullName 
+    
 class ChildHealthInfo(models.Model):
     childHealth_id = models.AutoField(primary_key=True)
     dow = models.DateField(null=True, blank=True)
@@ -131,5 +134,5 @@ class DuplicateChild(models.Model):
     full_name = models.CharField(max_length=255)
     first_barangay = models.CharField(max_length=255)
     second_barangay = models.CharField(max_length=255)
-
+    isDuplicate = models.BooleanField(default=False)
     

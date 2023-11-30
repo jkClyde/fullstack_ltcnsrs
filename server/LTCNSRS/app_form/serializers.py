@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import PrimaryChild, ChildHealthInfo, DuplicateChild
 
 class PrimaryChildSerializer(serializers.ModelSerializer):
+    fullName = serializers.CharField(required=False) 
     class Meta:
         model = PrimaryChild
         fields = '__all__'

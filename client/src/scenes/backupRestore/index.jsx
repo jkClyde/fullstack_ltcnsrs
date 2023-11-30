@@ -1,43 +1,87 @@
 // App.js
 
-import React from 'react';
-import './backupRestore.css';
-import {
-    Box,
-  } from "@mui/material";
-import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
-import RestoreIcon from '@mui/icons-material/Restore';
+import React from "react";
+import "./backupRestore.css";
+import { Box } from "@mui/material";
+import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
+import RestoreIcon from "@mui/icons-material/Restore";
+import axios from "axios";
 
 const BackupRestore = () => {
-  // Placeholder functions for backup and restore
-  const handleBackup = () => {
-    console.log('Backup functionality goes here');
-    // Add your backup logic here
+  const handleBackup = async () => {
+    try {
+      const tablesToBackup = [
+        "app_form_primarychild",
+        "app_form_childhealthinfo",
+        "app_form_duplicateChild",
+      ];
+
+      const response = await axios.get("http://127.0.0.1:8000/backup/", {
+        params: {
+          tables: tablesToBackup.join(","), // Send a comma-separated list of tables as a query parameter
+        },
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "backup-child.sql");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Backup failed:", error);
+      // Handle error or display an error message to the user
+    }
   };
 
-  const handleRestore = () => {
-    console.log('Restore functionality goes here');
-    // Add your restore logic here
+  const handleRestore = async (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append("backup_file", file);
+
+    try {
+      await axios.post("http://127.0.0.1:8000/primarychild/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Database restoration successful");
+      // Optionally, show a success message to the user
+    } catch (error) {
+      console.error("Database restoration failed:", error);
+      // Handle error or display an error message to the user
+    }
   };
 
- 
-    return (
-      <div className="BackupRestore">
-        <div className="center-container">
-          <Box backgroundColor="Black" color="White" borderRadius="10px">
-            <button onClick={handleBackup}>
+  return (
+    <div className="BackupRestore">
+      <div className="center-container">
+        <Box backgroundColor="Black" color="White" borderRadius="10px">
+          <button onClick={handleBackup}>
             <Box m="5px">
-                <CloudDownloadOutlinedIcon/>
+              <CloudDownloadOutlinedIcon />
             </Box>
             Backup
-            </button>
+          </button>
         </Box>
-          <Box backgroundColor="Red" color="White" borderRadius="10px"><button onClick={handleRestore}><Box m="5px">
-                <RestoreIcon/>
-            </Box>Restore</button></Box>
-        </div>
+        <Box backgroundColor="Red" color="White" borderRadius="10px">
+          <label htmlFor="file-upload">
+            <input
+              id="file-upload"
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleRestore}
+            />
+            <Box m="5px">
+              <RestoreIcon />
+            </Box>
+            Restore
+          </label>
+        </Box>
       </div>
-    );
-}
+    </div>
+  );
+};
 
 export default BackupRestore;

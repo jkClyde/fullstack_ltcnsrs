@@ -79,6 +79,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'LTCNSRS.urls'
 
+CSRF_COOKIE_SECURE = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

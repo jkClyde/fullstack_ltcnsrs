@@ -25,7 +25,7 @@ const DuplicateTable = () => {
   const [snackbarSeverity, setSnackbarSeverity] = React.useState("success");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/duplicateChild/")
+    fetch("http://127.0.0.1:8000/duplicateChild/?isDuplicate=false")
       .then((response) => response.json())
       .then((data) => setDuplicates(data))
       .catch((error) => console.error("Error fetching data:", error));
@@ -37,12 +37,27 @@ const DuplicateTable = () => {
     setSnackbarOpen(true);
   };
   const handleRemove = (id) => {
-    //no backend delete
-    const updatedDuplicates = duplicates.filter(
-      (duplicate) => duplicate.id !== id
-    );
-    setDuplicates(updatedDuplicates);
-    showSnackbar("Child deleted successfully", "success");
+    fetch(`http://127.0.0.1:8000/duplicateChild/${id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ isDuplicate: true }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update 'isDuplicate' value");
+        }
+        const updatedDuplicates = duplicates.filter(
+          (duplicate) => duplicate.id !== id
+        );
+        setDuplicates(updatedDuplicates);
+        showSnackbar("Child deleted successfully", "success");
+      })
+      .catch((error) => {
+        console.error("Error updating 'isDuplicate' value:", error);
+        showSnackbar("Failed to delete child", "error");
+      });
   };
 
   const columns = [
