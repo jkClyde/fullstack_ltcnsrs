@@ -1,3 +1,7 @@
+import os
+import subprocess
+import tempfile
+import shutil 
 from rest_framework import generics, authentication, permissions
 from .models import PrimaryChild, ChildHealthInfo, DuplicateChild
 from .serializers import PrimaryChildSerializer, ChildHealthInfoSerializer, DuplicateChildSerializer
@@ -6,11 +10,9 @@ from rest_framework import status
 from django.http import JsonResponse
 from django.core import serializers
 from .models import PrimaryChild, ChildHealthInfo, DuplicateChild
-import subprocess
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
-import os
 
 
 
@@ -63,27 +65,43 @@ class DuplicateChildDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = []  # No authentication required
     permission_classes = [permissions.AllowAny]  # Allow access to everyone
 
+
+import subprocess
+import os
+
 def backup_database(request):
-    tables = request.GET.getlist('tables')  # Retrieve a list of tables from the request
+    tables = request.GET.get('tables')  # Retrieve comma-separated tables from the request
     if not tables:
         return HttpResponse("No tables specified for backup", status=400)
 
- # Inside the backup function
-    temp_file = 'temp_backup.sql'  # Temporary file name
+    # Split the received comma-separated string into individual table names
+    tables_list = tables.split(',')
+
+    if not tables_list:
+        return HttpResponse("No valid tables specified for backup", status=400)
 
     try:
+        # Set the PGPASSWORD environment variable with your database password
+        os.environ["PGPASSWORD"] = "group1"
+
+        # Create a unique temporary file
+        temp_file = tempfile.NamedTemporaryFile(suffix='.sql', delete=False).name
+
         # Command to perform the backup for specific tables and write to the temporary file
-        command = f'pg_dump -U postgres -d db_cnsrs -t {" -t ".join(tables)} > {temp_file}'
+        command = f'pg_dump -U postgres -d db_cnsrs -t {" -t ".join(tables_list)} > {temp_file}'
 
         # Execute the command using shell=True to capture output and write to the temporary file
-        subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE)
+        subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, env=os.environ)
         
-        # Rename the temporary file to backup-child.sql
-        os.rename(temp_file, 'backup-child.sql')
+        # Define the absolute path for the backup file
+        backup_file_path = 'E:/Backup-Folder/backup-child.sql'  # Update this path
 
-        with open('backup-child.sql', 'rb') as backup_file:
+        # Move the temporary file to the defined backup file path
+        shutil.move(temp_file, backup_file_path)
+
+        with open(backup_file_path, 'rb') as backup_file:
             response = HttpResponse(backup_file.read())
-            response['Content-Disposition'] = 'attachment; filename="backup-child.sql"'
+            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(backup_file_path)}"'
             return response
     except subprocess.CalledProcessError as e:
         print(f"Backup failed: {e}")
@@ -91,7 +109,6 @@ def backup_database(request):
     except Exception as ex:
         print(f"An error occurred: {ex}")
         return HttpResponse("Internal Server Error", status=500)
-
     
 # Restore function
 @csrf_exempt
@@ -102,15 +119,28 @@ def restore_database(request):
             if not uploaded_file.name.endswith('.sql'):
                 return JsonResponse({'error': 'Invalid file format. Must be a .sql file'}, status=400)
             
-            # Read the uploaded SQL file and execute the queries
+            # Create a temporary file to save the uploaded SQL file
+            temp_file = tempfile.NamedTemporaryFile(suffix='.sql', delete=False)
             with uploaded_file.open() as sql_file:
-                queries = sql_file.read().decode('utf-8').split(';')
+                # Write the contents of the uploaded file to the temporary file
+                for chunk in sql_file.chunks():
+                    temp_file.write(chunk)
+            
+            # Close the temporary file after writing
+            temp_file.close()
+
+            # Execute the queries from the uploaded SQL file
+            with open(temp_file.name, 'r') as sql_file:
+                queries = sql_file.read().split(';')
                 with connection.cursor() as cursor:
                     for query in queries:
                         query = query.strip()
                         if query:
                             cursor.execute(query)
             
+            # Remove the temporary file
+            os.remove(temp_file.name)
+
             return JsonResponse({'message': 'Database restored successfully'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)

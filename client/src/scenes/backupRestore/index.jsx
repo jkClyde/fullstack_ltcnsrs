@@ -13,7 +13,6 @@ const BackupRestore = () => {
       const tablesToBackup = [
         "app_form_primarychild",
         "app_form_childhealthinfo",
-        "app_form_duplicateChild",
       ];
 
       const response = await axios.get("http://127.0.0.1:8000/backup/", {
@@ -40,16 +39,20 @@ const BackupRestore = () => {
     formData.append("backup_file", file);
 
     try {
-      await axios.post("http://127.0.0.1:8000/primarychild/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/restore/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      console.log("Database restoration successful");
-      // Optionally, show a success message to the user
+      console.log("Restore successful:", response.data.message);
+      // Handle successful restoration or display a success message to the user
     } catch (error) {
-      console.error("Database restoration failed:", error);
+      console.error("Restore failed:", error);
       // Handle error or display an error message to the user
     }
   };

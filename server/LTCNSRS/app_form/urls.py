@@ -11,5 +11,5 @@ urlpatterns = [
     path('childhealthinfo/', ChildHealthInfoListView.as_view(), name='ChildHealthInfo-list'),
     path('childhealthinfo/<int:pk>/', ChildHealthInfoDetailView.as_view(), name='ChildHealthInfo-detail'),
     path('backup/', backup_database, name='backup_database'),
-
+    path('restore/', views.restore_database, name='restore_database')   
 ]
