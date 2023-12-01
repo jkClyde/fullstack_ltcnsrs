@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ethnicityOptions from "../form/ethnicityOptions";
+// import ethnicityOptions from "../form/ethnicityOptions";
 import { calculateAgeInMonths } from "../Database/Calculations/calculateAgeInMonths";
 import lengthForAgeStatus from "../Database/Calculations/lengthForAgeStatus";
 import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
@@ -8,7 +8,7 @@ import "./../Database/StatusReference/StatusCellColors/statusColors.css";
 import { getClassForStatusColorValue } from "./getClassForStatusColorValue";
 import barangayOptions from "./../form/barangayOptions.js";
 
-// import ChildInfo from "./ChildInfo";
+
 import {
   Box,
   useTheme,
