@@ -106,7 +106,7 @@ const exportToExcel2 = (childData) => {
 };
 
 
-
+//------------------------------------------------------------------------
 const exportToExcel = (childData) => {
   if (!Array.isArray(childData)) {
     console.error('Invalid data format. Expected an array.');
@@ -154,16 +154,17 @@ const exportToExcel = (childData) => {
         dataKey.forEach((dk) => {
           formattedItem[excelKey] = item[dk];
         });
-      } else {
-        // Check if the key is 'Sex' and map it to 'M' or 'F' based on the 'gender' property
-        if (dataKey === 'gender') {
-          formattedItem[excelKey] = item[dataKey] === 'Male' ? 'M' : 'F';
-        } else if (dataKey === 'pt') {
-          formattedItem[excelKey] = item[dataKey] === 'Permanent' ? 'P' : 'T';
-        } else {
-          formattedItem[excelKey] = item[dataKey];
-        }
       }
+      // } else {
+      //   // Check if the key is 'Sex' and map it to 'M' or 'F' based on the 'gender' property
+      //   if (dataKey === 'gender') {
+      //     formattedItem[excelKey] = item[dataKey] === 'Male' ? 'M' : 'F';
+      //   } else if (dataKey === 'pt') {
+      //     formattedItem[excelKey] = item[dataKey] === 'Permanent' ? 'P' : 'T';
+      //   } else {
+      //     formattedItem[excelKey] = item[dataKey];
+      //   }
+      // }
     });
     // Add an auto-incremented index
     formattedItem['No'] = index + 1;
@@ -271,6 +272,37 @@ function App() {
           ...childHealthInfoResponse.data.find((healthInfo) => healthInfo.child === child.id),
         }));
 
+        const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+          fetch('http://127.0.0.1:8000/auth/users/me/', {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${storedToken.data.access}`,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                const auditCreatePayload = {
+                    user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
+                    action: 'Exported a Data',  // Replace 'your_action_here' with the actual action
+                };
+                fetch('http://127.0.0.1:8000/audit/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(auditCreatePayload),
+                })
+                    .then((auditResponse) => auditResponse.json())
+                    .then((auditData) => {
+                        console.log('Audit creation response:', auditData);
+                    })
+                    .catch((auditError) => {
+                        console.error('Error creating audit:', auditError);
+                    });
+            })
+            .catch((error) => {
+                console.error('Error fetching user data:', error);
+            });
         setChildData(mergedData);
         console.log(childData)
       } catch (error) {

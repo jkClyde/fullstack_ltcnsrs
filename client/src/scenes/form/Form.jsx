@@ -178,6 +178,39 @@ const Form = () => {
         });
       })
       .then((response) => {
+        //------------------------------------------------------------------------------------------
+        const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+        fetch('http://127.0.0.1:8000/auth/users/me/', {
+          method: 'GET',
+          headers: {
+              Authorization: `Bearer ${storedToken.data.access}`,
+          },
+      })
+          .then((response) => response.json())
+          .then((data) => {
+              const auditCreatePayload = {
+                  user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
+                  action: 'Create a new Data using forms ',  // Replace 'your_action_here' with the actual action
+              };
+              fetch('http://127.0.0.1:8000/audit/', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(auditCreatePayload),
+              })
+                  .then((auditResponse) => auditResponse.json())
+                  .then((auditData) => {
+                      console.log('Audit creation response:', auditData);
+                  })
+                  .catch((auditError) => {
+                      console.error('Error creating audit:', auditError);
+                  });
+          })
+          .catch((error) => {
+              console.error('Error fetching user data:', error);
+          });
+
         if (response.ok) {
           // Both primary child and quarter data saved successfully
           notify();

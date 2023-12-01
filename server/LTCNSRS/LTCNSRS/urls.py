@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from app_accounts.views import UserActivationView
 from app_accounts.views import UserListView, UserApprovalView, DisableUserView, EnableUserView, CustomTokenObtainPairView
+from app_audit.views import AuditCreateView
 
 
 
@@ -21,7 +22,7 @@ urlpatterns = [
 
 
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-
     path('api/users/', UserListView.as_view(), name='user-list'),
+    path('audit/', AuditCreateView.as_view(), name='Audit-Create'),
 
 ]

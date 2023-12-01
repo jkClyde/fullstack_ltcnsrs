@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'djoser',
     'app_accounts.apps.AppAccountsConfig',
     'app_calendar.apps.AppCalendarConfig',
+    'app_audit.apps.AppAuditConfig',
 ]
 
 REST_FRAMEWORK = {
