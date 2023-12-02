@@ -53,40 +53,7 @@ const ExcelToJSON = ({ population }) => {
 
   const success2 = useSelector((state) => state.refresher.success); // Assuming you have set up the Redux store correctly
   const dispatch = useDispatch();
-  const failedPayloads = [];
-  const failedPayloadObjects = [];
 
-  const calculateAndAddStatuses = (data) => {
-    // Loop through the transformed data
-    data.forEach((item) => {
-      // Calculate statuses based on available data fields and add them to the item
-      const lengthForAge = lengthForAgeStatus(
-        item.birthdate,
-        item.age,
-        item.height,
-        item.gender
-      );
-      const weightForAge = weightForAgeStatus(
-        item.birthdate,
-        item.age,
-        item.weight,
-        item.gender
-      );
-      const weightForLength = weightForLengthStatus(
-        item.birthdate,
-        item.height,
-        item.weight,
-        item.gender
-      );
-      // Add statuses to the item object
-      console.log("Gender", item.birthdate);
-
-      item.lengthForAgeStatus = lengthForAge;
-      item.weightForAgeStatus = weightForAge;
-      item.weightForLengthStatus = weightForLength;
-    });
-    return data; // Return the data with added statuses
-  };
 
   const [fileName, setFileName] = useState("");
   const handleFileUpload = (e) => {
@@ -140,12 +107,11 @@ const ExcelToJSON = ({ population }) => {
         }
         return transformedItem;
       });
-      const dataWithStatuses = calculateAndAddStatuses(transformedData);
-      setJsonData(dataWithStatuses);
+      setJsonData(transformedData);
 
       // Use Promise.all to wait for all fetch requests to complete
       Promise.all(
-        dataWithStatuses.map((item) =>
+        transformedData.map((item) =>
           fetch("http://127.0.0.1:8000/primarychild/", {
             method: "POST",
             headers: {
@@ -158,12 +124,7 @@ const ExcelToJSON = ({ population }) => {
                 setSuccess((prevSuccess) => prevSuccess + 1);
                 setBarangay(item.barangay);
                 return response.json();
-
-                // IF IMPORT FAILED ---------------------------------------------------------------------------
               } else {
-                // Search for data in primaryChild similar to item.name
-
-                //FOR DUPLICATES | ERROR 500
                 if (response.status === 500) {
                   setFailed((prevFailed) => prevFailed + 1);
 
@@ -191,7 +152,6 @@ const ExcelToJSON = ({ population }) => {
                         second_barangay: item.barangay,
                       };
 
-                      // Send POST request to duplicateChild endpoint
                       fetch("http://127.0.0.1:8000/duplicateChild/", {
                         method: "POST",
                         headers: {
@@ -250,10 +210,16 @@ const ExcelToJSON = ({ population }) => {
                 vac: item.vac,
                 gender: item.gender,
 
+
+                // lengthForAge: item.lengthForAgeStatus,
+                // weightForAge: item.weightForAgeStatus,
+                // weightForLength: item.weightForLengthStatus,
                 
-                lengthForAge: item.lengthForAgeStatus,
-                weightForAge: item.weightForAgeStatus,
-                weightForLength: item.weightForLengthStatus,
+
+                lengthForAge: lengthForAgeStatus(item.birthdate, item.height, item.gender),
+                weightForAge: weightForAgeStatus(item.birthdate, item.weight, item.gender),
+                weightForLength: weightForLengthStatus(item.birthdate, item.height, item.weight,  item.gender),
+
               };
               return fetch("http://127.0.0.1:8000/childhealthinfo/", {
                 method: "POST",
