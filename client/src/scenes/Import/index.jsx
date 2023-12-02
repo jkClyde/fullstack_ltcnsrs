@@ -49,9 +49,7 @@ const ExcelToJSON = ({ population }) => {
   const [isFile, setFile] = useState(false);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const navigate = useNavigate(); // Initialize useHistory
-
-  const success2 = useSelector((state) => state.refresher.success); // Assuming you have set up the Redux store correctly
+  const success2 = useSelector((state) => state.refresher.success); 
   const dispatch = useDispatch();
 
 

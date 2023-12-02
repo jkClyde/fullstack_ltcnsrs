@@ -24,6 +24,7 @@ const exportToExcel2 = (childData) => {
     "Date Measured" : "dow",
     "Height": "height",
     "Weight": "weight",
+
   };
 
   // Map keys and format data
@@ -130,18 +131,9 @@ const exportToExcel = (childData) => {
     "AIM": "aim",
     "barangay" : "barangay",
 
-   //Poblacion
-    // "__EMPTY_1": "fullName",
-    // "__EMPTY_2": "gender",
-    // "__EMPTY_3": "birthdate",
-    // "__EMPTY_4": "dow",
-    // "__EMPTY_5": "weight",
-    // "__EMPTY_6" : 'height',
-    // "__EMPTY_11" : "address",
-    // "__EMPTY_12" : "pt",
-    // "__EMPTY_15" : "parentName",
-    // "__EMPTY_16": "ethnicity",
-    // "__EMPTY_17": "occupation",
+    "LFA" : "lengthForAge",
+    "WFA" : "weightForAge",
+    "WFL" : "weightForLength",
 
   };
 
@@ -155,18 +147,7 @@ const exportToExcel = (childData) => {
           formattedItem[excelKey] = item[dk];
         });
       }
-      // } else {
-      //   // Check if the key is 'Sex' and map it to 'M' or 'F' based on the 'gender' property
-      //   if (dataKey === 'gender') {
-      //     formattedItem[excelKey] = item[dataKey] === 'Male' ? 'M' : 'F';
-      //   } else if (dataKey === 'pt') {
-      //     formattedItem[excelKey] = item[dataKey] === 'Permanent' ? 'P' : 'T';
-      //   } else {
-      //     formattedItem[excelKey] = item[dataKey];
-      //   }
-      // }
     });
-    // Add an auto-incremented index
     formattedItem['No'] = index + 1;
 
     return formattedItem;
@@ -187,27 +168,7 @@ const exportToExcel = (childData) => {
           formattedItem[excelKey] = item[dataKey] === 'Male' ? 'M' : 'F';
         } else if (dataKey === 'pt') {
           formattedItem[excelKey] = item[dataKey] === 'Permanent' ? 'P' : 'T';
-        // } else if (dataKey === 'birthdate'  ) {
-        //    // Reformat date from YYYY-MM-DD to DD-MM-YYYY
-        //   const dobParts = item[dataKey].split('-');
-        //   formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
-        // }
-        // else if (dataKey === 'dow' && item[dataKey]) {
-        //   // Reformat date from YYYY-MM-DD to DD-MM-YYYY
-        //   const dobParts = item[dataKey].split('-');
-        //   formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
-        // }
-        // else if (dataKey === 'vac' && item[dataKey]) {
-        //   // Reformat date from YYYY-MM-DD to DD-MM-YYYY
-        //   const dobParts = item[dataKey].split('-');
-        //   formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
-        // }
-        // else if (dataKey === 'purga' && item[dataKey]) {
-        //   // Reformat date from YYYY-MM-DD to DD-MM-YYYY
-        //   console.log([excelKey] = item[dataKey])
-        //   const dobParts = item[dataKey].split('-');
-        //   formattedItem[excelKey] = dobParts[2] + '/' + dobParts[1] + '/' + dobParts[0];
-          
+      
         }
         else {
           formattedItem[excelKey] = item[dataKey];
@@ -255,87 +216,55 @@ const ExportButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-
-
-function App() {
+function App({ barangay }) {
   const [childData, setChildData] = useState([]);
-  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const primaryChildResponse = await axios.get('http://127.0.0.1:8000/primarychild/');
         const childHealthInfoResponse = await axios.get('http://127.0.0.1:8000/childhealthinfo/');
+        console.log(barangay, "-----------------------------------")
 
-        const mergedData = primaryChildResponse.data.map((child) => ({
-          ...child,
-          ...childHealthInfoResponse.data.find((healthInfo) => healthInfo.child === child.id),
-        }));
+        const mergedData = primaryChildResponse.data
+          .filter((child) => barangay === 'All Barangay' || child.barangay === barangay)
+          .map((child) => ({
+            ...child,
+            ...childHealthInfoResponse.data.find((healthInfo) => healthInfo.child === child.id),
+          }));
 
-        const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${storedToken.data.access}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                const auditCreatePayload = {
-                    user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
-                    action: 'Exported a Data',  // Replace 'your_action_here' with the actual action
-                };
-                fetch('http://127.0.0.1:8000/audit/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(auditCreatePayload),
-                })
-                    .then((auditResponse) => auditResponse.json())
-                    .then((auditData) => {
-                        console.log('Audit creation response:', auditData);
-                    })
-                    .catch((auditError) => {
-                        console.error('Error creating audit:', auditError);
-                    });
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
         setChildData(mergedData);
-        console.log(childData)
+        console.log(childData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [barangay]);
 
   return (
     <div className="App">
-     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, margin : "8%" }} >
-          <Button
-            component="label"
-            variant="contained"
-            startIcon={<CloudDownloadIcon />}
-            onClick={() => exportToExcel(childData)}
-          >
-            Download in Master List Format
-          </Button>
-          <Button
-            component="label"
-            variant="contained"
-            startIcon={<CloudDownloadIcon />}
-            onClick={() => exportToExcel2(childData)}
-          >
-            Download in eOPT Format
-          </Button>
-        </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, margin: '8%' }}>
+        <ExportButton
+          component="label"
+          variant="contained"
+          startIcon={<CloudDownloadIcon />}
+          onClick={() => exportToExcel(childData)}
+        >
+          Download in Master List Format {barangay}
+        </ExportButton>
+        <ExportButton
+          component="label"
+          variant="contained"
+          startIcon={<CloudDownloadIcon />}
+          onClick={() => exportToExcel2(childData)}
+        >
+          Download in eOPT Format
+        </ExportButton>
+      </Box>
     </div>
   );
 }
-
 
 export default App;

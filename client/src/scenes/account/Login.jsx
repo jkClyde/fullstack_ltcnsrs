@@ -47,8 +47,7 @@ function SignInSide() {
   const navigate = useNavigate();
   // Access setUser, user, token, setToken from context
   const { setUser, user, token } = useStateContext();
-  // Initialize useDispatch
-  const dispatch = useDispatch();
+
 
   // Toggle password visibility
   const handlePasswordVisibilityToggle = () => {

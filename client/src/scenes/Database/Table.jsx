@@ -115,6 +115,7 @@ const Table = () => {
 
   const handleBarangayChange = (event) => {
     setSelectedBarangay(event.target.value);
+
     console.log("Selected Barangay:", event.target.value);
   };
   const handleQuarterChange = (event) => {
@@ -1436,7 +1437,7 @@ const Table = () => {
         maxWidth="sm"
         fullWidth
       >
-        <ExportToExcel closeDialog={closeDialog} />
+      <ExportToExcel barangay={selectedBarangay} closeDialog={closeDialog} />
       </Dialog>
       <Snackbar
         open={snackbarOpen}
