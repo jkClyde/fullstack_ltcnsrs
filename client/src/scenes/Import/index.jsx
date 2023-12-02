@@ -249,6 +249,8 @@ const ExcelToJSON = ({ population }) => {
                 purga: item.purga,
                 vac: item.vac,
                 gender: item.gender,
+
+                
                 lengthForAge: item.lengthForAgeStatus,
                 weightForAge: item.weightForAgeStatus,
                 weightForLength: item.weightForLengthStatus,

@@ -166,7 +166,20 @@ export default function SignUp() {
                         helperText={touched.lastName && errors.lastName}
                       />
                     </Grid>
-
+                    
+                    <Grid item xs={12} sm={6}>
+                      <Field
+                        as={TextField}
+                        name="jobDescription"
+                        required
+                        fullWidth
+                        id="jobDescription"
+                        label="Job Description"
+                        disabled={true}
+                        value="Barangay Nutritional Scholar"
+                      />
+                    </Grid>
+{/* 
                     <Grid item xs={12} sm={6}>
                       <Field
                         as={TextField}
@@ -189,7 +202,7 @@ export default function SignUp() {
                           Barangay Nutritional Scholar
                         </MenuItem>
                       </Field>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12} sm={6}>
                       <Field
                         as={TextField}

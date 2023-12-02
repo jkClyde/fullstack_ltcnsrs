@@ -28,13 +28,14 @@ import UserDrawer from "./scenes/global/UserDrawer";
 import ExcelTester from "./scenes/Import/components/ExcelTester";
 import ExcelToJSON from "./scenes/Import"
 import ExcelDataTransfer from "./scenes/export";
-import { useStateContext } from "./contexts/ContextProvider";
 import jwtDecode from 'jwt-decode';
+import BarangayTable from './scenes/Database/BarangayTable';
 
 import Statistics from "./scenes/Database/Calculations/Statistics/Statistics";
 import LoadingPage from "./components/LoadingPage";
 import BackupRestore from "./scenes/backupRestore";
 import AuditLogs from "./scenes/auditLogs";
+import FormUser from "./scenes/form/FormUser";
 
 
 
@@ -139,11 +140,11 @@ const user_route = [
       },
       {
         path: '/form',
-        element: <Form/>
+        element: <FormUser/>
       },
       {
         path: '/database',
-        element: <Table/>
+        element: <BarangayTable/>
       },
       {
         path: '/calendar',

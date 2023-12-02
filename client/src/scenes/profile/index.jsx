@@ -69,7 +69,7 @@ const UserProfile = () => {
             backgroundColor: colors.primary[400],
           }}
         >
-          <Typography variant="h4" color={colors.grey[100]} sx={{ marginBottom: 3 }} className="text-center">
+          <Typography variant="h4"  sx={{ marginBottom: 3, color : colors.greenAccent[300] }} className="text-center" >
             PERSONEL INFORMATION
           </Typography>
           {/* <img
@@ -77,7 +77,7 @@ const UserProfile = () => {
             src={profileImage}
             alt="Profile"
           /> */}
-           <Typography variant="h4" color={colors.grey[100]} sx={{ marginBottom: 1 }} className="mb-4 text-center text-primary">
+           <Typography variant="h4" color={colors.grey[100]} sx={{ marginBottom: 5, mt: 5 }} className="mb-1 text-center">
             {user.first_name}  {user.last_name}
           </Typography>
          
@@ -102,7 +102,7 @@ const UserProfile = () => {
             backgroundColor: colors.primary[400],
           }}
         >
-          <Typography color={colors.grey[100]} variant="h3" className="text-center" sx={{ marginBottom: "15px" }}>
+          <Typography color={colors.grey[100]} variant="h3" className="text-center" sx={{ marginBottom: "15px" , color : colors.greenAccent[300]}}>
             Edit Information
           </Typography>
           <Box className="grid grid-cols-2 gap-4 mb-4">

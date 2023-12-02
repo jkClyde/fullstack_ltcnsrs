@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import ChildProfile from "../Child_Profile/index";
-import lengthForAgeStatus from "./Calculations/lengthForAgeStatus";
-import weightForAgeStatus from "./Calculations/weightForAgeStatus";
-import weightForLengthStatus from "./Calculations/weightForLengthStatus";
-import { calculateAgeInMonths } from "./Calculations/calculateAgeInMonths";
+import lengthForAgeStatus from "./Calculations/lengthForAgeStatus.js";
+import weightForAgeStatus from "./Calculations/weightForAgeStatus.js";
+import weightForLengthStatus from "./Calculations/weightForLengthStatus.js";
+import { calculateAgeInMonths } from "./Calculations/calculateAgeInMonths.js";
 import { getCellClassNameWFA } from "./StatusReference/StatusCellColors/getCellClassNameWFA.js";
 import { getCellClassNameLFA } from "./StatusReference/StatusCellColors/getCellClassNameLFA.js";
 import { getCellClassNameWFL } from "./StatusReference/StatusCellColors/getCellClassNameWFL.js";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-import barangayOptions from "./../form/barangayOptions.js";
+import barangayOptions from "../form/barangayOptions.js";
 import DuplicateTable from "./DuplicatesTable.jsx";
 import { connect } from "react-redux";
-import { mapState } from "./../../redux/global_variables";
+import { mapState } from "../../redux/global_variables.js";
 import { useSelector } from "react-redux";
 
 import ExcelToJSON from "../Import/index.jsx";
@@ -40,14 +40,14 @@ import {
   Search,
   SearchOffOutlined,
 } from "@mui/icons-material";
-import { tokens } from "../../theme";
+import { tokens } from "../../theme.js";
 import {
   DataGrid,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 
-const Table = () => {
+const BarangayTable = () => {
   const success = useSelector((state) => state.refresher.success);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -58,7 +58,7 @@ const Table = () => {
   const [selectedChild, setselectedChild] = useState(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [selectedQuarter, setSelectedQuarter] = useState("All Quarter"); // Provide an initial value based on your requirements
-  const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
+  const [selectedBarangay, setSelectedBarangay] = useState("loading");
   const [yearInput, setYearInput] = useState("");
   const [isYearInputValid, setIsYearInputValid] = useState(true);
   const [duplicateChildren, setDuplicateChildren] = useState([]);
@@ -113,14 +113,32 @@ const Table = () => {
     setGridData(currentData);
   }, [activeTab]);
 
-  const handleBarangayChange = (event) => {
-    setSelectedBarangay(event.target.value);
-    console.log("Selected Barangay:", event.target.value);
-  };
+
   const handleQuarterChange = (event) => {
     setSelectedQuarter(event.target.value);
     console.log("Selected Quarter:", event.target.value);
   };
+
+  useEffect(() => {
+    const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+          fetch('http://127.0.0.1:8000/auth/users/me/', {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${storedToken.data.access}`,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+              // const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
+              setSelectedBarangay(data.barangay)
+            })
+            .catch((error) => {
+                console.error('Error fetching user data:', error);
+            });
+            
+    return () => {
+    };
+  }, []); //------------------------------------------------------------------------------------------------- 
 
   useEffect(() => {
     console.log(
@@ -468,24 +486,7 @@ const Table = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                const auditCreatePayload = {
-                    user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
-                    action: 'Updated a Child information',  // Replace 'your_action_here' with the actual action
-                };
-                fetch('http://127.0.0.1:8000/audit/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(auditCreatePayload),
-                })
-                    .then((auditResponse) => auditResponse.json())
-                    .then((auditData) => {
-                        console.log('Audit creation response:', auditData);
-                    })
-                    .catch((auditError) => {
-                        console.error('Error creating audit:', auditError);
-                    });
+               setSelectedBarangay(data.barangay)
             })
             .catch((error) => {
                 console.error('Error fetching user data:', error);
@@ -1032,7 +1033,8 @@ const Table = () => {
               id="barangay-select"
               sx={{ m: "0 10px 10px 0" }}
               value={selectedBarangay}
-              onChange={handleBarangayChange}
+              disabled={true}  
+
             >
               {/* Use an empty string as the value for "All Barangay" */}
               <MenuItem key="All Barangay" value="All Barangay">
@@ -1143,7 +1145,9 @@ const Table = () => {
               id="barangay-select"
               sx={{ m: "0 10px 10px 0" }}
               value={selectedBarangay}
-              onChange={handleBarangayChange}
+              disabled={true}  
+
+
             >
               {/* Use an empty string as the value for "All Barangay" */}
               <MenuItem key="All Barangay" value="All Barangay">
@@ -1254,7 +1258,8 @@ const Table = () => {
               id="barangay-select"
               sx={{ m: "0 10px 10px 0" }}
               value={selectedBarangay}
-              onChange={handleBarangayChange}
+              disabled={true} 
+
             >
               {/* Use an empty string as the value for "All Barangay" */}
               <MenuItem key="All Barangay" value="All Barangay">
@@ -1457,4 +1462,4 @@ const Table = () => {
   );
 };
 
-export default connect(mapState)(Table);
+export default connect(mapState)(BarangayTable);

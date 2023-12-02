@@ -19,6 +19,8 @@ class UserAccountManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_admin', True)  # Add this line to set is_admin to True
+        extra_fields.setdefault('is_disabled', False)
+        
 
 
         if extra_fields.get('is_staff') is not True:
@@ -39,7 +41,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
-    is_disabled = models.BooleanField(default=False)
+    is_disabled = models.BooleanField(default=True)
 
 
     objects = UserAccountManager()
@@ -52,6 +54,11 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.first_name
+    
+    def save(self, *args, **kwargs):
+        self.first_name = self.first_name.capitalize()
+        self.last_name = self.last_name.capitalize()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
