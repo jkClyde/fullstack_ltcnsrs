@@ -1015,13 +1015,38 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   const renderReport = () => (
     <Grid container spacing={2}>
-      <Grid display="flex" flexDirection="column">
-        <Typography >1st year:</Typography>
-        <Typography>2nd year:</Typography>
-        <Typography>3rd year:</Typography>
-        <Typography>4th year:</Typography>
-        <Typography>5th year:</Typography>
-        <Typography>6th year:</Typography>
+      <Grid display="flex" flexDirection="row">
+        <Grid display="flex" flexDirection="column" m="0px 50px 0 0">
+          <Typography>WFA</Typography>
+          <Typography >1st year:</Typography>
+          <Typography>2nd year:</Typography>
+          <Typography>3rd year:</Typography>
+          <Typography>4th year:</Typography>
+          <Typography>5th year:</Typography>
+          <Typography>6th year:</Typography>
+        </Grid>
+      </Grid>
+      <Grid display="flex" flexDirection="row">
+        <Grid display="flex" flexDirection="column" m="0px 50px 0 0">
+          <Typography>WFA</Typography>
+          <Typography >1st year:</Typography>
+          <Typography>2nd year:</Typography>
+          <Typography>3rd year:</Typography>
+          <Typography>4th year:</Typography>
+          <Typography>5th year:</Typography>
+          <Typography>6th year:</Typography>
+        </Grid>
+      </Grid>
+      <Grid display="flex" flexDirection="row">
+        <Grid display="flex" flexDirection="column" m="0px 50px 0 0">
+          <Typography>WFA</Typography>
+          <Typography >1st year:</Typography>
+          <Typography>2nd year:</Typography>
+          <Typography>3rd year:</Typography>
+          <Typography>4th year:</Typography>
+          <Typography>5th year:</Typography>
+          <Typography>6th year:</Typography>
+        </Grid>
       </Grid>
     </Grid>
   );
