@@ -40,7 +40,7 @@ import {
 } from "@mui/icons-material";
 import axios from "axios"; // Import Axios
 
-const ChildProfile = ({ child, updateChildData }) => {
+const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isEditing, setIsEditing] = useState(false);
@@ -65,12 +65,15 @@ const ChildProfile = ({ child, updateChildData }) => {
     ),
     quarter: "",
   });
+  const childId = editedChild.id;
+
   const [selectedView, setSelectedView] = useState("child"); // Default view
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [gridData, setGridData] = useState([]);
   const [initialYear, setInitialYear] = useState(null);
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedQuarter, setSelectedQuarter] = useState("");
+  const [frequentStatuses, setFrequentStatuses] = useState({});
   const [dataExists, setDataExists] = useState(false);
   const birthYear = editedChild.birthdate
     ? new Date(editedChild.birthdate).getFullYear()
@@ -83,6 +86,24 @@ const ChildProfile = ({ child, updateChildData }) => {
     { length: endYear - startYear + 1 },
     (_, i) => startYear + i
   );
+
+  useEffect(() => {
+    // Function to fetch most frequent statuses from backend
+    const fetchMostFrequentStatuses = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000//get-most-frequent-statuses"
+        );
+        console.log("Fetched Data:", response.data); // Log fetched data
+        setFrequentStatuses(response.data);
+      } catch (error) {
+        console.error("Error fetching most frequent statuses:", error);
+      }
+    };
+
+    fetchMostFrequentStatuses();
+  }, []);
+
   useEffect(() => {
     // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
     const birthdate = editedChild.birthdate;
@@ -158,12 +179,9 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   const handleCreateClick = () => {
     if (!dataExists) {
-      // Determine the quarter based on the 'dow' (Date of Weighing) value
       const dowDate = new Date(editedChild.dow);
-      const dowMonth = dowDate.getMonth() + 1; // Get the month (1-12)
-      const dowYear = dowDate.getFullYear(); // Get the year
-
-      // Get the numeric value for the selected quarter
+      const dowMonth = dowDate.getMonth() + 1;
+      const dowYear = dowDate.getFullYear();
       let selectedQuarterValue;
       switch (selectedQuarter) {
         case "1st Quarter":
@@ -182,7 +200,6 @@ const ChildProfile = ({ child, updateChildData }) => {
           selectedQuarterValue = 0;
       }
 
-      // Check if the 'dow' corresponds to the selected quarter and year
       if (
         (selectedQuarterValue === 1 &&
           dowMonth >= 1 &&
@@ -201,7 +218,6 @@ const ChildProfile = ({ child, updateChildData }) => {
           dowMonth <= 12 &&
           dowYear === selectedYear)
       ) {
-        // Calculate weightForAge, lengthForAge, and weightForLength
         const weightForAge = weightForAgeStatus(
           editedChild.birthdate,
           editedChild.weight,
@@ -209,20 +225,19 @@ const ChildProfile = ({ child, updateChildData }) => {
         );
         const lengthForAge = lengthForAgeStatus(
           editedChild.birthdate,
-          editedChild.length,
+          editedChild.height,
           editedChild.gender
         );
         const weightForLength = weightForLengthStatus(
           editedChild.birthdate,
-          editedChild.length,
+          editedChild.height,
           editedChild.weight,
           editedChild.gender
         );
-        // Create new child data
         const newChildData = {
           child: child.id,
-          quarter: selectedQuarter, // Use the selected quarter
-          year: selectedYear, // Use the selected year
+          quarter: selectedQuarter,
+          year: selectedYear,
           weight: editedChild.weight || null,
           height: editedChild.height || null,
           muac: editedChild.muac || null,
@@ -234,8 +249,6 @@ const ChildProfile = ({ child, updateChildData }) => {
           lengthForAge: lengthForAge,
           weightForLength: weightForLength,
         };
-
-        // Now, send a POST request to create the new child data
         axios
           .post(`http://127.0.0.1:8000/childhealthinfo/`, newChildData)
           .then((response) => {
@@ -245,14 +258,11 @@ const ChildProfile = ({ child, updateChildData }) => {
               "Successfully Created a New Health Data"
             );
             setIsEditing(false);
-            // You may want to do something here after the data is successfully created.
-            // For example, you could update your local state or display a success message.
           })
           .catch((error) => {
             console.error("Error creating new ChildHealthInfo data:", error);
           });
       } else {
-        // 'dow' does not match the selected quarter and year, log an error message
         console.log(
           "Cannot create in another quarter or year:",
           selectedQuarterValue,
@@ -262,17 +272,13 @@ const ChildProfile = ({ child, updateChildData }) => {
         setIsErrorSnackbarOpen(true);
       }
     } else {
-      // Handle the case when dataExists is true (data for the selected quarter already exists).
-      // You might want to display a message or implement your desired logic.
       console.log("Data already exists for the selected quarter and year.");
     }
     setButtonLabel("Save");
   };
 
-  //{Update Button}//
   const handleUpdateClick = async () => {
     try {
-      // Update the primary child data
       const updatedPrimaryChildData = {
         fullName: editedChild.fullName,
         address: editedChild.address,
@@ -574,25 +580,6 @@ const ChildProfile = ({ child, updateChildData }) => {
       }
     }
   };
-
-  const [frequentStatuses, setFrequentStatuses] = useState({});
-
-  useEffect(() => {
-    // Function to fetch most frequent statuses from backend
-    const fetchMostFrequentStatuses = async () => {
-      try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000//get-most-frequent-statuses"
-        );
-        console.log("Fetched Data:", response.data); // Log fetched data
-        setFrequentStatuses(response.data);
-      } catch (error) {
-        console.error("Error fetching most frequent statuses:", error);
-      }
-    };
-
-    fetchMostFrequentStatuses();
-  }, []);
 
   const renderTextField = (label, name, value, unit = "") => (
     <Box mt="10px">
@@ -962,43 +949,51 @@ const ChildProfile = ({ child, updateChildData }) => {
       </Grid>
     </Grid>
   );
-  const renderReport = () => (
-    <div>
-      {Object.entries(frequentStatuses).map(([childId, childData]) => (
-        <div key={`child-${childId}`}>
+  const renderReport = () => {
+    const selectedChildData = frequentStatuses[childId];
+
+    console.log("Frequent Statuses:", frequentStatuses);
+    console.log("Selected Child Data:", selectedChildData);
+    console.log("Selected Child ID:", childId);
+    if (!selectedChildData || Object.keys(selectedChildData).length === 0) {
+      return (
+        <div>
           <Typography variant="h6">Child {childId}</Typography>
-          <Grid container spacing={2}>
-            {Object.entries(childData).map(([year, statuses]) => (
-              <Grid item key={`status-${childId}-${year}`}>
-                <Grid
-                  container
-                  direction="column"
-                  style={{ marginLeft: "20px" }}
-                >
-                  <Typography variant="subtitle1">{year}</Typography>
-                  <Typography>
-                    {statuses.weight_for_age
-                      ? `WFA: ${statuses.weight_for_age}`
-                      : "No data available"}
-                  </Typography>
-                  <Typography>
-                    {statuses.length_for_age
-                      ? `LFA: ${statuses.length_for_age}`
-                      : "No data available"}
-                  </Typography>
-                  <Typography>
-                    {statuses.weight_for_length
-                      ? `WFL: ${statuses.weight_for_length}`
-                      : "No data available"}
-                  </Typography>
-                </Grid>
-              </Grid>
-            ))}
-          </Grid>
+          <div>No frequent data available for the selected child</div>
         </div>
-      ))}
-    </div>
-  );
+      );
+    }
+
+    return (
+      <div>
+        <Typography variant="h6">Child {childId}</Typography>
+        <Grid container spacing={2}>
+          {Object.entries(selectedChildData).map(([year, statuses]) => (
+            <Grid item key={`status-${selectedChildId}-${year}`}>
+              <Grid container direction="column" style={{ marginLeft: "20px" }}>
+                <Typography variant="subtitle1">{year}</Typography>
+                <Typography>
+                  {statuses.weight_for_age
+                    ? `WFA: ${statuses.weight_for_age}`
+                    : "No data available"}
+                </Typography>
+                <Typography>
+                  {statuses.length_for_age
+                    ? `LFA: ${statuses.length_for_age}`
+                    : "No data available"}
+                </Typography>
+                <Typography>
+                  {statuses.weight_for_length
+                    ? `WFL: ${statuses.weight_for_length}`
+                    : "No data available"}
+                </Typography>
+              </Grid>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  };
 
   return (
     <Box p="20px">

@@ -145,8 +145,6 @@ def restore_database(request):
     
 from collections import defaultdict
 
-
-
 def get_most_frequent_statuses_view(request):
     all_health_info = ChildHealthInfo.objects.all()
 
@@ -156,7 +154,7 @@ def get_most_frequent_statuses_view(request):
     # Group statuses by year and child
     for info in all_health_info:
         child_id = info.child_id
-        year = info.year
+        year = info.getYear
 
         if year not in frequent_statuses[child_id]:
             frequent_statuses[child_id][year] = {
