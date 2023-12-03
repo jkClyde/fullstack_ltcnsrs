@@ -1028,7 +1028,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       </Grid>
       <Grid display="flex" flexDirection="row">
         <Grid display="flex" flexDirection="column" m="0px 50px 0 0">
-          <Typography>WFA</Typography>
+          <Typography>LFA</Typography>
           <Typography >1st year:</Typography>
           <Typography>2nd year:</Typography>
           <Typography>3rd year:</Typography>
@@ -1039,7 +1039,7 @@ const ChildProfile = ({ child, updateChildData }) => {
       </Grid>
       <Grid display="flex" flexDirection="row">
         <Grid display="flex" flexDirection="column" m="0px 50px 0 0">
-          <Typography>WFA</Typography>
+          <Typography>WFL</Typography>
           <Typography >1st year:</Typography>
           <Typography>2nd year:</Typography>
           <Typography>3rd year:</Typography>
