@@ -5,6 +5,7 @@ import { Box, Paper, Button, IconButton, Grid } from "@mui/material";
 import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 import RestoreIcon from "@mui/icons-material/Restore";
 import axios from "axios";
+import databaseURL from "../../databaseURL";
 
 const BackupRestore = () => {
   const handleBackup = async () => {
@@ -14,7 +15,7 @@ const BackupRestore = () => {
         "app_form_childhealthinfo",
       ];
 
-      const response = await axios.get("http://127.0.0.1:8000/backup/", {
+      const response = await axios.get(`${databaseURL}/backup/`, {
         params: {
           tables: tablesToBackup.join(","),
         },
@@ -39,7 +40,7 @@ const BackupRestore = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/restore/",
+        `${databaseURL}/restore/`,
         formData,
         {
           headers: {

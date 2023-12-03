@@ -9,11 +9,14 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from rest_framework import generics
 from .models import UserAccount
+from rest_framework import generics, permissions
 
 
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import Token
+from django.shortcuts import get_object_or_404
+
 
 
 
@@ -94,6 +97,18 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['full_name'] = user.first_name + " " + user.last_name
         token['is_admin'] = user.is_admin
         return token
+
+
+class DeleteUserView(generics.DestroyAPIView):
+    queryset = UserAccount.objects.all()
+    serializer_class = UserCreateSerializer
+    authentication_classes = []  # No authentication required
+    permission_classes = [permissions.AllowAny]  # Allow access to everyone
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer

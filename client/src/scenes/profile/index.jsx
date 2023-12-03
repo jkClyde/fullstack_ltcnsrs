@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { tokens } from '../../theme';
 import { useStateContext } from '../../contexts/ContextProvider';
 import { Box, Typography, useTheme, Input, Select, MenuItem, Button } from '@mui/material';
+import databaseURL from '../../databaseURL';
 
 const UserProfile = () => {
   const theme = useTheme();
@@ -22,7 +23,7 @@ const UserProfile = () => {
   const fetchUserData = () => {
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
     // Replace with your actual API endpoint
-    fetch('http://127.0.0.1:8000/auth/users/me/', {
+    fetch(`${databaseURL}/auth/users/me/`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${storedToken.data.access}`,

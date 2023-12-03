@@ -15,6 +15,7 @@ import DuplicateTable from "./DuplicatesTable.jsx";
 import { connect } from "react-redux";
 import { mapState } from "../../redux/global_variables.js";
 import { useSelector } from "react-redux";
+import databaseURL from "../../databaseURL.js";
 
 import ExcelToJSON from "../Import/index.jsx";
 import ExportToExcel from "../export/index.jsx";
@@ -121,7 +122,7 @@ const BarangayTable = () => {
 
   useEffect(() => {
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
+          fetch(`${databaseURL}/auth/users/me/`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${storedToken.data.access}`,
@@ -156,7 +157,7 @@ const BarangayTable = () => {
     try {
       // Fetch primary child data
       const primaryChildResponse = await fetch(
-        "http://127.0.0.1:8000/primarychild/"
+        `${databaseURL}/primarychild/`
       );
       if (!primaryChildResponse.ok) {
         console.error(
@@ -174,7 +175,7 @@ const BarangayTable = () => {
 
       // Fetch child health info data
       const childHealthInfoResponse = await fetch(
-        "http://127.0.0.1:8000/childhealthinfo/"
+        `${databaseURL}/childhealthinfo/`
       );
       if (!childHealthInfoResponse.ok) {
         console.error(
@@ -227,7 +228,7 @@ const BarangayTable = () => {
     try {
       // Fetch primary child data
       const primaryChildResponse = await fetch(
-        "http://127.0.0.1:8000/primarychild/"
+        `${databaseURL}/primarychild/`
       );
       if (!primaryChildResponse.ok) {
         console.error(
@@ -240,7 +241,7 @@ const BarangayTable = () => {
 
       // Fetch data from the childhealthinfo endpoint
       const childHealthInfoResponse = await fetch(
-        "http://127.0.0.1:8000/childhealthinfo/"
+        `${databaseURL}/childhealthinfo/`
       );
       if (!childHealthInfoResponse.ok) {
         console.error(
@@ -289,7 +290,7 @@ const BarangayTable = () => {
     try {
       // Fetch primary child data
       const primaryChildResponse = await fetch(
-        "http://127.0.0.1:8000/primarychild/"
+        `${databaseURL}/primarychild/`
       );
       if (!primaryChildResponse.ok) {
         console.error(
@@ -307,7 +308,7 @@ const BarangayTable = () => {
 
       // Fetch child health info data
       const childHealthInfoResponse = await fetch(
-        "http://127.0.0.1:8000/childhealthinfo/"
+        `${databaseURL}/childhealthinfo/`
       );
       if (!childHealthInfoResponse.ok) {
         console.error(
@@ -367,7 +368,7 @@ const BarangayTable = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/primarychild/${id}/`,
+        `${databaseURL}/primarychild/${id}/`,
         {
           method: "DELETE",
         }
@@ -381,7 +382,7 @@ const BarangayTable = () => {
         showSnackbar("Child deleted successfully", "success");
         setGridDataTab3((prevData) => prevData.filter((row) => row.id !== id));
         const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
+          fetch(`${databaseURL}/auth/users/me/`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${storedToken.data.access}`,
@@ -394,7 +395,7 @@ const BarangayTable = () => {
                     user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
                     action: 'Deleted a Data in the Database',  // Replace 'your_action_here' with the actual action
                 };
-                fetch('http://127.0.0.1:8000/audit/', {
+                fetch(`${databaseURL}/audit/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -478,7 +479,7 @@ const BarangayTable = () => {
     );
     // --------------------------------------------------------------------------------------------------------------
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
+          fetch(`${databaseURL}/auth/users/me/`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${storedToken.data.access}`,
@@ -545,7 +546,7 @@ const BarangayTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/duplicateChild/");
+        const response = await fetch(`${databaseURL}/duplicateChild/`);
         const data = await response.json();
         setDuplicateChildren(data);
       } catch (error) {

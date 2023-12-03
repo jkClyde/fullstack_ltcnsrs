@@ -16,7 +16,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Snackbar from "@mui/material/Snackbar";
+import databaseURL from "../../databaseURL";
 
 const DuplicateTable = () => {
   const [duplicates, setDuplicates] = useState([]);
@@ -25,7 +25,7 @@ const DuplicateTable = () => {
   const [snackbarSeverity, setSnackbarSeverity] = React.useState("success");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/duplicateChild/?isDuplicate=false")
+    fetch(`${databaseURL}/duplicateChild/?isDuplicate=false`)
       .then((response) => response.json())
       .then((data) => setDuplicates(data))
       .catch((error) => console.error("Error fetching data:", error));
@@ -37,7 +37,7 @@ const DuplicateTable = () => {
     setSnackbarOpen(true);
   };
   const handleRemove = (id) => {
-    fetch(`http://127.0.0.1:8000/duplicateChild/${id}/`, {
+    fetch(`${databaseURL}/duplicateChild/${id}/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +62,8 @@ const DuplicateTable = () => {
 
   const columns = [
     { field: "full_name", headerName: "Name", flex: 1 },
-    { field: "second_barangay", headerName: "Barangay", flex: 1 },
+    { field: "first_barangay", headerName: "First Barangay", flex: 1 },
+    { field: "second_barangay", headerName: "Second Barangay", flex: 1 },
     {
       field: "remove",
       headerName: "Remove",

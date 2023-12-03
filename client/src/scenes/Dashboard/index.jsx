@@ -29,11 +29,17 @@ const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe,
   console.log(statsData.barangayData);
 
     const data = {
+      // "Length for Age": [
+      //   {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: lfa_severe},
+      //   {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: lfa_stunted},
+      //   {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: lfa_normal},
+      //   {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: lfa_tall}
+      // ],
       "Length for Age": [
-        {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: lfa_severe},
-        {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: lfa_stunted},
-        {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: lfa_normal},
-        {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: lfa_tall}
+        {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: statsData.lfa_severe},
+        {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: statsData.lfa_stunted},
+        {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: statsData.lfa_normal},
+        {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: statsData.lfa_tall}
       ],
       "Weight for Length": [
         {name: 'Severly Wasted', progress: Math.round((statsData.wfl_severe / statsData.population) * 100), number: statsData.wfl_severe},
@@ -43,10 +49,10 @@ const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe,
         {name: 'Obese', progress: Math.round((statsData.wfl_obese / statsData.population) * 100), number: statsData.wfl_obese}
       ],
       "Weight for Age": [
-        {name: 'Severly Underweight', progress: Math.round((statsData.wfa_severe / statsData.population) * 100), number: wfa_severe},
-        {name: 'Underweight', progress: Math.round((statsData.wfa_underweight / statsData.population) * 100), number: wfa_underweight},
-        {name: 'Normal', progress: Math.round((statsData.wfa_normal / statsData.population) * 100), number: wfa_normal},
-        {name: 'Overweight', progress: Math.round((statsData.wfa_overweight / statsData.population) * 100), number: wfa_overweight}
+        {name: 'Severly Underweight', progress: Math.round((statsData.wfa_severe / statsData.population) * 100), number: statsData.wfa_severe},
+        {name: 'Underweight', progress: Math.round((statsData.wfa_underweight / statsData.population) * 100), number: statsData.wfa_underweight},
+        {name: 'Normal', progress: Math.round((statsData.wfa_normal / statsData.population) * 100), number: statsData.wfa_normal},
+        {name: 'Overweight', progress: Math.round((statsData.wfa_overweight / statsData.population) * 100), number: statsData.wfa_overweight}
       ],
     };
 

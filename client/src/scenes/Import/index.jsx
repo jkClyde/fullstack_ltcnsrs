@@ -24,6 +24,7 @@ import { connect } from "react-redux";
 import { mapState } from "./../../redux/global_variables";
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresher } from "../../redux/actions";
+import databaseURL from "../../databaseURL";
 
 const LoadingDots = () => {
   const [dots, setDots] = useState(1);
@@ -54,6 +55,7 @@ const ExcelToJSON = ({ population }) => {
 
 
   const [fileName, setFileName] = useState("");
+  const [firstBarangay, setFirstBarangay] = useState("");
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -61,6 +63,8 @@ const ExcelToJSON = ({ population }) => {
     setFileName(file.name);
 
     reader.onload = (e) => {
+    
+
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: "array" });
       const sheetName = workbook.SheetNames[0];
@@ -110,7 +114,7 @@ const ExcelToJSON = ({ population }) => {
       // Use Promise.all to wait for all fetch requests to complete
       Promise.all(
         transformedData.map((item) =>
-          fetch("http://127.0.0.1:8000/primarychild/", {
+          fetch(`${databaseURL}/primarychild/`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -140,17 +144,19 @@ const ExcelToJSON = ({ population }) => {
                       }
                     })
                     .then((searchData) => {
-                      // const primaryChildBarangay = searchData.length > 0 ? searchData[0].barangay : null;
-                      const primaryChildBarangay = searchData[0].fullName;
+
+                      let primaryChildBarangay = searchData.length > 0 ? searchData[0].barangay : null;
+                      // const primaryChildBarangay = searchData[0].fullName;
+                      setFirstBarangay(searchData[0].barangay);
 
                       // Create payload for duplicateChild -----------------------------------------------------------
                       const duplicateChildPayload = {
                         full_name: item.fullName,
-                        first_barangay: primaryChildBarangay,
+                        first_barangay: searchData[0].barangay,
                         second_barangay: item.barangay,
                       };
 
-                      fetch("http://127.0.0.1:8000/duplicateChild/", {
+                      fetch(`${databaseURL}/duplicateChild/`, {
                         method: "POST",
                         headers: {
                           "Content-Type": "application/json",
@@ -166,6 +172,7 @@ const ExcelToJSON = ({ population }) => {
                             console.log(
                               "Duplicate Child data sent successfully."
                             );
+                            setFirstBarangay("");
                           } else {
                             console.error(
                               "Failed to send data to the duplicateChild server."
@@ -186,6 +193,7 @@ const ExcelToJSON = ({ population }) => {
                             duplicateChildError
                           );
                         });
+                      
                       // -------------------------------------------------------------------------------------------
                     })
                     .catch((searchError) => {
@@ -219,7 +227,7 @@ const ExcelToJSON = ({ population }) => {
                 weightForLength: weightForLengthStatus(item.birthdate, item.height, item.weight,  item.gender),
 
               };
-              return fetch("http://127.0.0.1:8000/childhealthinfo/", {
+              return fetch(`${databaseURL}/childhealthinfo/`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

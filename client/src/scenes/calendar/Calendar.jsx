@@ -16,6 +16,7 @@ import {
 import Header from "../../components/dashboard_components/Header";
 import { tokens } from "../../theme";
 import axios from "axios"; // Import Axios
+import databaseURL from "../../databaseURL";
 
 const Calendar = () => {
   const theme = useTheme();
@@ -24,7 +25,7 @@ const Calendar = () => {
 
   const fetchEvents = () => {
     axios
-      .get("http://127.0.0.1:8000/calendar/")
+      .get(`${databaseURL}/calendar/`)
       .then((response) => {
         console.log("Response data:", response.data);
         setCurrentEvents(response.data);
@@ -52,7 +53,7 @@ const Calendar = () => {
       calendarApi.addEvent(newEvent);
 
       axios
-        .post("http://127.0.0.1:8000/calendar/", newEvent)
+        .post(`${databaseURL}/calendar/`, newEvent)
         .then((response) => {
           console.log("Event saved to the database:", response.data);
           setCurrentEvents([...currentEvents, response.data]);
@@ -70,7 +71,7 @@ const Calendar = () => {
       )
     ) {
       axios
-        .delete(`http://127.0.0.1:8000/events/${selected.event.id}/`)
+        .delete(`${databaseURL}/events/${selected.event.id}/`)
         .then(() => {
           console.log("Event deleted from the database");
           fetchEvents(); // Refetch events after deletion

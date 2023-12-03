@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import { styled } from '@mui/system';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import Box from '@mui/material/Box';
+import databaseURL from '../../databaseURL';
 
 
 const exportToExcel2 = (childData) => {
@@ -222,8 +223,8 @@ function App({ barangay }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const primaryChildResponse = await axios.get('http://127.0.0.1:8000/primarychild/');
-        const childHealthInfoResponse = await axios.get('http://127.0.0.1:8000/childhealthinfo/');
+        const primaryChildResponse = await axios.get(`${databaseURL}/primarychild/`);
+        const childHealthInfoResponse = await axios.get(`${databaseURL}/childhealthinfo/`);
         console.log(barangay, "-----------------------------------")
 
         const mergedData = primaryChildResponse.data

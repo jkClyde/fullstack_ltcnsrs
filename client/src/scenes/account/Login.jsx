@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import databaseURL from "../../databaseURL";
 
 
 
@@ -73,7 +74,7 @@ function SignInSide() {
   const validateEmail = async () => {
     try {
       // Make a GET request to retrieve user data
-      const response = await Axios.get("http://127.0.0.1:8000/api/users/");
+      const response = await Axios.get(`${databaseURL}/api/users/`);
       console.log("User Data:", response.data);
       // Store the user data from the API
       setUserData(response.data);
@@ -185,7 +186,7 @@ function SignInSide() {
 
       // Send a POST request to your backend API to log in
       const loginResponse = await Axios.post(
-        "http://127.0.0.1:8000/token/",
+        `${databaseURL}/token/`,
         payload
       );
 
@@ -202,7 +203,7 @@ function SignInSide() {
         // Navigate to "/loading" and reload the page
         //------------------------------------------------------------------------------------------------------------
         const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
+          fetch(`${databaseURL}/auth/users/me/`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${storedToken.data.access}`,
@@ -214,7 +215,7 @@ function SignInSide() {
                     user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
                     action: 'Logged in to System',  // Replace 'your_action_here' with the actual action
                 };
-                fetch('http://127.0.0.1:8000/audit/', {
+                fetch(`${databaseURL}/audit/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

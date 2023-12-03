@@ -2,7 +2,7 @@ from django.urls import path, include, re_path
 from django.contrib import admin
 
 from django.views.generic import TemplateView
-from app_accounts.views import UserActivationView
+from app_accounts.views import UserActivationView, DeleteUserView
 from app_accounts.views import UserListView, UserApprovalView, DisableUserView, EnableUserView, CustomTokenObtainPairView
 from app_audit.views import AuditCreateView
 
@@ -19,6 +19,8 @@ urlpatterns = [
     path('user_approval/<int:user_id>/<str:action>/', UserApprovalView.as_view(), name='user_approval'),
     path('users/<int:pk>/disable/', DisableUserView.as_view(), name='disable_user'),
     path('users/<int:pk>/enable/', EnableUserView.as_view(), name='enable_user'),
+    path('users/<int:pk>/delete/', DeleteUserView.as_view(), name='delete_user'),
+
 
 
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),

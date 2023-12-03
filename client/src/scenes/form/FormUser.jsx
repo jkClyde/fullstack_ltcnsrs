@@ -20,6 +20,8 @@ import Header from "../../components/dashboard_components/Header";
 import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import databaseURL from "../../databaseURL";
+
 
 const FormUser = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -35,7 +37,7 @@ const FormUser = () => {
 
   useEffect(() => {
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
+          fetch(`${databaseURL}/auth/users/me/`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${storedToken.data.access}`,
@@ -203,7 +205,7 @@ const FormUser = () => {
       .then((response) => {
         //------------------------------------------------------------------------------------------
         const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-        fetch('http://127.0.0.1:8000/auth/users/me/', {
+        fetch(`${databaseURL}/auth/users/me/`, {
           method: 'GET',
           headers: {
               Authorization: `Bearer ${storedToken.data.access}`,
@@ -215,7 +217,7 @@ const FormUser = () => {
                   user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
                   action: 'Create a new Data using forms ',  // Replace 'your_action_here' with the actual action
               };
-              fetch('http://127.0.0.1:8000/audit/', {
+              fetch(`${databaseURL}/audit/`, {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json',

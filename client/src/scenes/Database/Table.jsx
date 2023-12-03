@@ -46,6 +46,7 @@ import {
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
+import databaseURL from "../../databaseURL.js";
 
 const Table = () => {
   const success = useSelector((state) => state.refresher.success);
@@ -139,7 +140,7 @@ const Table = () => {
     try {
       // Fetch primary child data
       const primaryChildResponse = await fetch(
-        "http://127.0.0.1:8000/primarychild/"
+        `${databaseURL}/primarychild/`
       );
       if (!primaryChildResponse.ok) {
         console.error(
@@ -157,7 +158,7 @@ const Table = () => {
 
       // Fetch child health info data
       const childHealthInfoResponse = await fetch(
-        "http://127.0.0.1:8000/childhealthinfo/"
+        `${databaseURL}/childhealthinfo/`
       );
       if (!childHealthInfoResponse.ok) {
         console.error(
@@ -210,7 +211,7 @@ const Table = () => {
     try {
       // Fetch primary child data
       const primaryChildResponse = await fetch(
-        "http://127.0.0.1:8000/primarychild/"
+        `${databaseURL}/primarychild/`
       );
       if (!primaryChildResponse.ok) {
         console.error(
@@ -223,7 +224,7 @@ const Table = () => {
 
       // Fetch data from the childhealthinfo endpoint
       const childHealthInfoResponse = await fetch(
-        "http://127.0.0.1:8000/childhealthinfo/"
+        `${databaseURL}/childhealthinfo/`
       );
       if (!childHealthInfoResponse.ok) {
         console.error(
@@ -272,7 +273,7 @@ const Table = () => {
     try {
       // Fetch primary child data
       const primaryChildResponse = await fetch(
-        "http://127.0.0.1:8000/primarychild/"
+        `${databaseURL}/primarychild/`
       );
       if (!primaryChildResponse.ok) {
         console.error(
@@ -290,7 +291,7 @@ const Table = () => {
 
       // Fetch child health info data
       const childHealthInfoResponse = await fetch(
-        "http://127.0.0.1:8000/childhealthinfo/"
+        `${databaseURL}/childhealthinfo/`
       );
       if (!childHealthInfoResponse.ok) {
         console.error(
@@ -545,7 +546,7 @@ const Table = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/duplicateChild/");
+        const response = await fetch(`${databaseURL}/duplicateChild/`);
         const data = await response.json();
         setDuplicateChildren(data);
       } catch (error) {

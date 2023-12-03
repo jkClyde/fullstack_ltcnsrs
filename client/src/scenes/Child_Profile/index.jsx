@@ -7,6 +7,7 @@ import weightForLengthStatus from "../Database/Calculations/weightForLengthStatu
 import "./../Database/StatusReference/StatusCellColors/statusColors.css";
 import { getClassForStatusColorValue } from "./getClassForStatusColorValue";
 import barangayOptions from "./../form/barangayOptions.js";
+import databaseURL from "../../databaseURL.js";
 
 
 import {
@@ -477,7 +478,7 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   const fetchData = (quarter, getYear) => {
     axios
-      .get(`http://127.0.0.1:8000/childhealthinfo/?child=${child.id}`)
+      .get(`${databaseURL}/childhealthinfo/?child=${child.id}`)
       .then((response) => {
         // Filter the data based on both quarter and year
         const childHealthInfo = response.data.find(

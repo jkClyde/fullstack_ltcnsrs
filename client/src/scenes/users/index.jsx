@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, useTheme, IconButton } from "@mui/material";
+import { Box, Typography, useTheme, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Snackbar } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
@@ -9,6 +9,9 @@ import ConfirmationPrompt from "../../components/dashboard_components/DeleteConf
 import Header from "../../components/dashboard_components/Header";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import databaseURL from "../../databaseURL";
+
+
 
 
 const Users = () => {
@@ -17,7 +20,19 @@ const Users = () => {
   const [isPromptOpen, setPromptOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [refresher, setRefresher] = useState(1);
+  const [isDeletePromptOpen, setDeletePromptOpen] = useState(false);
 
+  const handleOpenDeletePrompt = (userId) => {
+    setSelectedUserId(userId);
+    setDeletePromptOpen(true);
+  };
+
+  const handleCloseDeletePrompt = () => {
+    setSelectedUserId(null);
+    setDeletePromptOpen(false);
+  };
+
+  // ------------------------------------------------
 
   const handleOpenPrompt = (userId) => {
     setSelectedUserId(userId);
@@ -38,7 +53,7 @@ const Users = () => {
       }
 
       const response = await fetch(
-        `http://127.0.0.1:8000/users/${userId}/disable/`,
+        `${databaseURL}/users/${userId}/disable/`,
         {
           method: "PUT",
           headers: {
@@ -104,7 +119,7 @@ const Users = () => {
       }
 
       const response = await fetch(
-        `http://127.0.0.1:8000/users/${userId}/enable/`,
+        `${databaseURL}/users/${userId}/enable/`,
         {
           method: "PUT",
           headers: {
@@ -159,6 +174,36 @@ const Users = () => {
     }
   };
 
+  const handleDeleteUser = async (userId) => {
+    try {
+      const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+      if (!storedToken) {
+        console.error("No token found in local storage.");
+        return;
+      }
+  
+      const response = await fetch(`${databaseURL}/users/${userId}/delete/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${storedToken.data.access}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        toast.warning("User has been deleted!"); // Show a success toast
+        setRefresher(refresher + 1);
+      } else {
+        console.error("Failed to delete user. Status:", response.status);
+        const data = await response.json();
+        console.error("Error details:", data);
+      }
+    } catch (error) {
+      console.error("Error while deleting user:", error);
+    }
+  };
+  
+
   const columns = [
     {
       field: "first_name",
@@ -206,6 +251,7 @@ const Users = () => {
           
         </div>
       ),
+      
     },
     {
       field: "action",
@@ -226,6 +272,25 @@ const Users = () => {
           </IconButton>
           <Typography variant="body2">
             {row.is_disabled ? "Activate" : "Deactivate "}
+          </Typography>
+        </div>
+      ),
+    },
+    {
+      field: "delete",
+      headerName: "Delete",
+      flex: 1,
+      renderCell: ({ row }) => (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+          onClick={() => handleOpenDeletePrompt(row.id)}
+        >
+          <Typography variant="body2" style={{ color: "red" }}>
+            Delete
           </Typography>
         </div>
       ),
@@ -326,7 +391,55 @@ const Users = () => {
             : ""
         }
       />
-       <ToastContainer position="top-right" autoClose={3000} />
+        {/* Delete Confirmation Prompt */}
+      <Dialog open={isDeletePromptOpen} onClose={handleCloseDeletePrompt}>
+        <DialogTitle>Delete User</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this user?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeletePrompt} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleDeleteUser(selectedUserId);
+              handleCloseDeletePrompt();
+            }}
+            color="primary"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <ConfirmationPrompt
+        open={isPromptOpen}
+        onClose={handleClosePrompt}
+        onConfirm={() => {
+          if (selectedUserId !== null) {
+            const selectedUser = users.find(
+              (user) => user.id === selectedUserId
+            );
+            if (selectedUser) {
+              selectedUser.is_disabled
+                ? handleEnableUser(selectedUserId)
+                : handleDisableUser(selectedUserId);
+              handleClosePrompt();
+            }
+          }
+        }}
+        message={
+          selectedUserId !== null
+            ? users.find((user) => user.id === selectedUserId).is_disabled
+              ? "Are you sure you want to enable this user?"
+              : "Are you sure you want to disable this user?"
+            : ""
+        }
+      />
+      <ToastContainer position="top-right" autoClose={3000} />
     </Box>
   );
 };

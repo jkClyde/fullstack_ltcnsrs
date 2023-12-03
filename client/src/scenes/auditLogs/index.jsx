@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import databaseURL from '../../databaseURL';
 
 
 const AuditTable = () => {
@@ -7,7 +8,7 @@ const AuditTable = () => {
 
   useEffect(() => {
     // Fetch data from the API
-    fetch('http://127.0.0.1:8000/audit/')
+    fetch(`${databaseURL}/audit/`)
       .then((response) => response.json())
       .then((data) => {
         // Sort the data based on the 'time_created' field in descending order
