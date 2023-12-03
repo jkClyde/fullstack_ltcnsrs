@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import ethnicityOptions from "../form/ethnicityOptions";
+import ethnicityOptions from "../form/ethnicityOptions";
 import { calculateAgeInMonths } from "../Database/Calculations/calculateAgeInMonths";
 import lengthForAgeStatus from "../Database/Calculations/lengthForAgeStatus";
 import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
@@ -37,6 +37,7 @@ import {
   MedicationLiquidOutlined,
   EscalatorWarningOutlined,
   ModeEditOutline,
+  Assessment,
 } from "@mui/icons-material";
 import axios from "axios"; // Import Axios
 
@@ -1012,6 +1013,19 @@ const ChildProfile = ({ child, updateChildData }) => {
     </Grid>
   );
 
+  const renderReport = () => (
+    <Grid container spacing={2}>
+      <Grid display="flex" flexDirection="column">
+        <Typography >1st year:</Typography>
+        <Typography>2nd year:</Typography>
+        <Typography>3rd year:</Typography>
+        <Typography>4th year:</Typography>
+        <Typography>5th year:</Typography>
+        <Typography>6th year:</Typography>
+      </Grid>
+    </Grid>
+  );
+
   return (
     <Box p="20px">
       <Box
@@ -1069,6 +1083,20 @@ const ChildProfile = ({ child, updateChildData }) => {
               borderRadius: "20px 20px 0 0",
             })}
           />
+          <Tab
+            icon={<Assessment />}
+            label="Report"
+            value="report"
+            sx={(theme) => ({
+              backgroundColor:
+                selectedView === "report"
+                  ? theme.palette.mode === "light"
+                    ? colors.blueAccent[700]
+                    : colors.blueAccent[700]
+                  : undefined,
+              borderRadius: "20px 20px 0 0",
+            })}
+          />
         </Tabs>
 
         {selectedView === "health" ? (
@@ -1109,7 +1137,10 @@ const ChildProfile = ({ child, updateChildData }) => {
         ? renderChildProfile()
         : selectedView === "parent"
         ? renderParentInformation()
-        : renderHealthInfo()}
+        : selectedView === "health"
+        ? renderHealthInfo()
+        : renderReport()
+      }
 
       {isEditing ? (
         <Box mt="16px" sx={{ display: "flex", justifyContent: "flex-end" }}>
