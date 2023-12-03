@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import ethnicityOptions from "../form/ethnicityOptions";
+import ethnicityOptions from "../form/ethnicityOptions";
 import { calculateAgeInMonths } from "../Database/Calculations/calculateAgeInMonths";
 import lengthForAgeStatus from "../Database/Calculations/lengthForAgeStatus";
 import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
@@ -8,7 +8,6 @@ import "./../Database/StatusReference/StatusCellColors/statusColors.css";
 import { getClassForStatusColorValue } from "./getClassForStatusColorValue";
 import barangayOptions from "./../form/barangayOptions.js";
 import databaseURL from "../../databaseURL.js";
-
 
 import {
   Box,
@@ -38,10 +37,11 @@ import {
   MedicationLiquidOutlined,
   EscalatorWarningOutlined,
   ModeEditOutline,
+  Assessment,
 } from "@mui/icons-material";
 import axios from "axios"; // Import Axios
 
-const ChildProfile = ({ child, updateChildData }) => {
+const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isEditing, setIsEditing] = useState(false);
@@ -66,12 +66,15 @@ const ChildProfile = ({ child, updateChildData }) => {
     ),
     quarter: "",
   });
+  const childId = editedChild.id;
+
   const [selectedView, setSelectedView] = useState("child"); // Default view
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [gridData, setGridData] = useState([]);
   const [initialYear, setInitialYear] = useState(null);
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedQuarter, setSelectedQuarter] = useState("");
+  const [frequentStatuses, setFrequentStatuses] = useState({});
   const [dataExists, setDataExists] = useState(false);
   const birthYear = editedChild.birthdate
     ? new Date(editedChild.birthdate).getFullYear()
@@ -84,6 +87,24 @@ const ChildProfile = ({ child, updateChildData }) => {
     { length: endYear - startYear + 1 },
     (_, i) => startYear + i
   );
+
+  useEffect(() => {
+    // Function to fetch most frequent statuses from backend
+    const fetchMostFrequentStatuses = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000//get-most-frequent-statuses"
+        );
+        console.log("Fetched Data:", response.data); // Log fetched data
+        setFrequentStatuses(response.data);
+      } catch (error) {
+        console.error("Error fetching most frequent statuses:", error);
+      }
+    };
+
+    fetchMostFrequentStatuses();
+  }, []);
+
   useEffect(() => {
     // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
     const birthdate = editedChild.birthdate;
@@ -159,12 +180,9 @@ const ChildProfile = ({ child, updateChildData }) => {
 
   const handleCreateClick = () => {
     if (!dataExists) {
-      // Determine the quarter based on the 'dow' (Date of Weighing) value
       const dowDate = new Date(editedChild.dow);
-      const dowMonth = dowDate.getMonth() + 1; // Get the month (1-12)
-      const dowYear = dowDate.getFullYear(); // Get the year
-
-      // Get the numeric value for the selected quarter
+      const dowMonth = dowDate.getMonth() + 1;
+      const dowYear = dowDate.getFullYear();
       let selectedQuarterValue;
       switch (selectedQuarter) {
         case "1st Quarter":
@@ -183,7 +201,6 @@ const ChildProfile = ({ child, updateChildData }) => {
           selectedQuarterValue = 0;
       }
 
-      // Check if the 'dow' corresponds to the selected quarter and year
       if (
         (selectedQuarterValue === 1 &&
           dowMonth >= 1 &&
@@ -202,7 +219,6 @@ const ChildProfile = ({ child, updateChildData }) => {
           dowMonth <= 12 &&
           dowYear === selectedYear)
       ) {
-        // Calculate weightForAge, lengthForAge, and weightForLength
         const weightForAge = weightForAgeStatus(
           editedChild.birthdate,
           editedChild.weight,
@@ -210,20 +226,19 @@ const ChildProfile = ({ child, updateChildData }) => {
         );
         const lengthForAge = lengthForAgeStatus(
           editedChild.birthdate,
-          editedChild.length,
+          editedChild.height,
           editedChild.gender
         );
         const weightForLength = weightForLengthStatus(
           editedChild.birthdate,
-          editedChild.length,
+          editedChild.height,
           editedChild.weight,
           editedChild.gender
         );
-        // Create new child data
         const newChildData = {
           child: child.id,
-          quarter: selectedQuarter, // Use the selected quarter
-          year: selectedYear, // Use the selected year
+          quarter: selectedQuarter,
+          year: selectedYear,
           weight: editedChild.weight || null,
           height: editedChild.height || null,
           muac: editedChild.muac || null,
@@ -235,8 +250,6 @@ const ChildProfile = ({ child, updateChildData }) => {
           lengthForAge: lengthForAge,
           weightForLength: weightForLength,
         };
-
-        // Now, send a POST request to create the new child data
         axios
           .post(`http://127.0.0.1:8000/childhealthinfo/`, newChildData)
           .then((response) => {
@@ -246,14 +259,11 @@ const ChildProfile = ({ child, updateChildData }) => {
               "Successfully Created a New Health Data"
             );
             setIsEditing(false);
-            // You may want to do something here after the data is successfully created.
-            // For example, you could update your local state or display a success message.
           })
           .catch((error) => {
             console.error("Error creating new ChildHealthInfo data:", error);
           });
       } else {
-        // 'dow' does not match the selected quarter and year, log an error message
         console.log(
           "Cannot create in another quarter or year:",
           selectedQuarterValue,
@@ -263,17 +273,13 @@ const ChildProfile = ({ child, updateChildData }) => {
         setIsErrorSnackbarOpen(true);
       }
     } else {
-      // Handle the case when dataExists is true (data for the selected quarter already exists).
-      // You might want to display a message or implement your desired logic.
       console.log("Data already exists for the selected quarter and year.");
     }
     setButtonLabel("Save");
   };
 
-  //{Update Button}//
   const handleUpdateClick = async () => {
     try {
-      // Update the primary child data
       const updatedPrimaryChildData = {
         fullName: editedChild.fullName,
         address: editedChild.address,
@@ -296,36 +302,36 @@ const ChildProfile = ({ child, updateChildData }) => {
 
       console.log("Primarychild data updated:", primaryChildResponse.data);
       const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
-            method: 'GET',
+      fetch("http://127.0.0.1:8000/auth/users/me/", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${storedToken.data.access}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const auditCreatePayload = {
+            user: data.first_name + " " + data.last_name, // Assuming you want to send the user data as part of the payload
+            action: "Updated a Child Data", // Replace 'your_action_here' with the actual action
+          };
+          fetch("http://127.0.0.1:8000/audit/", {
+            method: "POST",
             headers: {
-                Authorization: `Bearer ${storedToken.data.access}`,
+              "Content-Type": "application/json",
             },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                const auditCreatePayload = {
-                    user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
-                    action: 'Updated a Child Data',  // Replace 'your_action_here' with the actual action
-                };
-                fetch('http://127.0.0.1:8000/audit/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(auditCreatePayload),
-                })
-                    .then((auditResponse) => auditResponse.json())
-                    .then((auditData) => {
-                        console.log('Audit creation response:', auditData);
-                    })
-                    .catch((auditError) => {
-                        console.error('Error creating audit:', auditError);
-                    });
+            body: JSON.stringify(auditCreatePayload),
+          })
+            .then((auditResponse) => auditResponse.json())
+            .then((auditData) => {
+              console.log("Audit creation response:", auditData);
             })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
+            .catch((auditError) => {
+              console.error("Error creating audit:", auditError);
             });
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
 
       // Fetch all ChildHealthInfo records for the selected child
       const childHealthInfoResponse = await axios.get(
@@ -531,7 +537,6 @@ const ChildProfile = ({ child, updateChildData }) => {
                 prevChild.gender
               ),
           }));
-          
         } else {
           // No data found for the selected quarter and year
           console.log(
@@ -831,74 +836,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           "parentName",
           editedChild.parentName
         )}
-        {/* Replace the "Parent-Child Relation" TextField with a Select */}
-        {/* {isEditing ? (
-          <Box mt="16px">
-            <FormControl fullWidth variant="outlined">
-              <InputLabel id="relationship-select-label">
-                Relationship
-              </InputLabel>
-              <Select
-                fullWidth
-                id="relationship"
-                name="relationship"
-                label="Relationship"
-                labelId="relationship-select-label"
-                value={editedChild.relationship}
-                onChange={handleInputChange}
-                variant="outlined"
-              >
-                <MenuItem value="Father">Father</MenuItem>
-                <MenuItem value="Mother">Mother</MenuItem>
-                <MenuItem value="Guardian">Guardian</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        ) : (
-          <Box>
-            <Box padding="10px" borderRadius="5px" border="1px solid grey">
-              <Typography variant="h6">Relationship</Typography>
-              <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                {editedChild.relationship}
-              </Typography>
-            </Box>
-          </Box>
-        )} */}
-        {/* {isEditing ? (
-          // Render the ethnicity field only when editing
-          <Box mt="16px">
-            <Select
-              fullWidth
-              id="ethnicity"
-              name="ethnicity"
-              label="Ethnicity"
-              value={editedChild.ethnicity}
-              onChange={handleInputChange}
-              variant="outlined"
-            >
-              {ethnicityOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </Box>
-        ) : (
-          // Display ethnicity information when not editing
-          <Box>
-            <Box
-              mt="10px"
-              padding="10px"
-              borderRadius="5px"
-              border="1px solid grey"
-            >
-              <Typography variant="h6">Ethnicity:</Typography>
-              <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                {editedChild.ethnicity}
-              </Typography>
-            </Box>
-          </Box>
-        )} */}
+
         {isEditing ? (
           // Render the ethnicity field as TextField when editing
           <Box mt="16px">
@@ -1012,6 +950,51 @@ const ChildProfile = ({ child, updateChildData }) => {
       </Grid>
     </Grid>
   );
+  const renderReport = () => {
+    const selectedChildData = frequentStatuses[childId];
+
+    console.log("Frequent Statuses:", frequentStatuses);
+    console.log("Selected Child Data:", selectedChildData);
+    console.log("Selected Child ID:", childId);
+    if (!selectedChildData || Object.keys(selectedChildData).length === 0) {
+      return (
+        <div>
+          <Typography variant="h6">Child {childId}</Typography>
+          <div>No frequent data available for the selected child</div>
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <Typography variant="h6">Child {childId}</Typography>
+        <Grid container spacing={2}>
+          {Object.entries(selectedChildData).map(([year, statuses]) => (
+            <Grid item key={`status-${selectedChildId}-${year}`}>
+              <Grid container direction="column" style={{ marginLeft: "20px" }}>
+                <Typography variant="subtitle1">{year}</Typography>
+                <Typography>
+                  {statuses.weight_for_age
+                    ? `WFA: ${statuses.weight_for_age}`
+                    : "No data available"}
+                </Typography>
+                <Typography>
+                  {statuses.length_for_age
+                    ? `LFA: ${statuses.length_for_age}`
+                    : "No data available"}
+                </Typography>
+                <Typography>
+                  {statuses.weight_for_length
+                    ? `WFL: ${statuses.weight_for_length}`
+                    : "No data available"}
+                </Typography>
+              </Grid>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  };
 
   return (
     <Box p="20px">
@@ -1070,6 +1053,20 @@ const ChildProfile = ({ child, updateChildData }) => {
               borderRadius: "20px 20px 0 0",
             })}
           />
+          <Tab
+            icon={<Assessment />}
+            label="Report"
+            value="report"
+            sx={(theme) => ({
+              backgroundColor:
+                selectedView === "report"
+                  ? theme.palette.mode === "light"
+                    ? colors.blueAccent[700]
+                    : colors.blueAccent[700]
+                  : undefined,
+              borderRadius: "20px 20px 0 0",
+            })}
+          />
         </Tabs>
 
         {selectedView === "health" ? (
@@ -1110,7 +1107,9 @@ const ChildProfile = ({ child, updateChildData }) => {
         ? renderChildProfile()
         : selectedView === "parent"
         ? renderParentInformation()
-        : renderHealthInfo()}
+        : selectedView === "health"
+        ? renderHealthInfo()
+        : renderReport()}
 
       {isEditing ? (
         <Box mt="16px" sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -1178,7 +1177,7 @@ const ChildProfile = ({ child, updateChildData }) => {
           severity="error"
           sx={{ width: "100%" }}
         >
-          You have inputed the wrong Date Of Weighing
+          Inputed Date Doesnt Match the selected Quarter or Year
         </MuiAlert>
       </Snackbar>
     </Box>
