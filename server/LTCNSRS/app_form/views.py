@@ -65,83 +65,72 @@ class DuplicateChildDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.AllowAny]  # Allow access to everyone
 
 
+@csrf_exempt
 def backup_database(request):
-    tables = request.GET.get('tables')  # Retrieve comma-separated tables from the request
-    if not tables:
-        return HttpResponse("No tables specified for backup", status=400)
-
-    # Split the received comma-separated string into individual table names
-    tables_list = tables.split(',')
-
-    if not tables_list:
-        return HttpResponse("No valid tables specified for backup", status=400)
-
     try:
         # Set the PGPASSWORD environment variable with your database password
         os.environ["PGPASSWORD"] = "group1"
 
-        # Create a unique temporary file
-        temp_file = tempfile.NamedTemporaryFile(suffix='.sql', delete=False).name
+        # Define the path where the backup file will be stored
+        backup_file_path = 'E:/github/fullstack_ltcnsrs/Point4/fullstack_ltcnsrs/server/LTCNSRS/backup.sql'  # Update this path
 
-        # Command to perform the backup for specific tables and write to the temporary file
-        command = f'pg_dump -U postgres -d db_cnsrs -t {" -t ".join(tables_list)} > {temp_file}'
+        # Command to perform the backup using pg_dump
+        command = f'pg_dump -U postgres -d db_cnsrs > {backup_file_path}'
 
-        # Execute the command using shell=True to capture output and write to the temporary file
+        # Execute the command using shell=True
         subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, env=os.environ)
-        
-        # Define the absolute path for the backup file
-        backup_file_path = 'E:/Backup-Folder/backup-child.sql'  # Update this path
 
-        # Move the temporary file to the defined backup file path
-        shutil.move(temp_file, backup_file_path)
-
+        # Read the backup file
         with open(backup_file_path, 'rb') as backup_file:
             response = HttpResponse(backup_file.read())
-            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(backup_file_path)}"'
+            response['Content-Disposition'] = 'attachment; filename="backup.sql"'
             return response
+
     except subprocess.CalledProcessError as e:
-        print(f"Backup failed: {e}")
+        print(f"Backup failed with subprocess error: {e}")
         return HttpResponse("Backup failed", status=500)
+    except FileNotFoundError as file_err:
+        print(f"File not found error: {file_err}")
+        return HttpResponse("File not found", status=500)
     except Exception as ex:
-        print(f"An error occurred: {ex}")
+        print(f"An unexpected error occurred: {ex}")
         return HttpResponse("Internal Server Error", status=500)
     
 # Restore function
 @csrf_exempt
 def restore_database(request):
-    if request.method == 'POST':
-        try:
-            uploaded_file = request.FILES['backup_file']
-            if not uploaded_file.name.endswith('.sql'):
-                return JsonResponse({'error': 'Invalid file format. Must be a .sql file'}, status=400)
-            
-            # Create a temporary file to save the uploaded SQL file
-            temp_file = tempfile.NamedTemporaryFile(suffix='.sql', delete=False)
-            with uploaded_file.open() as sql_file:
-                # Write the contents of the uploaded file to the temporary file
-                for chunk in sql_file.chunks():
-                    temp_file.write(chunk)
-            
-            # Close the temporary file after writing
-            temp_file.close()
+    try:
+        # Set the PGPASSWORD environment variable with your database password
+        os.environ["PGPASSWORD"] = "group1"
 
-            # Execute the queries from the uploaded SQL file
-            with open(temp_file.name, 'r') as sql_file:
-                queries = sql_file.read().split(';')
-                with connection.cursor() as cursor:
-                    for query in queries:
-                        query = query.strip()
-                        if query:
-                            cursor.execute(query)
-            
-            # Remove the temporary file
-            os.remove(temp_file.name)
+        # Retrieve the uploaded .sql file from the request
+        uploaded_file = request.FILES['file']
+        
+        # Define the path where the uploaded file will be stored temporarily
+        uploaded_file_path = 'E:/github/fullstack_ltcnsrs/Point4/fullstack_ltcnsrs/server/LTCNSRS/temp.sql'  # Update this path
 
-            return JsonResponse({'message': 'Database restored successfully'})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        # Write the uploaded file to the temporary location
+        with open(uploaded_file_path, 'wb+') as destination:
+            for chunk in uploaded_file.chunks():
+                destination.write(chunk)
+
+        # Command to restore the database using psql
+        command = f'psql -U postgres -d db_cnsrs -f {uploaded_file_path}'
+
+        # Execute the command using shell=True
+        subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, env=os.environ)
+
+        # Cleanup: remove the temporary uploaded file
+        os.remove(uploaded_file_path)
+
+        return HttpResponse("Database restored successfully")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Restore failed: {e}")
+        return HttpResponse("Restore failed", status=500)
+    except Exception as ex:
+        print(f"An error occurred during restore: {ex}")
+        return HttpResponse("Internal Server Error", status=500)
     
 from collections import defaultdict
 

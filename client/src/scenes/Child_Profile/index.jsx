@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ethnicityOptions from "../form/ethnicityOptions";
 import { calculateAgeInMonths } from "../Database/Calculations/calculateAgeInMonths";
 import lengthForAgeStatus from "../Database/Calculations/lengthForAgeStatus";
 import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
@@ -40,12 +39,46 @@ import {
   Assessment,
 } from "@mui/icons-material";
 import axios from "axios"; // Import Axios
+import * as Yup from 'yup';
+
 
 const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isEditing, setIsEditing] = useState(false);
-
+  // validation------------------------------------------>
+  const childProfileSchema = Yup.object().shape({
+    // Define validation rules for each field
+    dow: Yup.date().required("Date of Weighing is required"),
+    disability: Yup.string().required("Do not leave Disability as an empty field, atleast put none or N/A"),
+    muac: Yup.number().min(0, 'MUAC must be a non-negative number').required('MUAC is required'),
+    weight: Yup.number().nullable().positive('Weight must be a positive number').moreThan(0, 'Weight must be greater than 0'),
+    height: Yup.number().nullable().positive('Height must be a positive number').moreThan(0, 'Height must be greater than 0'),
+    fullName: Yup.string().required('Full Name is required').matches(/^[A-Za-z,.\-\s]+$/, 'Full Name can only contain letters, commas, periods, and dashes'),
+    address: Yup.string().required("Address is required").matches(/^[A-Za-z0-9,.\-\s]+$/, 'Address can only contain letters, numbers, commas, periods, and dashes'),
+    pt: Yup.string().required('Please select an option Permanent/Transient'),
+    gender: Yup.string().required('Please select an option for the Gender'),
+    birthdate: Yup.date().required("Date of Birth is required"),
+    parentName: Yup.string().required('Caregiver Name is required').matches(/^[A-Za-z,.\-\s]+$/, 'Caregiver Name can only contain letters, commas, periods, and dashes'),
+    occupation: Yup.string().required('Caregiver Occupation is required').matches(/^[A-Za-z,.\-\s]+$/, 'Occupation can only contain letters, commas, periods, and dashes'),
+    ethnicity: Yup.string().required('Caregiver Ethnicity is required').matches(/^[A-Za-z\s]+$/, 'Ethnicity can only contain letters and spaces'),
+    barangay: Yup.string().required('Please select an option for the Barangay').matches(/^[A-Za-z\s]+$/, 'Barangay can only contain letters and spaces'),
+  });
+  const validateForm = async (data) => {
+    try {
+      await childProfileSchema.validate(data, { abortEarly: false });
+      return {}; // No validation errors
+    } catch (errors) {
+      // Yup validation errors
+      const validationErrors = {};
+      errors.inner.forEach((error) => {
+        validationErrors[error.path] = error.message;
+      });
+      return validationErrors;
+    }
+  };
+  const [isValidationError, setIsValidationError] = useState(false);
+  // validation----------------------------------------->
   const [editedChild, setEditedChild] = useState({
     ...child,
     weightForAge: weightForAgeStatus(
@@ -178,12 +211,21 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   );
   const [isErrorSnackbarOpen, setIsErrorSnackbarOpen] = useState(false);
 
-  const handleCreateClick = () => {
-    if (!dataExists) {
+  const handleCreateClick = async () => {
+    const validationErrors = await validateForm(editedChild);
+
+    if (Object.keys(validationErrors).length === 0) {
       const dowDate = new Date(editedChild.dow);
       const dowMonth = dowDate.getMonth() + 1;
       const dowYear = dowDate.getFullYear();
       let selectedQuarterValue;
+      try {
+        await childProfileSchema.validate(editedChild, { abortEarly: false });
+      } catch (errors) {
+        console.log('Yup validation errors:', errors);
+        // You can handle Yup validation errors here if needed
+        return;
+      }
       switch (selectedQuarter) {
         case "1st Quarter":
           selectedQuarterValue = 1;
@@ -245,6 +287,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
           disability: editedChild.disability || null,
           dow: editedChild.dow || null,
           vac: editedChild.vac || null,
+          bpe: editedChild.bpe || null,
           deworming: editedChild.deworming || null,
           weightForAge: weightForAge,
           lengthForAge: lengthForAge,
@@ -271,15 +314,21 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
           dowMonth
         );
         setIsErrorSnackbarOpen(true);
+        setIsValidationError(false);
       }
     } else {
-      console.log("Data already exists for the selected quarter and year.");
+      console.log('Validation errors:', validationErrors);
+      setIsValidationError(true);
+      alert(`${JSON.stringify(validationErrors)}`);
+      return;
     }
     setButtonLabel("Save");
   };
 
   const handleUpdateClick = async () => {
     try {
+      const validationErrors = await validateForm(editedChild);
+      if (Object.keys(validationErrors).length === 0) {
       const updatedPrimaryChildData = {
         fullName: editedChild.fullName,
         address: editedChild.address,
@@ -372,6 +421,13 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
 
       setIsEditing(false);
       setIsSnackbarOpen(true);
+    } else {
+        // Validation errors, handle them (e.g., show an alert)
+        console.log('Validation errors:', validationErrors);
+        const errorMessage = Object.values(validationErrors).join('\n');
+        alert(`Validation errors:\n${errorMessage}`);
+      return;
+      }
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -640,7 +696,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   const renderChildProfile = () => (
     <Grid container columnSpacing={2}>
       <Grid item xs={4}>
-        {renderTextField("First Name", "fullName", editedChild.fullName)}
+        {renderTextField("Name", "fullName", editedChild.fullName)}
 
         {isEditing ? (
           // Render the gender field only when editing
@@ -950,51 +1006,51 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
       </Grid>
     </Grid>
   );
-  const renderReport = () => {
-    const selectedChildData = frequentStatuses[childId];
+  // const renderReport = () => {
+  //   const selectedChildData = frequentStatuses[childId];
 
-    console.log("Frequent Statuses:", frequentStatuses);
-    console.log("Selected Child Data:", selectedChildData);
-    console.log("Selected Child ID:", childId);
-    if (!selectedChildData || Object.keys(selectedChildData).length === 0) {
-      return (
-        <div>
-          <Typography variant="h6">Child {childId}</Typography>
-          <div>No frequent data available for the selected child</div>
-        </div>
-      );
-    }
+  //   console.log("Frequent Statuses:", frequentStatuses);
+  //   console.log("Selected Child Data:", selectedChildData);
+  //   console.log("Selected Child ID:", childId);
+  //   if (!selectedChildData || Object.keys(selectedChildData).length === 0) {
+  //     return (
+  //       <div>
+  //         <Typography variant="h6">Child {childId}</Typography>
+  //         <div>No frequent data available for the selected child</div>
+  //       </div>
+  //     );
+  //   }
 
-    return (
-      <div>
-        <Typography variant="h6">Child {childId}</Typography>
-        <Grid container spacing={2}>
-          {Object.entries(selectedChildData).map(([year, statuses]) => (
-            <Grid item key={`status-${selectedChildId}-${year}`}>
-              <Grid container direction="column" style={{ marginLeft: "20px" }}>
-                <Typography variant="subtitle1">{year}</Typography>
-                <Typography>
-                  {statuses.weight_for_age
-                    ? `WFA: ${statuses.weight_for_age}`
-                    : "No data available"}
-                </Typography>
-                <Typography>
-                  {statuses.length_for_age
-                    ? `LFA: ${statuses.length_for_age}`
-                    : "No data available"}
-                </Typography>
-                <Typography>
-                  {statuses.weight_for_length
-                    ? `WFL: ${statuses.weight_for_length}`
-                    : "No data available"}
-                </Typography>
-              </Grid>
-            </Grid>
-          ))}
-        </Grid>
-      </div>
-    );
-  };
+  //   return (
+  //     <div>
+  //       <Typography variant="h6">Child {childId}</Typography>
+  //       <Grid container spacing={2}>
+  //         {Object.entries(selectedChildData).map(([year, statuses]) => (
+  //           <Grid item key={`status-${selectedChildId}-${year}`}>
+  //             <Grid container direction="column" style={{ marginLeft: "20px" }}>
+  //               <Typography variant="subtitle1">{year}</Typography>
+  //               <Typography>
+  //                 {statuses.weight_for_age
+  //                   ? `WFA: ${statuses.weight_for_age}`
+  //                   : "No data available"}
+  //               </Typography>
+  //               <Typography>
+  //                 {statuses.length_for_age
+  //                   ? `LFA: ${statuses.length_for_age}`
+  //                   : "No data available"}
+  //               </Typography>
+  //               <Typography>
+  //                 {statuses.weight_for_length
+  //                   ? `WFL: ${statuses.weight_for_length}`
+  //                   : "No data available"}
+  //               </Typography>
+  //             </Grid>
+  //           </Grid>
+  //         ))}
+  //       </Grid>
+  //     </div>
+  //   );
+  // };
 
   return (
     <Box p="20px">
@@ -1053,7 +1109,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
               borderRadius: "20px 20px 0 0",
             })}
           />
-          <Tab
+          {/* <Tab
             icon={<Assessment />}
             label="Report"
             value="report"
@@ -1066,7 +1122,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
                   : undefined,
               borderRadius: "20px 20px 0 0",
             })}
-          />
+          /> */}
         </Tabs>
 
         {selectedView === "health" ? (
@@ -1107,9 +1163,15 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         ? renderChildProfile()
         : selectedView === "parent"
         ? renderParentInformation()
+        : renderHealthInfo()}
+
+      {/* {selectedView === "child"
+        ? renderChildProfile()
+        : selectedView === "parent"
+        ? renderParentInformation()
         : selectedView === "health"
         ? renderHealthInfo()
-        : renderReport()}
+        : renderReport()} */}
 
       {isEditing ? (
         <Box mt="16px" sx={{ display: "flex", justifyContent: "flex-end" }}>
