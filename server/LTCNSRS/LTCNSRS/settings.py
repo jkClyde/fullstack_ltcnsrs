@@ -165,17 +165,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Add your frontend URL here
-    "http://localhost:3000",
-    "http://192.168.182.1:3000"
-
+    "http://localhost:3000",  # Add the origin of your frontend application
+    "http://127.0.0.1:3000",  # Add the origin of your frontend application
+    "http://192.168.137.1:3000",  # Add the IP address of your frontend application
 ]
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.137.1', '192.168.100.114']
+
 
 #EMAIL
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'aquin.randall@gmail.com'
-EMAIL_HOST_PASSWORD = 'ucql wrwz kmnc nnro'
+EMAIL_HOST_USER = 'lt.cnsrs@gmail.com'
+EMAIL_HOST_PASSWORD = 'sfqk qtci ekly pybx'
 EMAIL_USE_TLS = True
 
 DJOSER = {

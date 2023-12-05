@@ -172,11 +172,11 @@ function SignInSide() {
       // Check if the email exists
       await validateEmail();
 
-      // if (!emailExists) {
-      //   // Email does not exist, handle accordingly
-      //   setEmailError("Email does not exist.");
-      //   return;
-      // }
+      if (!emailExists) {
+        // Email does not exist, handle accordingly
+        setEmailError("Email does not exist.");
+        return;
+      }
 
       // Prepare payload for login request
       const payload = {
@@ -226,7 +226,7 @@ function SignInSide() {
                     .then((auditData) => {
                         console.log('Audit creation response:', auditData);
                          navigate("/loading");
-                         window.location.reload(); 
+                        //  window.location.reload(); 
                     })
                     .catch((auditError) => {
                         console.error('Error creating audit:', auditError);

@@ -4,6 +4,7 @@ import weightForAgeStatus from '../weightForAgeStatus';
 import weigthForLengthStatus from '../weightForLengthStatus';
 import axios from 'axios';
 import { tokens } from '../../../../theme';
+import databaseURL from '../../../../databaseURL';
 
 //REDUX
 import { useDispatch } from 'react-redux';
@@ -100,8 +101,8 @@ const Statistics = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const primaryChildResponse = await axios.get('http://127.0.0.1:8000/primarychild/');
-        const childHealthInfoResponse = await axios.get('http://127.0.0.1:8000/childhealthinfo/');
+        const primaryChildResponse = await axios.get(`${databaseURL}/primarychild/`);
+        const childHealthInfoResponse = await axios.get(`${databaseURL}/childhealthinfo/`);
 
         const mergedData = primaryChildResponse.data.map((child) => ({
           ...child,

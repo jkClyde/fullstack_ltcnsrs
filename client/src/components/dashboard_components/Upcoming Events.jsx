@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, Typography, List, ListItem, ListItemText, useTheme } from '@mui/material';
 import { tokens } from '../../theme';
 import axios from "axios"; // Import Axios
+import databaseURL from '../../databaseURL';
 
 
 function EventsList() {
@@ -11,7 +12,7 @@ function EventsList() {
   
   const fetchEvents = () => {
     axios
-      .get("http://127.0.0.1:8000/calendar")
+      .get(`${databaseURL}/calendar`)
       .then((response) => {
         const sortedEvents = response.data.sort((a, b) => new Date(a.date) - new Date(b.date));
         setCurrentEvents(sortedEvents);

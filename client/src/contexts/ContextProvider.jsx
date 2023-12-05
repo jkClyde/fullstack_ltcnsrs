@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect  } from "react";
 import Axios from "axios"; // Import Axios
+import databaseURL from "../databaseURL";
 
 const StateContext = createContext({
   currentUser: null,
@@ -46,7 +47,7 @@ export const ContextProvider = ({ children }) => {
   //Getting User Information || checking user roles
   const fetchUserData = () => {
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-    fetch('http://127.0.0.1:8000/auth/users/me/', {
+    fetch(`${databaseURL}/auth/users/me/`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${storedToken.data.access}`,
@@ -76,7 +77,7 @@ export const ContextProvider = ({ children }) => {
   const activateUser = async (uid, token) => {
     try {
       const response = await Axios.post(
-        `http://127.0.0.1:8000/auth/users/activation/`,
+        `${databaseURL}/auth/users/activation/`,
         { uid, token }
       );
   
