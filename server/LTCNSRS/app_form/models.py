@@ -20,9 +20,14 @@ bpe_choices = (
 )
 vac_choices = (
     ('Ongoing', 'Ongoing'),
-    ('None', 'None')
+    ('None', 'None'),
+    ('FIC','FIC'),
+    ('CIC','CIC'),
+    ('INC','INC'),
+    ('None','None'),
 )
 deworming_choices = (
+    
     ('Yes', 'Yes'),
     ('No', 'No')
 )
@@ -52,7 +57,7 @@ barangay_choices = (
 )
 ethnicity_choices = (
     ('OTHERS', 'Others'),
-    ('AGGAY', 'Aggay'),
+    ('AGGAY', 'AGGAY'),
     ('AKEANON/AKLANON', 'Akeanon/Aklanon'),
     ('APAYAO/YAPAYAO', 'Apayao/Yapayao'),
     ('AYANGAN', 'Ayangan'),
@@ -154,6 +159,9 @@ class PrimaryChild(models.Model):
     caregiverContact = models.CharField(max_length=255, default='Unknown')
 
     archive = models.BooleanField(default=False) 
+    
+    class Meta:
+        unique_together = [['surname', 'firstname', 'middlename', 'birthdate']]
 
     def save(self, *args, **kwargs):
         self.fullName = ' '.join(filter(None, [self.firstname, self.middlename, self.surname, self.suffix]))
@@ -205,7 +213,7 @@ class ChildHealthInfo(models.Model):
     #vitamin
     vaccinationRemarks = models.CharField(max_length=100, blank=True, default='')
     vitAOneHTIU = models.DateField(null=True, blank=True)
-    
+
     #other vita by age
     vitATwoHTIUOneYear = models.DateField(null=True, blank=True)
     vitATwoHTIUOneSixYear = models.DateField(null=True, blank=True)

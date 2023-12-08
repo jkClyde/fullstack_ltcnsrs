@@ -122,17 +122,6 @@ const Form = () => {
   };
 
   const handleFormSubmit = (values, { resetForm }) => {
-    const isDuplicate = existingEntries.some(
-      (entry) =>
-        dayjs(entry.birthdate).format("YYYY-MM-DD") ===
-        dayjs(selectedBirthdate).format("YYYY-MM-DD")
-    );
-
-    if (isDuplicate) {
-      alert("Duplicate entry found: This child already exists.");
-      return;
-    }
-
     if (!selectedBirthdate || !selectedDOW) {
       alert("Birthdate and Date of Weighing are required");
       return;
@@ -140,6 +129,65 @@ const Form = () => {
     const formattedBirthdate = dayjs(selectedBirthdate).format("YYYY-MM-DD");
     const formattedDOW = selectedDOW
       ? dayjs(selectedDOW).format("YYYY-MM-DD")
+      : null;
+    const formattedvitAOneHTIU = selectedVitAOneHTIU
+      ? dayjs(selectedVitAOneHTIU).format("YYYY-MM-DD")
+      : null;
+    const formattedVitATwoHTIUOneYear = selectedVitATwoHTIUOneYear
+      ? dayjs(selectedVitATwoHTIUOneYear).format("YYYY-MM-DD")
+      : null;
+    const formattedVitATwoHTIUOneSixYear = selectedVitATwoHTIUOneSixYear
+      ? dayjs(selectedVitATwoHTIUOneSixYear).format("YYYY-MM-DD")
+      : null;
+    const formattedVitATwoHTIUTwoYear = selectedVitATwoHTIUTwoYear
+      ? dayjs(selectedVitATwoHTIUTwoYear).format("YYYY-MM-DD")
+      : null;
+    const formattedVitATwoHTIUTwoSixYear = selectedVitATwoHTIUTwoSixYear
+      ? dayjs(selectedVitATwoHTIUTwoSixYear).format("YYYY-MM-DD")
+      : null;
+    const formattedvitATwoHTIUThreeYear = selectedVitATwoHTIUThreeYear
+      ? dayjs(selectedVitATwoHTIUThreeYear).format("YYYY-MM-DD")
+      : null;
+    const formattedvitATwoHTIUThreeSixYear = selectedVitATwoHTIUThreeSixYear
+      ? dayjs(selectedVitATwoHTIUThreeSixYear).format("YYYY-MM-DD")
+      : null;
+    const formattedvitATwoHTIUFourYear = selectedVitATwoHTIUFourYear
+      ? dayjs(selectedVitATwoHTIUFourYear).format("YYYY-MM-DD")
+      : null;
+    const formattedvitATwoHTIUFourSixYear = selectedVitATwoHTIUFourSixYear
+      ? dayjs(selectedVitATwoHTIUFourSixYear).format("YYYY-MM-DD")
+      : null;
+    const formattedvitATwoHTIUFiveYear = selectedVitATwoHTIUFiveYear
+      ? dayjs(selectedVitATwoHTIUFiveYear).format("YYYY-MM-DD")
+      : null;
+
+    const formatteddewormingOneYear = selectedDewormingOneYear
+      ? dayjs(selectedDewormingOneYear).format("YYYY-MM-DD")
+      : null;
+
+    const formatteddewormingOneSixYear = selectedDewormingOneSixYear
+      ? dayjs(selectedDewormingOneSixYear).format("YYYY-MM-DD")
+      : null;
+    const formatteddewormingTwoYear = selectedDewormingTwoYear
+      ? dayjs(selectedDewormingTwoYear).format("YYYY-MM-DD")
+      : null;
+    const formatteddewormingTwoSixYear = selectedDewormingTwoSixYear
+      ? dayjs(selectedDewormingTwoSixYear).format("YYYY-MM-DD")
+      : null;
+    const formatteddewormingThreeYear = selectedDewormingThreeYear
+      ? dayjs(selectedDewormingThreeYear).format("YYYY-MM-DD")
+      : null;
+    const formatteddewormingThreeSixYear = selectedDewormingThreeSixYear
+      ? dayjs(selectedDewormingThreeSixYear).format("YYYY-MM-DD")
+      : null;
+    const formatteddewormingFourYear = selectedDewormingFourYear
+      ? dayjs(selectedDewormingFourYear).format("YYYY-MM-DD")
+      : null;
+    const formatteddewormingFourSixYear = selectedDewormingFourSixYear
+      ? dayjs(selectedDewormingFourSixYear).format("YYYY-MM-DD")
+      : null;
+    const formatteddewormingFiveYear = selectedDewormingFiveYear
+      ? dayjs(selectedDewormingFiveYear).format("YYYY-MM-DD")
       : null;
 
     const dowDate = new Date(selectedDOW);
@@ -176,6 +224,8 @@ const Form = () => {
       deworming: values.deworming,
       bpe: values.bpe,
       disability: values.disability,
+      vaccinationRemarks: values.vaccinationRemarks,
+
       weightForAge: weightForAgeStatus(
         formattedBirthdate,
         values.weight,
@@ -192,6 +242,28 @@ const Form = () => {
         values.weight,
         values.gender
       ),
+      // Vitamin fields
+      vitAOneHTIU: formattedvitAOneHTIU,
+      vitATwoHTIUOneYear: formattedVitATwoHTIUOneYear,
+      vitATwoHTIUOneSixYear: formattedVitATwoHTIUOneSixYear,
+      vitATwoHTIUTwoYear: formattedVitATwoHTIUTwoYear,
+      vitATwoHTIUTwoSixYear: formattedVitATwoHTIUTwoSixYear,
+      vitATwoHTIUThreeYear: formattedvitATwoHTIUThreeYear,
+      vitATwoHTIUThreeSixYear: formattedvitATwoHTIUThreeSixYear,
+      vitATwoHTIUFourYear: formattedvitATwoHTIUFourYear,
+      vitATwoHTIUFourSixYear: formattedvitATwoHTIUFourSixYear,
+      vitATwoHTIUFiveYear: formattedvitATwoHTIUFiveYear,
+
+      // Deworming fields
+      dewormingOneYear: formatteddewormingOneYear,
+      dewormingOneSixYear: formatteddewormingOneSixYear,
+      dewormingTwoYear: formatteddewormingTwoYear,
+      dewormingTwoSixYear: formatteddewormingTwoSixYear,
+      dewormingThreeYear: formatteddewormingThreeYear,
+      dewormingThreeSixYear: formatteddewormingThreeSixYear,
+      dewormingFourYear: formatteddewormingFourYear,
+      dewormingFourSixYear: formatteddewormingFourSixYear,
+      dewormingFiveYear: formatteddewormingFiveYear,
     };
 
     // Create a data object for saving in the PrimaryChild table
@@ -199,6 +271,7 @@ const Form = () => {
       surname: values.surname,
       firstname: values.firstname,
       middlename: values.middlename,
+      suffix: values.suffix,
       pt: values.pt,
       gender: values.gender,
       birthdate: formattedBirthdate,
@@ -239,8 +312,6 @@ const Form = () => {
       caregiverOccupation: values.caregiverOccupation,
       caregiverReligion: values.caregiverReligion,
       caregiverContact: values.caregiverContact,
-
-      //vitamin
     };
 
     // Make an API call to your Django backend to save data in the PrimaryChild table
@@ -299,6 +370,7 @@ const Form = () => {
               .then((auditResponse) => auditResponse.json())
               .then((auditData) => {
                 console.log("Audit creation response:", auditData);
+                console.log("Vita: ", vitAOneHTIU);
               })
               .catch((auditError) => {
                 console.error("Error creating audit:", auditError);
