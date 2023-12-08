@@ -57,7 +57,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   const childProfileSchema = Yup.object().shape({
     dow: Yup.date().required("Date of Weighing is required"),
     surname: Yup.string()
-      .required("Required")
+      .required("Surname is required")
       .matches(
         /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
         "Special characters not allowed"
