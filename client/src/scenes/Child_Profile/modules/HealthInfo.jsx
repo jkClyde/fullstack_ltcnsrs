@@ -20,7 +20,11 @@ const HealthInfo = ({
   return (
     <Grid container spacing={2}>
       <Grid item xs={4}>
-        {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
+        {renderTextField(
+          "Date of Weighing (DOW) (MM/DD/YYYY)",
+          "dow",
+          editedChild.dow
+        )}
         {renderTextField("Weight", "weight", editedChild.weight, "kg")}
         {renderTextField("Height", "height", editedChild.height, "cm")}
         {renderTextField("MUAC", "muac", editedChild.muac, "cm")}

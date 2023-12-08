@@ -25,7 +25,11 @@ const ChildInfo = ({
       <Grid item xs={4}>
         {renderTextField("First Name", "firstname", editedChild.firstname)}
 
-        {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
+        {renderTextField(
+          "Date of Birth (MM/DD/YYYY)",
+          "birthdate",
+          editedChild.birthdate
+        )}
         {isEditing ? (
           <Box mt="10px">
             <FormControl fullWidth>

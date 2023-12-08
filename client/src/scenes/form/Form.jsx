@@ -196,16 +196,51 @@ const Form = () => {
 
     // Create a data object for saving in the PrimaryChild table
     const primaryChildData = {
-      fullName: values.fullName,
-      address: values.address,
+      surname: values.surname,
+      firstname: values.firstname,
+      middlename: values.middlename,
       pt: values.pt,
       gender: values.gender,
       birthdate: formattedBirthdate,
-      parentName: values.parentName,
-      occupation: values.occupation,
-      // relationship: values.relationship,
-      ethnicity: values.ethnicity,
       barangay: values.barangay,
+      sitio: values.sitio,
+      houseNumberAndStreet: values.houseNumberAndStreet,
+      birthOrder: values.birthOrder,
+      birthWeight: values.birthWeight,
+      lengthOfStay: values.lengthOfStay,
+      lengthOfStayType: values.lengthOfStayType,
+
+      // Add other fields from your model here
+      fatherSurname: values.fatherSurname,
+      fatherFirstName: values.fatherFirstName,
+      fatherMiddleName: values.fatherMiddleName,
+      fatherSuffix: values.fatherSuffix,
+      fatherAge: values.fatherAge,
+      fatherEthnicity: values.fatherEthnicity,
+      fatherOccupation: values.fatherOccupation,
+      fatherReligion: values.fatherReligion,
+      fatherContact: values.fatherContact,
+      motherSurname: values.motherSurname,
+      motherFirstName: values.motherFirstName,
+      motherMiddleName: values.motherMiddleName,
+      motherSuffix: values.motherSuffix,
+      motherAge: values.motherAge,
+      motherEthnicity: values.motherEthnicity,
+      motherOccupation: values.motherOccupation,
+      motherReligion: values.motherReligion,
+      motherContact: values.motherContact,
+      caregiverSurname: values.caregiverSurname,
+      caregiverFirstName: values.caregiverFirstName,
+      caregiverMiddleName: values.caregiverMiddleName,
+      caregiverSuffix: values.caregiverSuffix,
+      caregiverRelationship: values.caregiverRelationship,
+      motherEthnicity: values.motherEthnicity,
+      caregiverAge: values.caregiverAge,
+      caregiverOccupation: values.caregiverOccupation,
+      caregiverReligion: values.caregiverReligion,
+      caregiverContact: values.caregiverContact,
+
+      //vitamin
     };
 
     // Make an API call to your Django backend to save data in the PrimaryChild table
@@ -463,13 +498,7 @@ const checkoutSchema = yup.object().shape({
     .number()
     .notRequired()
     .typeError("Birth Weight must be a number"),
-  birthOrder: yup
-    .string()
-    .notRequired()
-    .matches(
-      /^[A-Za-z0-9\s]{2,16}$/, // Allow letters (upper and lower case), numbers, and spaces
-      "Only letters, numbers, and spaces are allowed"
-    ),
+  birthOrder: yup.number("Birth Order must be a Number").notRequired(),
   houseNumberAndStreet: yup
     .string()
     .notRequired()
@@ -520,8 +549,8 @@ const checkoutSchema = yup.object().shape({
   fatherContact: yup
     .number()
     .notRequired()
-    .test("isElevenDigits", "Must be an 11-digit number", (value) =>
-      value ? /^[0-9]{11}$/.test(value) : true
+    .test("isTwelveDigits", "Must be an 12-digit number", (value) =>
+      value ? /^[0-9]{12}$/.test(value) : true
     ),
   motherSurname: yup
     .string()
@@ -548,8 +577,8 @@ const checkoutSchema = yup.object().shape({
   motherContact: yup
     .number()
     .notRequired()
-    .test("isElevenDigits", "Must be an 11-digit number", (value) =>
-      value ? /^[0-9]{11}$/.test(value) : true
+    .test("isTwelveDigits", "Must be an 12-digit number", (value) =>
+      value ? /^[0-9]{12}$/.test(value) : true
     ),
   caregiverSurname: yup
     .string()
@@ -583,8 +612,8 @@ const checkoutSchema = yup.object().shape({
   caregiverContact: yup
     .number()
     .notRequired()
-    .test("isElevenDigits", "Must be an 11-digit number", (value) =>
-      value ? /^[0-9]{11}$/.test(value) : true
+    .test("isTwelveDigits", "Must be an 12-digit number", (value) =>
+      value ? /^[0-9]{12}$/.test(value) : true
     ),
 
   weight: yup.number().required("Required").typeError("Must be a number"),

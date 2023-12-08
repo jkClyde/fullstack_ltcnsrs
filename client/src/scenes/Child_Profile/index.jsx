@@ -63,7 +63,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         "Special characters not allowed"
       ),
     firstname: Yup.string()
-      .required("Required")
+      .required("Surname is required")
       .matches(
         /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
         "Special characters not allowed"
@@ -80,7 +80,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         "Only letters, spaces, and periods are allowed"
       )
       .notRequired(),
-    gender: Yup.string().required("Required"),
+    gender: Yup.string().required("Gender is required"),
     birthWeight: Yup.number()
       .notRequired()
       .typeError("Birth Weight must be a number"),
@@ -99,7 +99,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         /^[A-Za-z\s.]{2,50}$/,
         "Should contain only 2-20 letters (no special characters)"
       ),
-    barangay: Yup.string().required("Required"),
+    barangay: Yup.string().required("Barangay is required"),
     pt: Yup.string().notRequired(),
     lengthOfStay: Yup.number().notRequired(),
     lengthOfStayType: Yup.string().notRequired(),
@@ -121,8 +121,8 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
         "Special characters not allowed"
       ),
-    fatherAge: Yup.number().required("Required").typeError("Must be a number"),
-    fatherEthnicity: Yup.string().required("Required"),
+    fatherAge: Yup.number().notRequired().typeError("Must be a number"),
+    fatherEthnicity: Yup.string().notRequired(),
     fatherOccupation: Yup.string()
       .notRequired()
       .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
@@ -206,6 +206,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     pt: Yup.string().required("Status of Residency must not be empty"),
     birthdate: Yup.date().required("Date of Birth is required"),
   });
+
   const validateForm = async (data) => {
     try {
       await childProfileSchema.validate(data, { abortEarly: false });
@@ -241,7 +242,6 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     ),
     quarter: "",
   });
-  const childId = editedChild.id;
 
   const [selectedView, setSelectedView] = useState("child"); // Default view
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -262,23 +262,6 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     { length: endYear - startYear + 1 },
     (_, i) => startYear + i
   );
-
-  useEffect(() => {
-    // Function to fetch most frequent statuses from backend
-    const fetchMostFrequentStatuses = async () => {
-      try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000//get-most-frequent-statuses"
-        );
-        console.log("Fetched Data:", response.data); // Log fetched data
-        setFrequentStatuses(response.data);
-      } catch (error) {
-        console.error("Error fetching most frequent statuses:", error);
-      }
-    };
-
-    fetchMostFrequentStatuses();
-  }, []);
 
   useEffect(() => {
     // Recalculate and update aim, weightForAge, lengthForAge, and weightForLength when birthdate changes
@@ -340,6 +323,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
       .catch((error) => {
         console.error("Error fetching ChildHealthInfo record:", error);
       });
+    console.log("child: ", child);
   }, [editedChild.birthdate, child.id]);
 
   const handleSnackbarClose = (event, reason) => {
@@ -472,7 +456,12 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
       const validationErrors = await validateForm(editedChild);
       if (Object.keys(validationErrors).length === 0) {
         const updatedPrimaryChildData = {
-          fullName: editedChild.fullName,
+          surname: editedChild.surname,
+          firstname: editedChild.firstname,
+          middlename: editedChild.middlename,
+          suffix: editedChild.suffix,
+          birthWeight: editedChild.birthWeight,
+          birthOrder: editedChild.birthOrder,
           address: editedChild.address,
           pt: editedChild.pt,
           muac: editedChild.muac,
@@ -855,104 +844,6 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     </Box>
   );
 
-  //   <Grid container columnSpacing={2}>
-  //     <Grid item xs={4}>
-  //       {renderTextField("Name", "fullName", editedChild.fullName)}
-
-  //       {isEditing ? (
-  //         // Render the gender field only when editing
-  //         <Box mt="10px">
-  //           <FormControl fullWidth>
-  //             <InputLabel id="gender-select-label">Sex</InputLabel>
-  //             <Select
-  //               labelId="gender-select-label"
-  //               label="Sex"
-  //               id="gender-select"
-  //               name="gender"
-  //               value={editedChild.gender}
-  //               onChange={handleInputChange}
-  //             >
-  //               <MenuItem value="Male">Male</MenuItem>
-  //               <MenuItem value="Female">Female</MenuItem>
-  //             </Select>
-  //           </FormControl>
-  //         </Box>
-  //       ) : (
-  //         // Display gender information when not editing
-  //         <Grid item xs={12}>
-  //           <Box>
-  //             <Box padding="10px" borderRadius="5px" border="1px solid grey">
-  //               <Typography variant="h6">Sex</Typography>
-  //               <Typography variant="body1" style={{ fontWeight: "bold" }}>
-  //                 {editedChild.gender}
-  //               </Typography>
-  //             </Box>
-  //           </Box>
-  //         </Grid>
-  //       )}
-  //     </Grid>
-  //     <Grid item xs={4}>
-  //       {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
-  //     </Grid>
-  //     <Grid item xs={4}>
-  //       {!isEditing &&
-  //         renderTextField(
-  //           "Age in Months",
-  //           "aim",
-  //           editedChild.aim,
-  //           "Months old"
-  //         )}
-  //     </Grid>
-  //   </Grid>
-  // );
-  const isChildMoreThan12Months = editedChild.aim > 12;
-
-  // const renderReport = () => {
-  //   const selectedChildData = frequentStatuses[childId];
-
-  //   console.log("Frequent Statuses:", frequentStatuses);
-  //   console.log("Selected Child Data:", selectedChildData);
-  //   console.log("Selected Child ID:", childId);
-  //   if (!selectedChildData || Object.keys(selectedChildData).length === 0) {
-  //     return (
-  //       <div>
-  //         <Typography variant="h6">Child {childId}</Typography>
-  //         <div>No frequent data available for the selected child</div>
-  //       </div>
-  //     );
-  //   }
-
-  //   return (
-  //     <div>
-  //       <Typography variant="h6">Child {childId}</Typography>
-  //       <Grid container spacing={2}>
-  //         {Object.entries(selectedChildData).map(([year, statuses]) => (
-  //           <Grid item key={`status-${selectedChildId}-${year}`}>
-  //             <Grid container direction="column" style={{ marginLeft: "20px" }}>
-  //               <Typography variant="subtitle1">{year}</Typography>
-  //               <Typography>
-  //                 {statuses.weight_for_age
-  //                   ? `WFA: ${statuses.weight_for_age}`
-  //                   : "No data available"}
-  //               </Typography>
-  //               <Typography>
-  //                 {statuses.length_for_age
-  //                   ? `LFA: ${statuses.length_for_age}`
-  //                   : "No data available"}
-  //               </Typography>
-  //               <Typography>
-  //                 {statuses.weight_for_length
-  //                   ? `WFL: ${statuses.weight_for_length}`
-  //                   : "No data available"}
-  //               </Typography>
-  //             </Grid>
-  //           </Grid>
-  //         ))}
-  //       </Grid>
-  //     </div>
-  //   );
-  // };
-
   return (
     <Box p="20px">
       <Box
@@ -1038,20 +929,6 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
               borderRadius: "20px 20px 0 0",
             })}
           />
-          {/* <Tab
-            icon={<Assessment />}
-            label="Report"
-            value="report"
-            sx={(theme) => ({
-              backgroundColor:
-                selectedView === "report"
-                  ? theme.palette.mode === "light"
-                    ? colors.blueAccent[700]
-                    : colors.blueAccent[700]
-                  : undefined,
-              borderRadius: "20px 20px 0 0",
-            })}
-          /> */}
         </Tabs>
 
         {selectedView === "health" ? (
@@ -1124,14 +1001,6 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
           handleInputChange={handleInputChange}
         />
       )}
-
-      {/* {selectedView === "child"
-        ? renderChildInfo()
-        : selectedView === "parent"
-        ? renderParentInformation()
-        : selectedView === "health"
-        ? renderHealthInfo()
-        : renderReport()} */}
 
       {isEditing ? (
         <Box mt="16px" sx={{ display: "flex", justifyContent: "flex-end" }}>

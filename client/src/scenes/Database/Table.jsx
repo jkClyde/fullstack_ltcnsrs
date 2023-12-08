@@ -139,9 +139,7 @@ const Table = () => {
   const fetchTab1Data = async () => {
     try {
       // Fetch primary child data
-      const primaryChildResponse = await fetch(
-        `${databaseURL}/primarychild/`
-      );
+      const primaryChildResponse = await fetch(`${databaseURL}/primarychild/`);
       if (!primaryChildResponse.ok) {
         console.error(
           "Error fetching primarychild data:",
@@ -210,9 +208,7 @@ const Table = () => {
   const fetchTab2Data = async () => {
     try {
       // Fetch primary child data
-      const primaryChildResponse = await fetch(
-        `${databaseURL}/primarychild/`
-      );
+      const primaryChildResponse = await fetch(`${databaseURL}/primarychild/`);
       if (!primaryChildResponse.ok) {
         console.error(
           "Error fetching primarychild data:",
@@ -272,9 +268,7 @@ const Table = () => {
   const fetchTab3Data = async () => {
     try {
       // Fetch primary child data
-      const primaryChildResponse = await fetch(
-        `${databaseURL}/primarychild/`
-      );
+      const primaryChildResponse = await fetch(`${databaseURL}/primarychild/`);
       if (!primaryChildResponse.ok) {
         console.error(
           "Error fetching primarychild data:",
@@ -345,7 +339,6 @@ const Table = () => {
     );
 
     if (!confirmed) {
-      
       return;
     }
 
@@ -365,38 +358,38 @@ const Table = () => {
         showSnackbar("Child deleted successfully", "success");
         setGridDataTab3((prevData) => prevData.filter((row) => row.id !== id));
         const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${storedToken.data.access}`,
-            },
+        fetch("http://127.0.0.1:8000/auth/users/me/", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${storedToken.data.access}`,
+          },
         })
-            .then((response) => response.json())
-            .then((data) => {
+          .then((response) => response.json())
+          .then((data) => {
             //-----------------------------------------------------------------------------------------------------------
-                const auditCreatePayload = {
-                    user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
-                    action: 'Deleted a Data in the Database',  // Replace 'your_action_here' with the actual action
-                };
-                fetch('http://127.0.0.1:8000/audit/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(auditCreatePayload),
-                })
-                    .then((auditResponse) => auditResponse.json())
-                    .then((auditData) => {
-                        console.log('Audit creation response:', auditData);
-                    })
-                    .catch((auditError) => {
-                        console.error('Error creating audit:', auditError);
-                    });
+            const auditCreatePayload = {
+              user: data.first_name + " " + data.last_name, // Assuming you want to send the user data as part of the payload
+              action: "Deleted a Data in the Database", // Replace 'your_action_here' with the actual action
+            };
+            fetch("http://127.0.0.1:8000/audit/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(auditCreatePayload),
             })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
-            //---------------------------------------------------------------------------------------------
+              .then((auditResponse) => auditResponse.json())
+              .then((auditData) => {
+                console.log("Audit creation response:", auditData);
+              })
+              .catch((auditError) => {
+                console.error("Error creating audit:", auditError);
+              });
+          })
+          .catch((error) => {
+            console.error("Error fetching user data:", error);
+          });
+        //---------------------------------------------------------------------------------------------
       } else {
         console.error("Error deleting the record");
         showSnackbar("Failed to delete child", "error");
@@ -415,16 +408,17 @@ const Table = () => {
 
       return {
         id: primaryChild.id,
-        fullName: primaryChild.fullName,
+        surname: primaryChild.surname,
+        firstname: primaryChild.firstname,
+        middlename: primaryChild.middlename,
+        suffix: primaryChild.suffix,
+        birthWeight: primaryChild.birthWeight,
+        birthOrder: primaryChild.birthOrder,
         birthdate: primaryChild.birthdate,
-        address: primaryChild.address,
+        houseNumberAndStreet: primaryChild.houseNumberAndStreet,
         pt: primaryChild.pt,
         gender: primaryChild.gender,
         aim: primaryChild.aim,
-        parentName: primaryChild.parentName,
-        occupation: primaryChild.occupation,
-        // relationship: primaryChild.relationship,
-        ethnicity: primaryChild.ethnicity,
         barangay: primaryChild.barangay,
         dow: matchingChildHealthInfo ? matchingChildHealthInfo.dow : "N/A",
         weight: matchingChildHealthInfo ? matchingChildHealthInfo.weight : 0,
@@ -438,6 +432,41 @@ const Table = () => {
         disability: matchingChildHealthInfo
           ? matchingChildHealthInfo.disability
           : "N/A",
+
+        // Guardian info
+        fatherSurname: primaryChild.fatherSurname,
+        fatherFirstName: primaryChild.fatherFirstName,
+        fatherMiddleName: primaryChild.fatherMiddleName,
+        fatherSuffix: primaryChild.fatherSuffix,
+        fatherAge: primaryChild.fatherAge,
+        fatherEthnicity: primaryChild.fatherEthnicity,
+        fatherOccupation: primaryChild.fatherOccupation,
+        fatherReligion: primaryChild.fatherReligion,
+        fatherContact: primaryChild.fatherContact,
+
+        motherSurname: primaryChild.motherSurname,
+        motherFirstName: primaryChild.motherFirstName,
+        motherMiddleName: primaryChild.motherMiddleName,
+        motherAge: primaryChild.motherAge,
+        motherEthnicity: primaryChild.motherEthnicity,
+        motherOccupation: primaryChild.motherOccupation,
+        motherReligion: primaryChild.motherReligion,
+        motherContact: primaryChild.motherContact,
+
+        caregiverSurname: primaryChild.caregiverSurname,
+        caregiverFirstName: primaryChild.caregiverFirstName,
+        caregiverMiddleName: primaryChild.caregiverMiddleName,
+        caregiverSuffix: primaryChild.caregiverSuffix,
+        caregiverRelationship: primaryChild.caregiverRelationship,
+        caregiverAge: primaryChild.caregiverAge,
+        caregiverOccupation: primaryChild.caregiverOccupation,
+        caregiverReligion: primaryChild.caregiverReligion,
+        caregiverContact: primaryChild.caregiverContact,
+
+        //Address
+        sitio: primaryChild.sitio,
+        lengthOfStay: primaryChild.lengthOfStay,
+        lengthOfStayType: primaryChild.lengthOfStayType,
         childHealthInfo: matchingChildHealthInfo,
       };
     });
@@ -462,37 +491,37 @@ const Table = () => {
     );
     // --------------------------------------------------------------------------------------------------------------
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${storedToken.data.access}`,
-            },
+    fetch("http://127.0.0.1:8000/auth/users/me/", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${storedToken.data.access}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const auditCreatePayload = {
+          user: data.first_name + " " + data.last_name, // Assuming you want to send the user data as part of the payload
+          action: "Updated a Child information", // Replace 'your_action_here' with the actual action
+        };
+        fetch("http://127.0.0.1:8000/audit/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(auditCreatePayload),
         })
-            .then((response) => response.json())
-            .then((data) => {
-                const auditCreatePayload = {
-                    user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
-                    action: 'Updated a Child information',  // Replace 'your_action_here' with the actual action
-                };
-                fetch('http://127.0.0.1:8000/audit/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(auditCreatePayload),
-                })
-                    .then((auditResponse) => auditResponse.json())
-                    .then((auditData) => {
-                        console.log('Audit creation response:', auditData);
-                    })
-                    .catch((auditError) => {
-                        console.error('Error creating audit:', auditError);
-                    });
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
-      //-----------------------------------------------------------------------------------------------------------
+          .then((auditResponse) => auditResponse.json())
+          .then((auditData) => {
+            console.log("Audit creation response:", auditData);
+          })
+          .catch((auditError) => {
+            console.error("Error creating audit:", auditError);
+          });
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+    //-----------------------------------------------------------------------------------------------------------
   };
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -564,7 +593,7 @@ const Table = () => {
     {
       field: "fullName",
       headerName: "Name",
-      flex: 3,
+      flex: 5,
       cellClassName: "fname-column--cell",
       renderCell: renderWrappedCell,
       headerAlign: "center",
@@ -572,7 +601,17 @@ const Table = () => {
     },
     {
       field: "birthdate",
-      headerName: "DOB",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          DOB (MM/DD/YYYY)
+        </div>
+      ),
       flex: 3,
       headerAlign: "center",
       cellClassName: "centered-cell",
@@ -590,7 +629,17 @@ const Table = () => {
     },
     {
       field: "dow",
-      headerName: "DOW",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          DOW (MM/DD/YYYY)
+        </div>
+      ),
       flex: 3,
       headerAlign: "center",
       cellClassName: "centered-cell",
@@ -617,7 +666,17 @@ const Table = () => {
     },
     {
       field: "weight",
-      headerName: "Wt.",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          Weight (kg)
+        </div>
+      ),
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
@@ -626,7 +685,17 @@ const Table = () => {
     },
     {
       field: "height",
-      headerName: "Ht.",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          Height (cm)
+        </div>
+      ),
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
@@ -635,7 +704,17 @@ const Table = () => {
     },
     {
       field: "muac",
-      headerName: "MUAC",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          MUAC (cm)
+        </div>
+      ),
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
@@ -645,22 +724,6 @@ const Table = () => {
     {
       field: "gender",
       headerName: "Sex",
-      flex: 2,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "vac",
-      headerName: "Vaccination",
-      flex: 2,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "deworming",
-      headerName: "Deworming",
       flex: 2,
       renderCell: renderWrappedCell,
       headerAlign: "center",
@@ -790,7 +853,17 @@ const Table = () => {
     },
     {
       field: "birthdate",
-      headerName: "DOB",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          DOB (MM/DD/YYYY)
+        </div>
+      ),
       flex: 2,
       headerAlign: "center",
       cellClassName: "centered-cell",
@@ -808,7 +881,17 @@ const Table = () => {
     },
     {
       field: "dow",
-      headerName: "DOW",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          DOW (MM/DD/YYYY)
+        </div>
+      ),
       flex: 2,
       headerAlign: "center",
       cellClassName: "centered-cell",
@@ -826,7 +909,17 @@ const Table = () => {
     },
     {
       field: "height",
-      headerName: "Ht.",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          Height (cm)
+        </div>
+      ),
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
@@ -835,7 +928,17 @@ const Table = () => {
     },
     {
       field: "weight",
-      headerName: "Wt.",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          Weight (kg)
+        </div>
+      ),
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
@@ -855,7 +958,17 @@ const Table = () => {
     },
     {
       field: "birthdate",
-      headerName: "DOB",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          DOB (MM/DD/YYYY)
+        </div>
+      ),
       flex: 3,
       headerAlign: "center",
       cellClassName: "centered-cell",
@@ -873,7 +986,17 @@ const Table = () => {
     },
     {
       field: "dow",
-      headerName: "DOW",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          DOW (MM/DD/YYYY)
+        </div>
+      ),
       flex: 3,
       headerAlign: "center",
       cellClassName: "centered-cell",
@@ -900,7 +1023,17 @@ const Table = () => {
     },
     {
       field: "weight",
-      headerName: "Wt.",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          Weight (kg)
+        </div>
+      ),
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
@@ -909,7 +1042,17 @@ const Table = () => {
     },
     {
       field: "height",
-      headerName: "Ht.",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          Height (cm)
+        </div>
+      ),
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
@@ -918,7 +1061,17 @@ const Table = () => {
     },
     {
       field: "muac",
-      headerName: "MUAC",
+      headerName: (
+        <div
+          style={{
+            whiteSpace: "normal",
+            lineHeight: "1.2",
+            textAlign: "center",
+          }}
+        >
+          MUAC (cm)
+        </div>
+      ),
       type: "number",
       flex: 1.5,
       renderCell: renderWrappedCell,
@@ -928,22 +1081,6 @@ const Table = () => {
     {
       field: "gender",
       headerName: "Sex",
-      flex: 2,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "vac",
-      headerName: "Vaccination",
-      flex: 2,
-      renderCell: renderWrappedCell,
-      headerAlign: "center",
-      cellClassName: "centered-cell",
-    },
-    {
-      field: "deworming",
-      headerName: "Deworming",
       flex: 2,
       renderCell: renderWrappedCell,
       headerAlign: "center",
@@ -1438,7 +1575,7 @@ const Table = () => {
         maxWidth="sm"
         fullWidth
       >
-      <ExportToExcel barangay={selectedBarangay} closeDialog={closeDialog} />
+        <ExportToExcel barangay={selectedBarangay} closeDialog={closeDialog} />
       </Dialog>
       <Snackbar
         open={snackbarOpen}

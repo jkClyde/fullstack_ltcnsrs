@@ -55,7 +55,7 @@ const ChildHealthInformation = ({
   return (
     <>
       <DateInput
-        label="Date of Weighing"
+        label="Date of Weighing (MM/DD/YYYY)"
         name="dow"
         value={selectedDOW}
         onChange={(name, date) => handleDateChange(name, date, "dow")}
@@ -211,7 +211,7 @@ const ChildHealthInformation = ({
             <Header subtitle="Vitamin A Capsule 100,000 IU Status Information" />
           </Box>
           <DateInput
-            label="Vitamin A Capsule 100,000 IU"
+            label="Vitamin A Capsule 100,000 IU (MM/DD/YYYY)"
             name="vitAOneHTIU"
             value={selectedVitAOneHTIU}
             onChange={(name, date) =>
@@ -232,7 +232,7 @@ const ChildHealthInformation = ({
             <Header subtitle="Vitamin A Capsule 200,000 IU Status Information" />
           </Box>
           <DateInput
-            label="1 year old"
+            label="1 year old (MM/DD/YYYY)"
             name="vitATwoHTIUOneYear"
             value={selectedVitATwoHTIUOneYear}
             onChange={(name, date) =>
@@ -246,7 +246,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="1.6 years old"
+            label="1.6 years old (MM/DD/YYYY)"
             name="vitATwoHTIUOneSixYear"
             value={selectedVitATwoHTIUOneSixYear}
             onChange={(name, date) =>
@@ -264,7 +264,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="2 years old"
+            label="2 years old (MM/DD/YYYY)"
             name="vitATwoHTIUTwoYear"
             value={selectedVitATwoHTIUTwoYear}
             onChange={(name, date) =>
@@ -278,7 +278,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="2.6 years old"
+            label="2.6 years old (MM/DD/YYYY)"
             name="vitATwoHTIUTwoSixYear"
             value={selectedVitATwoHTIUTwoSixYear}
             onChange={(name, date) =>
@@ -296,7 +296,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="3 years old"
+            label="3 years old (MM/DD/YYYY)"
             name="vitATwoHTIUThreeYear"
             value={selectedVitATwoHTIUThreeYear}
             onChange={(name, date) =>
@@ -314,7 +314,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="3.6 years old"
+            label="3.6 years old (MM/DD/YYYY)"
             name="vitATwoHTIUThreeSixYear"
             value={selectedVitATwoHTIUThreeSixYear}
             onChange={(name, date) =>
@@ -333,7 +333,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="4 years old"
+            label="4 years old (MM/DD/YYYY)"
             name="vitATwoHTIUFourYear"
             value={selectedVitATwoHTIUFourYear}
             onChange={(name, date) =>
@@ -351,7 +351,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="4.6 years old"
+            label="4.6 years old (MM/DD/YYYY)"
             name="vitATwoHTIUFourSixYear"
             value={selectedVitATwoHTIUFourSixYear}
             onChange={(name, date) =>
@@ -370,7 +370,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="5 years old"
+            label="5 years old (MM/DD/YYYY)"
             name="vitATwoHTIUFiveYear"
             value={selectedVitATwoHTIUFiveYear}
             onChange={(name, date) =>
@@ -392,7 +392,7 @@ const ChildHealthInformation = ({
             <Header subtitle="Deworming" />
           </Box>
           <DateInput
-            label="1 year old"
+            label="1 year old (MM/DD/YYYY)"
             name="dewormingOneYear"
             value={selectedDewormingOneYear}
             onChange={(name, date) =>
@@ -406,7 +406,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="1.6 years old"
+            label="1.6 years old (MM/DD/YYYY)"
             name="dewormingOneSixYear"
             value={selectedDewormingOneSixYear}
             onChange={(name, date) =>
@@ -424,7 +424,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="2 years old"
+            label="2 years old (MM/DD/YYYY)"
             name="dewormingTwoYear"
             value={selectedDewormingTwoYear}
             onChange={(name, date) =>
@@ -438,7 +438,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="2.6 years old"
+            label="2.6 years old (MM/DD/YYYY)"
             name="dewormingTwoSixYear"
             value={selectedDewormingTwoSixYear}
             onChange={(name, date) =>
@@ -456,7 +456,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="3 years old"
+            label="3 years old (MM/DD/YYYY)"
             name="dewormingThreeYear"
             value={selectedDewormingThreeYear}
             onChange={(name, date) =>
@@ -470,7 +470,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="3.6 years old"
+            label="3.6 years old (MM/DD/YYYY)"
             name="dewormingThreeSixYear"
             value={selectedDewormingThreeSixYear}
             onChange={(name, date) =>
@@ -488,7 +488,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="4 years old"
+            label="4 years old (MM/DD/YYYY)"
             name="dewormingFourYear"
             value={selectedDewormingFourYear}
             onChange={(name, date) =>
@@ -502,7 +502,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="4.6 years old"
+            label="4.6 years old (MM/DD/YYYY)"
             name="dewormingFourSixYear"
             value={selectedDewormingFourSixYear}
             onChange={(name, date) =>
@@ -520,7 +520,7 @@ const ChildHealthInformation = ({
             required={false}
           />
           <DateInput
-            label="5 years old"
+            label="5 years old (MM/DD/YYYY)"
             name="dewormingFiveYear"
             value={selectedDewormingFiveYear}
             onChange={(name, date) =>
