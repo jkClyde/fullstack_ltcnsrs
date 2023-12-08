@@ -112,9 +112,9 @@ class PrimaryChild(models.Model):
     houseNumberAndStreet = models.CharField(max_length=255, default='Not specified')
     sitio = models.CharField(max_length=255, default='Not specified')
     pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
-    lengthOfStay = models.CharField(max_length=255, default='Not specified')
+    lengthOfStay = models.CharField(max_length=255, null=True,default='Not specified')
     lengthOfStayType = models.CharField(
-        max_length=100, choices=lengthofstay_choices, default='Not specified')
+        max_length=100, choices=lengthofstay_choices, null=True, default='Not specified')
     gender = models.CharField(
         max_length=100, choices=gender_choices, default='Not specified')
     birthdate = models.DateField(null=True, blank=True)
@@ -153,13 +153,15 @@ class PrimaryChild(models.Model):
     caregiverMiddleName = models.CharField(max_length=255, default='Unknown')
     caregiverSuffix = models.CharField(max_length=10, blank=True, null=True)
     caregiverRelationship = models.CharField(max_length=255, default='Unknown')
+    caregiverEthnicity = models.CharField(
+        max_length=100, choices=ethnicity_choices, default='Not specified')
     caregiverAge = models.CharField(max_length=255, default='Unknown')
     caregiverOccupation = models.CharField(max_length=255, default='Unknown')
     caregiverReligion = models.CharField(max_length=255, default='Unknown')
     caregiverContact = models.CharField(max_length=255, default='Unknown')
 
     archive = models.BooleanField(default=False) 
-    
+
     class Meta:
         unique_together = [['surname', 'firstname', 'middlename', 'birthdate']]
 

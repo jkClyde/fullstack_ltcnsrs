@@ -307,7 +307,7 @@ const Form = () => {
       caregiverMiddleName: values.caregiverMiddleName,
       caregiverSuffix: values.caregiverSuffix,
       caregiverRelationship: values.caregiverRelationship,
-      motherEthnicity: values.motherEthnicity,
+      caregiverEthnicity: values.caregiverEthnicity,
       caregiverAge: values.caregiverAge,
       caregiverOccupation: values.caregiverOccupation,
       caregiverReligion: values.caregiverReligion,

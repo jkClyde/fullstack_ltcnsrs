@@ -459,6 +459,7 @@ const Table = () => {
         caregiverSuffix: primaryChild.caregiverSuffix,
         caregiverRelationship: primaryChild.caregiverRelationship,
         caregiverAge: primaryChild.caregiverAge,
+        caregiverEthnicity: primaryChild.caregiverEthnicity,
         caregiverOccupation: primaryChild.caregiverOccupation,
         caregiverReligion: primaryChild.caregiverReligion,
         caregiverContact: primaryChild.caregiverContact,
@@ -467,6 +468,66 @@ const Table = () => {
         sitio: primaryChild.sitio,
         lengthOfStay: primaryChild.lengthOfStay,
         lengthOfStayType: primaryChild.lengthOfStayType,
+
+        vitAOneHTIU: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitAOneHTIU
+          : "N/A",
+        vitATwoHTIUOneYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUOneYear
+          : "N/A",
+        vitATwoHTIUOneSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUOneSixYear
+          : "N/A",
+        vitATwoHTIUTwoYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUTwoYear
+          : "N/A",
+        vitATwoHTIUTwoSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUTwoSixYear
+          : "N/A",
+        vitATwoHTIUThreeYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUThreeYear
+          : "N/A",
+        vitATwoHTIUThreeSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUThreeSixYear
+          : "N/A",
+        vitATwoHTIUFourYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUFourYear
+          : "N/A",
+        vitATwoHTIUFourSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUFourSixYear
+          : "N/A",
+        vitATwoHTIUFiveYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUFiveYear
+          : "N/A",
+
+        // Deworming fields
+        dewormingOneYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingOneYear
+          : "N/A",
+        dewormingOneSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingOneSixYear
+          : "N/A",
+        dewormingTwoYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingTwoYear
+          : "N/A",
+        dewormingTwoSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingTwoSixYear
+          : "N/A",
+        dewormingThreeYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingThreeYear
+          : "N/A",
+        dewormingThreeSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingThreeSixYear
+          : "N/A",
+        dewormingFourYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingFourYear
+          : "N/A",
+        dewormingFourSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingFourSixYear
+          : "N/A",
+        dewormingFiveYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingFiveYear
+          : "N/A",
         childHealthInfo: matchingChildHealthInfo,
       };
     });
