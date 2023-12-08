@@ -57,7 +57,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   const childProfileSchema = Yup.object().shape({
     dow: Yup.date().required("Date of Weighing is required"),
     surname: Yup.string()
-      .required("Required")
+      .required("Surname is required")
       .matches(
         /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
         "Special characters not allowed"
@@ -80,7 +80,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         "Only letters, spaces, and periods are allowed"
       )
       .notRequired(),
-    gender: Yup.string().required("Required"),
+    gender: Yup.string().required("Gender is required"),
     birthWeight: Yup.number()
       .notRequired()
       .typeError("Birth Weight must be a number"),
@@ -99,7 +99,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         /^[A-Za-z\s.]{2,50}$/,
         "Should contain only 2-20 letters (no special characters)"
       ),
-    barangay: Yup.string().required("Required"),
+    barangay: Yup.string().required("Barangay is required"),
     pt: Yup.string().notRequired(),
     lengthOfStay: Yup.number().notRequired(),
     lengthOfStayType: Yup.string().notRequired(),
@@ -121,8 +121,8 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
         "Special characters not allowed"
       ),
-    fatherAge: Yup.number().required("Required").typeError("Must be a number"),
-    fatherEthnicity: Yup.string().required("Required"),
+    fatherAge: Yup.number().notRequired().typeError("Must be a number"),
+    fatherEthnicity: Yup.string().notRequired(),
     fatherOccupation: Yup.string()
       .notRequired()
       .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),

@@ -518,6 +518,12 @@ COPY public.app_audit_audit (id, time_created, "user", action) FROM stdin;
 29	2023-12-05 17:29:57.708676+08	Asd As	Create a new Data using forms
 30	2023-12-05 17:36:12.41132+08	Admin Admin	Deleted a Data in the Database
 31	2023-12-05 17:36:28.25005+08	Admin Admin	Deleted a Data in the Database
+32	2023-12-05 17:46:04.380079+08	Admin Admin	Deleted a Data in the Database
+33	2023-12-06 21:33:50.237421+08	Admin Admin	Create a new Data using forms
+34	2023-12-06 21:36:16.043032+08	Admin Admin	Create a new Data using forms
+35	2023-12-06 21:39:20.645316+08	Admin Admin	Create a new Data using forms
+36	2023-12-06 22:45:24.269309+08	Admin Admin	Create a new Data using forms
+37	2023-12-06 23:02:25.180539+08	Admin Admin	Create a new Data using forms
 \.
 
 
@@ -534,6 +540,8 @@ COPY public.app_calendar_calendarevent (id, title, date) FROM stdin;
 --
 
 COPY public.app_form_childhealthinfo ("childHealth_id", dow, weight, height, muac, bpe, disability, quarter, year, "getYear", child_id, deworming, "lengthForAge", vac, "weightForAge", "weightForLength") FROM stdin;
+689	2023-12-01	7.2	90	6	Yes	Hershung	4th Quarter	2023	2023	1877	No	Tall	Yes	Overweight	Severely Wasted
+693	2023-12-06	7.2	90	6	Yes	Hershung	4th Quarter	2023	2023	1881	No	Tall	Yes	Overweight	Severely Wasted
 7	2023-01-04	10.4	83.4	0	No	none	1st Quarter	2021	2023	11	No	Stunted	No	Underweight	Normal
 8	2023-01-17	12.6	86.7	0	No	none	1st Quarter	2020	2023	8	No	Severely Stunted	No	Normal	Normal
 10	2023-01-17	13	83.5	0	No	none	1st Quarter	2020	2023	12	No	Severely Stunted	No	Normal	Normal
@@ -818,6 +826,8 @@ COPY public.app_form_childhealthinfo ("childHealth_id", dow, weight, height, mua
 272	2023-01-19	13	89	0	No	none	1st Quarter	2021	2023	848	No	Normal	No	Normal	Normal
 290	2023-01-17	13.2	91.2	0	No	none	1st Quarter	2019	2023	868	No	Severely Stunted	No	Normal	Normal
 291	2023-01-26	8.2	68	0	No	none	1st Quarter	2022	2023	870	No	Severely Stunted	No	Underweight	Normal
+690	2023-12-06	7.2	90	6	Yes	Hershung	4th Quarter	2023	2023	1878	Yes	Tall	Yes	Overweight	Severely Wasted
+694	2023-12-05	7.2	90	6	Yes	Hershung	4th Quarter	2023	2023	1882	Yes	Tall	Yes	Overweight	Severely Wasted
 293	2023-01-26	16	100.2	0	No	none	1st Quarter	2020	2023	866	No	Normal	No	Normal	Normal
 294	2023-01-18	5	54.7	0	No	none	1st Quarter	2022	2023	871	No	Severely Stunted	No	Severely Underweight	Normal
 295	2023-01-27	8.5	76.5	0	No	none	1st Quarter	2021	2023	873	No	Severely Stunted	No	Severely Underweight	Normal
@@ -1156,6 +1166,7 @@ COPY public.app_form_childhealthinfo ("childHealth_id", dow, weight, height, mua
 628	2023-01-19	15	101.9	0	No	none	1st Quarter	2018	2023	1206	No	Normal	No	Normal	Child's age is >60
 629	2023-01-16	11.5	79	0	No	none	1st Quarter	2021	2023	1205	No	Severely Stunted	No	Normal	Normal
 630	2023-12-05	8	90	6	Yes	HERSHUNG	4th Quarter	2022	2023	1818	Yes	Tall	Yes	Severely Underweight	Severely Wasted
+691	2023-12-05	7.2	90	6	Yes	Hershung	4th Quarter	2023	2023	1879	Yes	Tall	Yes	Overweight	Severely Wasted
 632	2023-06-08	8	80	23	No	N/A	2nd Quarter	2022	2023	7	No	Normal	No	Underweight	Severely Wasted
 633	2023-03-10	6	55.2	0	No	none	1st Quarter	2023	2023	1821	No	Severely Stunted	No	Severely Underweight	Overweight
 634	2023-03-06	13.1	96.6	0	No	none	1st Quarter	2019	2023	1822	No	Stunted	No	Weight N/A	Normal
@@ -1212,7 +1223,7 @@ COPY public.app_form_childhealthinfo ("childHealth_id", dow, weight, height, mua
 685	2023-03-23	15.2	101	0	No	none	1st Quarter	2019	2023	1873	No	Normal	No	Normal	Normal
 686	2023-03-16	4.2	51	0	No	none	1st Quarter	2023	2023	1874	No	Severely Stunted	No	Severely Underweight	Normal
 687	2023-03-27	15	102	0	No	none	1st Quarter	2018	2023	1875	No	Stunted	No	Normal	Child's age is >60
-688	2023-12-05	7.2	89	9	No	Cerebral Palsy	4th Quarter	2021	2023	1876	Yes	Normal	Yes	Severely Underweight	Severely Wasted
+692	2023-12-05	7.2	90	6	Yes	Hershung	4th Quarter	2023	2023	1880	Yes	Tall	Yes	Overweight	Severely Wasted
 \.
 
 
@@ -1230,6 +1241,7 @@ COPY public.app_form_duplicatechild (id, full_name, first_barangay, second_baran
 --
 
 COPY public.app_form_primarychild (id, "fullName", address, pt, gender, birthdate, aim, "parentName", occupation, relationship, ethnicity, barangay, archive) FROM stdin;
+1877	antonio, cristien	asdasd	Permanent	Male	2023-11-01	1	sdfsd	asdasd	Not specified	asdas	Ambiong	f
 8	CATAO-AN, ALYSSA	LOWER	Permanent	Female	2020-05-20	43	BEVERLY/NESTOR	HK/FARMER	Not specified	BOTH KANKANA-EY	Wangal	f
 11	SORIANO, MEZER LANCE	PA 322	Transient	Male	2021-03-28	33	LENYROSE/MARLON	Unknown	Not specified	ILOKANO	Wangal	f
 12	FIANZA, REVEN JAY	LOWER	Permanent	Male	2020-11-14	37	JOYCE/ERVIN	HK/FARMER	Not specified	IBALOI /ILOCANO	Wangal	f
@@ -2306,6 +2318,7 @@ COPY public.app_form_primarychild (id, "fullName", address, pt, gender, birthdat
 1082	DALOG, KATE D.	AE-216	Transient	Female	2022-06-29	18	CHRISTOPHER/ YVONNE AMY	FARMING/ONLINE SELLER	Not specified	IBALOI/KANKANA-EY	Poblacion	f
 1083	DALOG, FRITZ MYLER A.	AE-216	Transient	Male	2018-05-11	67	MEYER/JANICE	DRIVER	Not specified	KANKANA-EY	Poblacion	t
 1084	DALOG, MOANA D.	AE-216	Transient	Female	2019-05-06	55	CHRISTOPHER/ YVONNE AMY	FARMING/ONLINE SELLER	Not specified	IBALOI/KANKANA-EY	Poblacion	f
+1878	antoino, ahd	sdfsd	Permanent	Male	2023-12-03	0	mina	sdfsdf	Not specified	sdfds	Alno	f
 1085	Damang, Jarvis Rio Parian	Windyhill	Transient	Male	2019-11-28	49	Jordan/ Melba	Miner/ HW	Not specified	Kankana-ey	Poblacion	f
 1086	Damang, Jomel Rye Parian	Windyhill	Transient	Male	2022-02-21	22	Jordan/ Melba	Miner/ HW	Not specified	Kankana-ey	Poblacion	f
 1087	DAMASO, ZYNONE BLAKE	AE-225-C	Transient	Male	2019-09-10	51	KENT EUGENE/ JESSARY	GASOLINE BOY	Not specified	ILOCANO/IBALOI	Poblacion	f
@@ -2508,6 +2521,7 @@ COPY public.app_form_primarychild (id, "fullName", address, pt, gender, birthdat
 1284	LAMPITAO, JOHANNE KASEDEIGH	AE-190	Transient	Female	2018-11-12	61	MATTHEW/JOHANNA	DRIVER	Not specified	KANKANA-EY	Poblacion	t
 1285	Landocan, Freyah	AB-56-C	Transient	Female	2018-12-22	60	Freda	Business	Not specified	Kankana-ey	Poblacion	f
 1286	LANGOYAN, ATHEA	AE-228	Permanent	Female	2018-04-15	68	FEDERICO/SHIRLEY	OFW	Not specified	BISAYA/KANKANA-EY	Poblacion	t
+1879	sample, tin	dsfdsf	Permanent	Female	2023-12-01	0	sdfd	sdfsdf	Not specified	sfsdfds	Alapang	f
 1287	LANGEG, JIM KIRK	AC 170	Transient	Male	2018-09-18	63	Unknown	Unknown	Not specified	Not specified	Poblacion	t
 1288	LANGGOYAN, RAVEN	AE-228	Transient	Male	2019-08-19	52	JAVIER/ROSE	POLICE	Not specified	IBALOI/KANKANA-EY	Poblacion	f
 1289	Lapa-an, Psy Jilly S.	AD-110-L	Permanent	Female	2020-02-05	46	Jimmy/ Kelly	Laborer	Not specified	Kankana-ey	Poblacion	f
@@ -2610,6 +2624,7 @@ COPY public.app_form_primarychild (id, "fullName", address, pt, gender, birthdat
 1386	MENDOZA, ELAIJA RAVEN	A 64-E	Permanent	Male	2020-02-26	46	VARNEL/KRISTINE	NURSE	Not specified	IBALOI/ILOCANO	Poblacion	f
 1387	Mendoza, Blythe Karrigan	AC-162	Transient	Female	2018-09-18	63	Emmanuel Marinel	Unknown	Not specified	Kankana-ey	Poblacion	t
 1388	Mendoza, Zen Ryker P.	AC-144	Permanent	Male	2019-08-11	52	Gernelyn/ Mark	HW/ Farmer	Not specified	Kankana-ey	Poblacion	f
+1880	sample, tam	sdfsd	Permanent	Male	2023-12-01	0	mina	sdfds	Not specified	sdfd	Alno	f
 1389	MERCADO, CHANELLE	AD 157		Female	2021-07-05	29	RICHARD/MARICRIS	MECHANIC/HK	Not specified	ILOCANO	Poblacion	f
 1390	MILIO, BRIANA P.	AE-216	Transient	Female	2022-07-31	17	BENSON/ TERESITA	HOUSEKEEPING	Not specified	KANKANA-EY	Poblacion	f
 1391	MODAWAN, AXEL REY JAZZ	AB-44-A	Permanent	Male	2022-06-08	18	Jenilyn	Laborer	Not specified	Kankana-ey	Poblacion	f
@@ -2815,6 +2830,7 @@ COPY public.app_form_primarychild (id, "fullName", address, pt, gender, birthdat
 1591	Sangao, Yasser Balera	AE116	Permanent	Male	2020-03-01	45	Yasser/ Rona	Unknown	Not specified	Ilocano	Poblacion	f
 1592	SANTIAGO,ARABELLA	AE225-A	Transient	Female	2018-08-21	64	ROMEO/CHERRY ANN	MECHANIC	Not specified	KALANGUYA	Poblacion	t
 1593	Sanwen, ARia Ayesha LOUISE	AB-16	Permanent	Female	2018-03-13	69	Daeglyne/ Ruben	Student/ OFW	Not specified	Ilocano/ Kankana-ey	Poblacion	t
+1881	may, may	asdas	Transient	Male	2023-12-04	0	sdfds	sdfsdf	Not specified	sdfdfd	Bahong	f
 1594	SANTIAGO, GM GINO	AD 237	Transient	Male	2020-12-12	36	JIM/ NORIBEL	FARMER	Not specified	IBALOI-KANKANA-EY	Poblacion	f
 1595	Santiago, Nadech Mark	AC-50	Transient	Male	2019-06-25	54	Alfonso/ Valerie	Security Guard/ HW	Not specified	Ibaloi	Poblacion	f
 1596	SANWEN, RAVEN	AC 142-A	Transient	Male	2020-09-08	39	Unknown	FARMER/HK	Not specified	KANKANA-EY	Poblacion	f
@@ -2866,6 +2882,7 @@ COPY public.app_form_primarychild (id, "fullName", address, pt, gender, birthdat
 1642	SORIANO, JACE Ziaden	AD91	Transient	Male	2022-02-05	22	JAYSON/JILL	VEGETABLE DEALER/	Not specified	KANKANA-EY	Poblacion	f
 1643	Sta. Maria, Rhylie Ezekiel O.	AD-80	Transient	Male	2018-11-16	61	Reymund/  Kate	Laborer/ HW	Not specified	Tagalog	Poblacion	t
 1644	Sueno, Elisha Faith	A-26	Transient	Female	2019-09-14	51	Dexter/ Jannelle	Farming/ Service Crew	Not specified	Ibaloi/ Ilocano	Poblacion	f
+1882	test, mi	sdfd	Transient	Male	2023-12-03	0	arlynsd	sdfsdf	Not specified	sdfsdf	Alno	f
 1645	Sumayang, Ryker Chaz	AC-15	Permanent	Male	2021-12-02	24	Christian/ Wadelyn	Barista/ Cashier	Not specified	Kankana-ey/ Tagalog	Poblacion	f
 1646	SUKIL-AP,BLESS AESHA	AE229-G	Transient	Female	2018-10-25	62	MARK/ROCHELLE	FARMING	Not specified	KAN	Poblacion	t
 1647	SUKIL-UP,KHERVIN CLYDE	AE229-G	Transient	Male	2018-01-24	71	JOHN/LYKA	FARMING	Not specified	KAN/KAN	Poblacion	t
@@ -3096,7 +3113,6 @@ COPY public.app_form_primarychild (id, "fullName", address, pt, gender, birthdat
 1873	SOLIDUM, KYRIE LOUISE	KE-11	Transient	Female	2019-09-02	51	PHILLIP LUIS-ERICA	LINEMAN-SERVICE CREW	Not specified	WARAY	Cruz	f
 1874	SUKAW, JIA	KA-54	Transient	Male	2023-01-27	11	EVERLYN	OFW	Not specified	IBALOI	Cruz	f
 1875	TATONEC, RYSHANE GRYLLE	KA-32	Transient	Female	2018-04-17	68	JASMINE	SELF-EMP	Not specified	ILOCANO	Cruz	t
-1876	alzaga, richard jr	LE1234	Permanent	Male	2021-01-01	35	alzaga  richard	businessman	Not specified	american	Bahong	f
 \.
 
 
@@ -3268,7 +3284,7 @@ SELECT pg_catalog.setval('public.app_accounts_useraccount_user_permissions_id_se
 -- Name: app_audit_audit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.app_audit_audit_id_seq', 31, true);
+SELECT pg_catalog.setval('public.app_audit_audit_id_seq', 37, true);
 
 
 --
@@ -3282,7 +3298,7 @@ SELECT pg_catalog.setval('public.app_calendar_calendarevent_id_seq', 2, true);
 -- Name: app_form_childhealthinfo_childHealth_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."app_form_childhealthinfo_childHealth_id_seq"', 688, true);
+SELECT pg_catalog.setval('public."app_form_childhealthinfo_childHealth_id_seq"', 694, true);
 
 
 --
@@ -3296,7 +3312,7 @@ SELECT pg_catalog.setval('public.app_form_duplicatechild_id_seq', 1, true);
 -- Name: app_form_primarychild_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.app_form_primarychild_id_seq', 1876, true);
+SELECT pg_catalog.setval('public.app_form_primarychild_id_seq', 1882, true);
 
 
 --

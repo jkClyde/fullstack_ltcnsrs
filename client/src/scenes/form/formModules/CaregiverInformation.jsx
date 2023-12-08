@@ -5,7 +5,7 @@ import DateInput from "../formComponents/DateInput";
 import MenuSelect from "../formComponents/MenuSelect";
 import MenuInput from "../formComponents/MenuInput";
 import barangayOptions from "./../barangayOptions";
-import ethnicityOptions from "./../barangayOptions";
+import ethnicityOptions from "./../ethnicityOptions";
 import Header from "../../../components/dashboard_components/Header";
 
 const CaregiverInformation = ({
@@ -364,6 +364,22 @@ const CaregiverInformation = ({
         helperText={touched.caregiverAge && errors.caregiverAge}
         className="textInput"
         sx={{ gridColumn: "span 1" }}
+      />
+      <MenuSelect
+        label="Caregiver's Ethnicity"
+        onBlur={handleBlur}
+        value={values.caregiverEthnicity}
+        name="caregiverEthnicity"
+        onChange={(name, value) => {
+          setFieldValue(name, value);
+        }}
+        error={!!touched.caregiverEthnicity && !!errors.caregiverEthnicity}
+        helperText={touched.caregiverEthnicity && errors.caregiverEthnicity}
+        sx={{ gridColumn: "span 1" }}
+        options={ethnicityOptions.map((option) => ({
+          value: option,
+          label: option,
+        }))}
       />
       <TextInput
         fullWidth

@@ -93,7 +93,7 @@ const ChildInformation = ({
         sx={{ gridColumn: "span 1" }}
       />
       <DateInput
-        label="Birthdate"
+        label="Birthdate (MM/DD/YYYY)"
         name="birthdate"
         value={selectedBirthdate}
         onChange={(name, date) => handleDateChange(name, date, "birthdate")}
