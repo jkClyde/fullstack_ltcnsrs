@@ -5,8 +5,14 @@ import weightForAgeStatus from "../Database/Calculations/weightForAgeStatus";
 import weightForLengthStatus from "../Database/Calculations/weightForLengthStatus";
 import "./../Database/StatusReference/StatusCellColors/statusColors.css";
 import { getClassForStatusColorValue } from "./getClassForStatusColorValue";
-import barangayOptions from "./../form/barangayOptions.js";
+import barangayOptions from "../form/barangayOptions.js";
 import databaseURL from "../../databaseURL.js";
+
+import ChildInfo from "./modules/ChildInfo";
+import HealthInfo from "./modules/HealthInfo";
+import CaregiverInfo from "./modules/CaregiverInfo";
+import AddressInfo from "./modules/AddressInfo";
+import IntakesInfo from "./modules/IntakesInfo";
 
 import {
   Box,
@@ -37,10 +43,11 @@ import {
   EscalatorWarningOutlined,
   ModeEditOutline,
   Assessment,
+  Home,
+  Vaccines,
 } from "@mui/icons-material";
 import axios from "axios"; // Import Axios
-import * as Yup from 'yup';
-
+import * as Yup from "yup";
 
 const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   const theme = useTheme();
@@ -48,21 +55,156 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
   const [isEditing, setIsEditing] = useState(false);
   // validation------------------------------------------>
   const childProfileSchema = Yup.object().shape({
-    // Define validation rules for each field
     dow: Yup.date().required("Date of Weighing is required"),
-    disability: Yup.string().required("Do not leave Disability as an empty field, atleast put none or N/A"),
-    muac: Yup.number().min(0, 'MUAC must be a non-negative number').required('MUAC is required'),
-    weight: Yup.number().nullable().positive('Weight must be a positive number').moreThan(0, 'Weight must be greater than 0'),
-    height: Yup.number().nullable().positive('Height must be a positive number').moreThan(0, 'Height must be greater than 0'),
-    fullName: Yup.string().required('Full Name is required').matches(/^[A-Za-z,.\-\s]+$/, 'Full Name can only contain letters, commas, periods, and dashes'),
-    address: Yup.string().required("Address is required").matches(/^[A-Za-z0-9,.\-\s]+$/, 'Address can only contain letters, numbers, commas, periods, and dashes'),
-    pt: Yup.string().required('Please select an option Permanent/Transient'),
-    gender: Yup.string().required('Please select an option for the Gender'),
+    surname: Yup.string()
+      .required("Required")
+      .matches(
+        /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
+        "Special characters not allowed"
+      ),
+    firstname: Yup.string()
+      .required("Required")
+      .matches(
+        /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
+        "Special characters not allowed"
+      ),
+    middlename: Yup.string()
+      .notRequired()
+      .matches(
+        /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
+        "Special characters not allowed"
+      ),
+    suffix: Yup.string()
+      .matches(
+        /^[A-Za-z\s.]{2,16}$/, // Allow letters (upper and lower case), spaces, and period
+        "Only letters, spaces, and periods are allowed"
+      )
+      .notRequired(),
+    gender: Yup.string().required("Required"),
+    birthWeight: Yup.number()
+      .notRequired()
+      .typeError("Birth Weight must be a number"),
+    birthOrder: Yup.string()
+      .notRequired()
+      .matches(
+        /^[A-Za-z0-9\s]{2,16}$/, // Allow letters (upper and lower case), numbers, and spaces
+        "Only letters, numbers, and spaces are allowed"
+      ),
+    houseNumberAndStreet: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\d\s!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]{2,50}$/, ""),
+    sitio: Yup.string()
+      .notRequired()
+      .matches(
+        /^[A-Za-z\s.]{2,50}$/,
+        "Should contain only 2-20 letters (no special characters)"
+      ),
+    barangay: Yup.string().required("Required"),
+    pt: Yup.string().notRequired(),
+    lengthOfStay: Yup.number().notRequired(),
+    lengthOfStayType: Yup.string().notRequired(),
+    fatherSurname: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "no special characters"),
+    fatherFirstName: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "no special characters"),
+    fatherMiddleName: Yup.string()
+      .notRequired()
+      .matches(
+        /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
+        "Special characters not allowed"
+      ),
+    fatherSuffix: Yup.string()
+      .notRequired()
+      .matches(
+        /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
+        "Special characters not allowed"
+      ),
+    fatherAge: Yup.number().required("Required").typeError("Must be a number"),
+    fatherEthnicity: Yup.string().required("Required"),
+    fatherOccupation: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    fatherReligion: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    fatherContact: Yup.number()
+      .notRequired()
+      .test("isElevenDigits", "Must be an 11-digit number", (value) =>
+        value ? /^[0-9]{11}$/.test(value) : true
+      ),
+    motherSurname: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    motherFirstName: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    motherMiddleName: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    motherAge: Yup.number().notRequired().typeError("Must be a number"),
+    motherEthnicity: Yup.string().notRequired(),
+    motherOccupation: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    motherReligion: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    motherContact: Yup.number()
+      .notRequired()
+      .test("isElevenDigits", "Must be an 11-digit number", (value) =>
+        value ? /^[0-9]{11}$/.test(value) : true
+      ),
+    caregiverSurname: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    caregiverFirstName: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    caregiverMiddleName: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    caregiverSuffix: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s.]{2,16}$/, "Special characters not allowed"),
+    caregiverRelationship: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    caregiverAge: Yup.number().notRequired(),
+    caregiverOccupation: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    caregiverReligion: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    caregiverContact: Yup.number()
+      .notRequired()
+      .test("isElevenDigits", "Must be an 11-digit number", (value) =>
+        value ? /^[0-9]{11}$/.test(value) : true
+      ),
+    muac: Yup.number()
+      .min(0, "MUAC must be a non-negative number")
+      .required("MUAC is required"),
+    weight: Yup.number()
+      .nullable()
+      .positive("Weight must be a positive number")
+      .moreThan(0, "Weight must be greater than 0"),
+    height: Yup.number()
+      .nullable()
+      .positive("Height must be a positive number")
+      .moreThan(0, "Height must be greater than 0"),
+    bpe: Yup.string().notRequired(),
+    disability: Yup.string().notRequired(),
+    otherDisability: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    vac: Yup.string().notRequired(),
+    vaccinationRemarks: Yup.string()
+      .notRequired()
+      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+    pt: Yup.string().required("Status of Residency must not be empty"),
     birthdate: Yup.date().required("Date of Birth is required"),
-    parentName: Yup.string().required('Caregiver Name is required').matches(/^[A-Za-z,.\-\s]+$/, 'Caregiver Name can only contain letters, commas, periods, and dashes'),
-    occupation: Yup.string().required('Caregiver Occupation is required').matches(/^[A-Za-z,.\-\s]+$/, 'Occupation can only contain letters, commas, periods, and dashes'),
-    ethnicity: Yup.string().required('Caregiver Ethnicity is required').matches(/^[A-Za-z\s]+$/, 'Ethnicity can only contain letters and spaces'),
-    barangay: Yup.string().required('Please select an option for the Barangay').matches(/^[A-Za-z\s]+$/, 'Barangay can only contain letters and spaces'),
   });
   const validateForm = async (data) => {
     try {
@@ -222,7 +364,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
       try {
         await childProfileSchema.validate(editedChild, { abortEarly: false });
       } catch (errors) {
-        console.log('Yup validation errors:', errors);
+        console.log("Yup validation errors:", errors);
         // You can handle Yup validation errors here if needed
         return;
       }
@@ -317,7 +459,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         setIsValidationError(false);
       }
     } else {
-      console.log('Validation errors:', validationErrors);
+      console.log("Validation errors:", validationErrors);
       setIsValidationError(true);
       alert(`${JSON.stringify(validationErrors)}`);
       return;
@@ -329,104 +471,104 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     try {
       const validationErrors = await validateForm(editedChild);
       if (Object.keys(validationErrors).length === 0) {
-      const updatedPrimaryChildData = {
-        fullName: editedChild.fullName,
-        address: editedChild.address,
-        pt: editedChild.pt,
-        muac: editedChild.muac,
-        gender: editedChild.gender,
-        birthdate: editedChild.birthdate,
-        aim: editedChild.aim,
-        parentName: editedChild.parentName,
-        occupation: editedChild.occupation,
-        relationship: editedChild.relationship,
-        ethnicity: editedChild.ethnicity,
-        barangay: editedChild.barangay,
-      };
-
-      const primaryChildResponse = await axios.put(
-        `http://127.0.0.1:8000/primarychild/${child.id}/`,
-        updatedPrimaryChildData
-      );
-
-      console.log("Primarychild data updated:", primaryChildResponse.data);
-      const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-      fetch("http://127.0.0.1:8000/auth/users/me/", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${storedToken.data.access}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const auditCreatePayload = {
-            user: data.first_name + " " + data.last_name, // Assuming you want to send the user data as part of the payload
-            action: "Updated a Child Data", // Replace 'your_action_here' with the actual action
-          };
-          fetch("http://127.0.0.1:8000/audit/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(auditCreatePayload),
-          })
-            .then((auditResponse) => auditResponse.json())
-            .then((auditData) => {
-              console.log("Audit creation response:", auditData);
-            })
-            .catch((auditError) => {
-              console.error("Error creating audit:", auditError);
-            });
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
-
-      // Fetch all ChildHealthInfo records for the selected child
-      const childHealthInfoResponse = await axios.get(
-        `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&quarter=${selectedQuarter}`
-      );
-
-      const childHealthInfo = childHealthInfoResponse.data.find(
-        (info) => info.quarter === selectedQuarter && info.child === child.id
-      );
-
-      // Loop through each quarter's ChildHealthInfo entry and update
-      if (childHealthInfo) {
-        // Update the child health information for each quarter
-        const updatedChildData = {
-          weight: editedChild.weight,
-          height: editedChild.height,
+        const updatedPrimaryChildData = {
+          fullName: editedChild.fullName,
+          address: editedChild.address,
+          pt: editedChild.pt,
           muac: editedChild.muac,
-          disability: editedChild.disability,
-          dow: editedChild.dow,
-          vac: editedChild.vac,
-          purga: editedChild.purga,
-          weightForAge: editedChild.weightForAge,
-          lengthForAge: editedChild.lengthForAge,
-          weightForLength: editedChild.weightForLength,
-          child: child.id,
+          gender: editedChild.gender,
+          birthdate: editedChild.birthdate,
+          aim: editedChild.aim,
+          parentName: editedChild.parentName,
+          occupation: editedChild.occupation,
+          relationship: editedChild.relationship,
+          ethnicity: editedChild.ethnicity,
+          barangay: editedChild.barangay,
         };
 
-        const updateChildHealthInfoResponse = await axios.put(
-          `http://127.0.0.1:8000/childhealthinfo/${childHealthInfo.childHealth_id}/`,
-          updatedChildData
+        const primaryChildResponse = await axios.put(
+          `http://127.0.0.1:8000/primarychild/${child.id}/`,
+          updatedPrimaryChildData
         );
 
-        console.log(
-          `Childhealthinfo data updated for quarter ${childHealthInfo.quarter}:`,
-          updateChildHealthInfoResponse.data
-        );
-      }
+        console.log("Primarychild data updated:", primaryChildResponse.data);
+        const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+        fetch("http://127.0.0.1:8000/auth/users/me/", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${storedToken.data.access}`,
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const auditCreatePayload = {
+              user: data.first_name + " " + data.last_name, // Assuming you want to send the user data as part of the payload
+              action: "Updated a Child Data", // Replace 'your_action_here' with the actual action
+            };
+            fetch("http://127.0.0.1:8000/audit/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(auditCreatePayload),
+            })
+              .then((auditResponse) => auditResponse.json())
+              .then((auditData) => {
+                console.log("Audit creation response:", auditData);
+              })
+              .catch((auditError) => {
+                console.error("Error creating audit:", auditError);
+              });
+          })
+          .catch((error) => {
+            console.error("Error fetching user data:", error);
+          });
 
-      setIsEditing(false);
-      setIsSnackbarOpen(true);
-    } else {
+        // Fetch all ChildHealthInfo records for the selected child
+        const childHealthInfoResponse = await axios.get(
+          `http://127.0.0.1:8000/childhealthinfo/?child=${child.id}&quarter=${selectedQuarter}`
+        );
+
+        const childHealthInfo = childHealthInfoResponse.data.find(
+          (info) => info.quarter === selectedQuarter && info.child === child.id
+        );
+
+        // Loop through each quarter's ChildHealthInfo entry and update
+        if (childHealthInfo) {
+          // Update the child health information for each quarter
+          const updatedChildData = {
+            weight: editedChild.weight,
+            height: editedChild.height,
+            muac: editedChild.muac,
+            disability: editedChild.disability,
+            dow: editedChild.dow,
+            vac: editedChild.vac,
+            purga: editedChild.purga,
+            weightForAge: editedChild.weightForAge,
+            lengthForAge: editedChild.lengthForAge,
+            weightForLength: editedChild.weightForLength,
+            child: child.id,
+          };
+
+          const updateChildHealthInfoResponse = await axios.put(
+            `http://127.0.0.1:8000/childhealthinfo/${childHealthInfo.childHealth_id}/`,
+            updatedChildData
+          );
+
+          console.log(
+            `Childhealthinfo data updated for quarter ${childHealthInfo.quarter}:`,
+            updateChildHealthInfoResponse.data
+          );
+        }
+
+        setIsEditing(false);
+        setIsSnackbarOpen(true);
+      } else {
         // Validation errors, handle them (e.g., show an alert)
-        console.log('Validation errors:', validationErrors);
-        const errorMessage = Object.values(validationErrors).join('\n');
+        console.log("Validation errors:", validationErrors);
+        const errorMessage = Object.values(validationErrors).join("\n");
         alert(`Validation errors:\n${errorMessage}`);
-      return;
+        return;
       }
     } catch (error) {
       console.error("Error updating data:", error);
@@ -642,7 +784,27 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     <Box mt="10px">
       {/* Add this line for debugging */}
       {isEditing ? (
-        name === "birthdate" || name === "dow" ? (
+        name === "birthdate" ||
+        name === "dow" ||
+        name === "vitAOneHTIU" ||
+        name === "vitATwoHTIUOneYear" ||
+        name === "vitATwoHTIUOneSixYear" ||
+        name === "vitATwoHTIUTwoYear" ||
+        name === "vitATwoHTIUTwoSixYear" ||
+        name === "vitATwoHTIUThreeYear" ||
+        name === "vitATwoHTIUThreeSixYear" ||
+        name === "vitATwoHTIUFourYear" ||
+        name === "vitATwoHTIUFourSixYear" ||
+        name === "vitATwoHTIUFiveYear" ||
+        name === "dewormingOneYear" ||
+        name === "dewormingOneSixYear" ||
+        name === "dewormingTwoYear" ||
+        name === "dewormingTwoSixYear" ||
+        name === "dewormingThreeYear" ||
+        name === "dewormingThreeSixYear" ||
+        name === "dewormingFourYear" ||
+        name === "dewormingFourSixYear" ||
+        name === "dewormingFiveYear" ? (
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label={label}
@@ -693,319 +855,58 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     </Box>
   );
 
-  const renderChildProfile = () => (
-    <Grid container columnSpacing={2}>
-      <Grid item xs={4}>
-        {renderTextField("Name", "fullName", editedChild.fullName)}
+  //   <Grid container columnSpacing={2}>
+  //     <Grid item xs={4}>
+  //       {renderTextField("Name", "fullName", editedChild.fullName)}
 
-        {isEditing ? (
-          // Render the gender field only when editing
-          <Box mt="10px">
-            <FormControl fullWidth>
-              <InputLabel id="gender-select-label">Sex</InputLabel>
-              <Select
-                labelId="gender-select-label"
-                label="Sex"
-                id="gender-select"
-                name="gender"
-                value={editedChild.gender}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="Male">Male</MenuItem>
-                <MenuItem value="Female">Female</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        ) : (
-          // Display gender information when not editing
-          <Grid item xs={12}>
-            <Box>
-              <Box padding="10px" borderRadius="5px" border="1px solid grey">
-                <Typography variant="h6">Sex</Typography>
-                <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                  {editedChild.gender}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        )}
-      </Grid>
-      <Grid item xs={4}>
-        {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
-      </Grid>
-      <Grid item xs={4}>
-        {!isEditing &&
-          renderTextField(
-            "Age in Months",
-            "aim",
-            editedChild.aim,
-            "Months old"
-          )}
-      </Grid>
-    </Grid>
-  );
+  //       {isEditing ? (
+  //         // Render the gender field only when editing
+  //         <Box mt="10px">
+  //           <FormControl fullWidth>
+  //             <InputLabel id="gender-select-label">Sex</InputLabel>
+  //             <Select
+  //               labelId="gender-select-label"
+  //               label="Sex"
+  //               id="gender-select"
+  //               name="gender"
+  //               value={editedChild.gender}
+  //               onChange={handleInputChange}
+  //             >
+  //               <MenuItem value="Male">Male</MenuItem>
+  //               <MenuItem value="Female">Female</MenuItem>
+  //             </Select>
+  //           </FormControl>
+  //         </Box>
+  //       ) : (
+  //         // Display gender information when not editing
+  //         <Grid item xs={12}>
+  //           <Box>
+  //             <Box padding="10px" borderRadius="5px" border="1px solid grey">
+  //               <Typography variant="h6">Sex</Typography>
+  //               <Typography variant="body1" style={{ fontWeight: "bold" }}>
+  //                 {editedChild.gender}
+  //               </Typography>
+  //             </Box>
+  //           </Box>
+  //         </Grid>
+  //       )}
+  //     </Grid>
+  //     <Grid item xs={4}>
+  //       {renderTextField("Date of Birth", "birthdate", editedChild.birthdate)}
+  //     </Grid>
+  //     <Grid item xs={4}>
+  //       {!isEditing &&
+  //         renderTextField(
+  //           "Age in Months",
+  //           "aim",
+  //           editedChild.aim,
+  //           "Months old"
+  //         )}
+  //     </Grid>
+  //   </Grid>
+  // );
   const isChildMoreThan12Months = editedChild.aim > 12;
 
-  const renderHealthInfo = () => (
-    <Grid container spacing={2}>
-      <Grid item xs={4}>
-        {renderTextField("Weight", "weight", editedChild.weight, "kg")}
-        {renderTextField("Height", "height", editedChild.height, "cm")}
-        {renderTextField("MUAC", "muac", editedChild.muac, "cm")}
-        {renderTextField("Disability", "disability", editedChild.disability)}
-        {isEditing ? (
-          // Render the bpe field only when editing
-          <Box mt="10px">
-            <FormControl fullWidth>
-              <InputLabel id="bpe-select-label">
-                Bilateral Pitting Edema
-              </InputLabel>
-              <Select
-                labelId="bpe-select-label"
-                label="Bilateral Pitting Edema"
-                id="bpe-select"
-                name="bpe"
-                value={editedChild.bpe}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        ) : (
-          // Display bpe information when not editing
-          <Grid item xs={12}>
-            <Box>
-              <Box padding="10px" borderRadius="5px" border="1px solid grey">
-                <Typography variant="h6">Bilateral Pitting Edema:</Typography>
-                <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                  {editedChild.bpe}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        )}
-      </Grid>
-
-      <Grid item xs={4}>
-        {renderTextField("Date of Weighing (DOW)", "dow", editedChild.dow)}
-        {isEditing ? (
-          // Render the vac field only when editing
-          <Box mt="10px">
-            <FormControl fullWidth>
-              <InputLabel id="vac-select-label">Vaccination</InputLabel>
-              <Select
-                labelId="vac-select-label"
-                label="Vaccination"
-                id="vac-select"
-                name="vac"
-                value={editedChild.vac}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        ) : (
-          // Display vac information when not editing
-          <Grid item xs={12}>
-            <Box>
-              <Box padding="10px" borderRadius="5px" border="1px solid grey">
-                <Typography variant="h6">Vaccination</Typography>
-                <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                  {editedChild.vac}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        )}
-        {isEditing ? (
-          // Render the deworming field only when editing
-          <Box mt="10px">
-            <FormControl fullWidth>
-              <InputLabel id="deworming-select-label">Deworming</InputLabel>
-              <Select
-                labelId="deworming-select-label"
-                label="Deworming"
-                id="deworming-select"
-                name="deworming"
-                value={editedChild.deworming}
-                onChange={handleInputChange}
-              >
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        ) : (
-          // Display deworming information when not editing
-          <Grid item xs={12}>
-            <Box mt="10px">
-              <Box padding="10px" borderRadius="5px" border="1px solid grey">
-                <Typography variant="h6">Deworming</Typography>
-                <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                  {editedChild.deworming}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        )}
-      </Grid>
-
-      <Divider
-        orientation="vertical"
-        variant="middle"
-        flexItem
-        style={{ margin: "0px 20px 0px 40px" }}
-      />
-
-      <Grid item xs={3}>
-        {!isEditing &&
-          renderTextField(
-            "Weight For Age",
-            "weightForAge",
-            editedChild.weightForAge
-          )}
-        {!isEditing &&
-          renderTextField(
-            "Length For Age",
-            "lengthForAge",
-            editedChild.lengthForAge
-          )}
-        {!isEditing &&
-          renderTextField(
-            "Weight For Length",
-            "weightForLength",
-            editedChild.weightForLength
-          )}
-      </Grid>
-    </Grid>
-  );
-
-  const renderParentInformation = () => (
-    <Grid container spacing={2}>
-      <Grid item xs={4}>
-        {renderTextField(
-          "Caregiver Name",
-          "parentName",
-          editedChild.parentName
-        )}
-
-        {isEditing ? (
-          // Render the ethnicity field as TextField when editing
-          <Box mt="16px">
-            <TextField
-              fullWidth
-              id="ethnicity"
-              name="ethnicity"
-              label="Ethnicity"
-              value={editedChild.ethnicity}
-              onChange={handleInputChange}
-              variant="outlined"
-            />
-          </Box>
-        ) : (
-          // Display ethnicity information when not editing
-          <Box>
-            <Box
-              mt="10px"
-              padding="10px"
-              borderRadius="5px"
-              border="1px solid grey"
-            >
-              <Typography variant="h6">Ethnicity:</Typography>
-              <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                {editedChild.ethnicity}
-              </Typography>
-            </Box>
-          </Box>
-        )}
-      </Grid>
-
-      <Grid item xs={4}>
-        {renderTextField("Address", "address", editedChild.address)}
-
-        {isEditing ? (
-          // Render the field only when editing
-          <Box mt="16px">
-            <FormControl fullWidth variant="outlined">
-              <InputLabel id="pt-select-label">Permanent/Transient</InputLabel>
-              <Select
-                fullWidth
-                id="pt"
-                name="pt"
-                labelId="pt-select-label"
-                label="Permanent/Transient"
-                value={editedChild.pt}
-                onChange={handleInputChange}
-                variant="outlined"
-              >
-                <MenuItem value="Permanent">Permanent</MenuItem>
-                <MenuItem value="Transient">Transient</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        ) : (
-          // Display information when not editing
-          <Box>
-            <Box padding="10px" borderRadius="5px" border="1px solid grey">
-              <Typography variant="h6">Permanent/Transient</Typography>
-              <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                {editedChild.pt}
-              </Typography>
-            </Box>
-          </Box>
-        )}
-      </Grid>
-
-      <Grid item xs={4}>
-        <Box mt="10px">
-          {isEditing ? (
-            // Render the barangay field only when editing
-            <Box mt="10px">
-              <FormControl fullWidth variant="outlined">
-                <InputLabel id="barangay-select-label">Barangay</InputLabel>
-                <Select
-                  labelId="barangay-select-label"
-                  label="Barangay"
-                  id="barangay-select"
-                  name="barangay"
-                  value={editedChild.barangay}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                >
-                  {barangayOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          ) : (
-            // Display barangay information when not editing
-            <Box>
-              <Box padding="10px" borderRadius="5px" border="1px solid grey">
-                <Typography variant="h6">Barangay:</Typography>
-                <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                  {editedChild.barangay}
-                </Typography>
-              </Box>
-            </Box>
-          )}
-        </Box>
-        <Box mt="10px">
-          {renderTextField(
-            "Caregiver's Occupation",
-            "occupation",
-            editedChild.occupation
-          )}
-        </Box>
-      </Grid>
-    </Grid>
-  );
   // const renderReport = () => {
   //   const selectedChildData = frequentStatuses[childId];
 
@@ -1096,12 +997,40 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
             })}
           />
           <Tab
+            icon={<Vaccines />}
+            label="Intakes"
+            value="intakes"
+            sx={(theme) => ({
+              backgroundColor:
+                selectedView === "intakes"
+                  ? theme.palette.mode === "light"
+                    ? colors.blueAccent[700]
+                    : colors.blueAccent[700]
+                  : undefined,
+              borderRadius: "20px 20px 0 0",
+            })}
+          />
+          <Tab
             icon={<EscalatorWarningOutlined />}
             label="Caregiver"
             value="parent"
             sx={(theme) => ({
               backgroundColor:
                 selectedView === "parent"
+                  ? theme.palette.mode === "light"
+                    ? colors.blueAccent[700]
+                    : colors.blueAccent[700]
+                  : undefined,
+              borderRadius: "20px 20px 0 0",
+            })}
+          />
+          <Tab
+            icon={<Home />}
+            label="Address"
+            value="address"
+            sx={(theme) => ({
+              backgroundColor:
+                selectedView === "address"
                   ? theme.palette.mode === "light"
                     ? colors.blueAccent[700]
                     : colors.blueAccent[700]
@@ -1159,14 +1088,45 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
         )}
       </Box>
 
-      {selectedView === "child"
-        ? renderChildProfile()
-        : selectedView === "parent"
-        ? renderParentInformation()
-        : renderHealthInfo()}
+      {selectedView === "child" ? (
+        <ChildInfo
+          renderTextField={renderTextField}
+          isEditing={isEditing}
+          editedChild={editedChild}
+          handleInputChange={handleInputChange}
+        />
+      ) : selectedView === "parent" ? (
+        <CaregiverInfo
+          renderTextField={renderTextField}
+          isEditing={isEditing}
+          editedChild={editedChild}
+          handleInputChange={handleInputChange}
+        />
+      ) : selectedView === "intakes" ? (
+        <IntakesInfo
+          renderTextField={renderTextField}
+          isEditing={isEditing}
+          editedChild={editedChild}
+          handleInputChange={handleInputChange}
+        />
+      ) : selectedView === "health" ? (
+        <HealthInfo
+          renderTextField={renderTextField}
+          isEditing={isEditing}
+          editedChild={editedChild}
+          handleInputChange={handleInputChange}
+        />
+      ) : (
+        <AddressInfo
+          renderTextField={renderTextField}
+          isEditing={isEditing}
+          editedChild={editedChild}
+          handleInputChange={handleInputChange}
+        />
+      )}
 
       {/* {selectedView === "child"
-        ? renderChildProfile()
+        ? renderChildInfo()
         : selectedView === "parent"
         ? renderParentInformation()
         : selectedView === "health"

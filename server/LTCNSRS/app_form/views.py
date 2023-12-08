@@ -72,7 +72,7 @@ def backup_database(request):
         os.environ["PGPASSWORD"] = "group1"
 
         # Define the path where the backup file will be stored
-        backup_file_path = 'E:/github/fullstack_ltcnsrs/Point4/fullstack_ltcnsrs/server/LTCNSRS/backup.sql'  # Update this path
+        backup_file_path = 'C:/Users/HP/SystemThesis/fullstack_ltcnsrs/server/LTCNSRS/backup.sql'  # Update this path
 
         # Command to perform the backup using pg_dump
         command = f'pg_dump -U postgres -d db_cnsrs > {backup_file_path}'
@@ -107,7 +107,7 @@ def restore_database(request):
         uploaded_file = request.FILES['file']
         
         # Define the path where the uploaded file will be stored temporarily
-        uploaded_file_path = 'E:/github/fullstack_ltcnsrs/Point4/fullstack_ltcnsrs/server/LTCNSRS/temp.sql'  # Update this path
+        uploaded_file_path = 'C:/Users/HP/SystemThesis/fullstack_ltcnsrs/server/LTCNSRS//temp.sql'  # Update this path
 
         # Write the uploaded file to the temporary location
         with open(uploaded_file_path, 'wb+') as destination:
