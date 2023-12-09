@@ -9,7 +9,6 @@ import { getCellClassNameLFA } from "./StatusReference/StatusCellColors/getCellC
 import { getCellClassNameWFL } from "./StatusReference/StatusCellColors/getCellClassNameWFL.js";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
 import barangayOptions from "../form/barangayOptions.js";
 import DuplicateTable from "./DuplicatesTable.jsx";
 import { connect } from "react-redux";
@@ -114,7 +113,6 @@ const BarangayTable = () => {
     setGridData(currentData);
   }, [activeTab]);
 
-
   const handleQuarterChange = (event) => {
     setSelectedQuarter(event.target.value);
     console.log("Selected Quarter:", event.target.value);
@@ -122,24 +120,23 @@ const BarangayTable = () => {
 
   useEffect(() => {
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch(`${databaseURL}/auth/users/me/`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${storedToken.data.access}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-              // const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
-              setSelectedBarangay(data.barangay)
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
-            
-    return () => {
-    };
-  }, []); //------------------------------------------------------------------------------------------------- 
+    fetch(`${databaseURL}/auth/users/me/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${storedToken.data.access}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
+        setSelectedBarangay(data.barangay);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+
+    return () => {};
+  }, []); //-------------------------------------------------------------------------------------------------
 
   useEffect(() => {
     console.log(
@@ -156,9 +153,7 @@ const BarangayTable = () => {
   const fetchTab1Data = async () => {
     try {
       // Fetch primary child data
-      const primaryChildResponse = await fetch(
-        `${databaseURL}/primarychild/`
-      );
+      const primaryChildResponse = await fetch(`${databaseURL}/primarychild/`);
       if (!primaryChildResponse.ok) {
         console.error(
           "Error fetching primarychild data:",
@@ -227,9 +222,7 @@ const BarangayTable = () => {
   const fetchTab2Data = async () => {
     try {
       // Fetch primary child data
-      const primaryChildResponse = await fetch(
-        `${databaseURL}/primarychild/`
-      );
+      const primaryChildResponse = await fetch(`${databaseURL}/primarychild/`);
       if (!primaryChildResponse.ok) {
         console.error(
           "Error fetching primarychild data:",
@@ -289,9 +282,7 @@ const BarangayTable = () => {
   const fetchTab3Data = async () => {
     try {
       // Fetch primary child data
-      const primaryChildResponse = await fetch(
-        `${databaseURL}/primarychild/`
-      );
+      const primaryChildResponse = await fetch(`${databaseURL}/primarychild/`);
       if (!primaryChildResponse.ok) {
         console.error(
           "Error fetching primarychild data:",
@@ -356,74 +347,6 @@ const BarangayTable = () => {
     }
   };
 
-  const handleDeleteRow = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this row?"
-    );
-
-    if (!confirmed) {
-      
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${databaseURL}/primarychild/${id}/`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (response.status === 204) {
-        // Filter out the deleted row from the state
-        setGridDataTab1((prevData) => prevData.filter((row) => row.id !== id));
-        setGridDataTab2((prevData) => prevData.filter((row) => row.id !== id));
-        setGridDataTab3((prevData) => prevData.filter((row) => row.id !== id));
-        showSnackbar("Child deleted successfully", "success");
-        setGridDataTab3((prevData) => prevData.filter((row) => row.id !== id));
-        const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch(`${databaseURL}/auth/users/me/`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${storedToken.data.access}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-            //-----------------------------------------------------------------------------------------------------------
-                const auditCreatePayload = {
-                    user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
-                    action: 'Deleted a Data in the Database',  // Replace 'your_action_here' with the actual action
-                };
-                fetch(`${databaseURL}/audit/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(auditCreatePayload),
-                })
-                    .then((auditResponse) => auditResponse.json())
-                    .then((auditData) => {
-                        console.log('Audit creation response:', auditData);
-                    })
-                    .catch((auditError) => {
-                        console.error('Error creating audit:', auditError);
-                    });
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
-            //---------------------------------------------------------------------------------------------
-      } else {
-        console.error("Error deleting the record");
-        showSnackbar("Failed to delete child", "error");
-      }
-    } catch (error) {
-      console.error("Error deleting the record:", error);
-      showSnackbar("Failed to delete child", "error");
-    }
-  };
-
   const mergeData = (primaryChildData, childHealthInfoData) => {
     return primaryChildData.map((primaryChild) => {
       const matchingChildHealthInfo = childHealthInfoData.find(
@@ -479,20 +402,20 @@ const BarangayTable = () => {
     );
     // --------------------------------------------------------------------------------------------------------------
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch(`${databaseURL}/auth/users/me/`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${storedToken.data.access}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-               setSelectedBarangay(data.barangay)
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
-      //-----------------------------------------------------------------------------------------------------------
+    fetch(`${databaseURL}/auth/users/me/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${storedToken.data.access}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setSelectedBarangay(data.barangay);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+    //-----------------------------------------------------------------------------------------------------------
   };
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -710,21 +633,6 @@ const BarangayTable = () => {
           }}
         >
           <VisibilityIcon />
-        </IconButton>
-      ),
-    },
-    {
-      field: "delete",
-      headerName: "Delete",
-      headerAlign: "center",
-      flex: 2,
-      renderCell: (params) => (
-        <IconButton
-          variant="outlined"
-          color="error"
-          onClick={() => handleDeleteRow(params.row.id)}
-        >
-          <DeleteIcon />
         </IconButton>
       ),
     },
@@ -996,21 +904,6 @@ const BarangayTable = () => {
         </IconButton>
       ),
     },
-    {
-      field: "delete",
-      headerName: "Delete",
-      headerAlign: "center",
-      flex: 2,
-      renderCell: (params) => (
-        <IconButton
-          variant="outlined"
-          color="error"
-          onClick={() => handleDeleteRow(params.row.id)}
-        >
-          <DeleteIcon />
-        </IconButton>
-      ),
-    },
   ];
 
   // Define separate DataGrid components for each tab
@@ -1034,8 +927,7 @@ const BarangayTable = () => {
               id="barangay-select"
               sx={{ m: "0 10px 10px 0" }}
               value={selectedBarangay}
-              disabled={true}  
-
+              disabled={true}
             >
               {/* Use an empty string as the value for "All Barangay" */}
               <MenuItem key="All Barangay" value="All Barangay">
@@ -1146,9 +1038,7 @@ const BarangayTable = () => {
               id="barangay-select"
               sx={{ m: "0 10px 10px 0" }}
               value={selectedBarangay}
-              disabled={true}  
-
-
+              disabled={true}
             >
               {/* Use an empty string as the value for "All Barangay" */}
               <MenuItem key="All Barangay" value="All Barangay">
@@ -1259,8 +1149,7 @@ const BarangayTable = () => {
               id="barangay-select"
               sx={{ m: "0 10px 10px 0" }}
               value={selectedBarangay}
-              disabled={true} 
-
+              disabled={true}
             >
               {/* Use an empty string as the value for "All Barangay" */}
               <MenuItem key="All Barangay" value="All Barangay">

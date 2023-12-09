@@ -1,5 +1,13 @@
-import { Box, Button,Select, MenuItem, IconButton, Typography, useTheme } from "@mui/material";
-import React from 'react';
+import {
+  Box,
+  Button,
+  Select,
+  MenuItem,
+  IconButton,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import React from "react";
 import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 
@@ -9,82 +17,170 @@ import PieChart from "../../components/charts/PieChart";
 import BarChart from "../../components/charts/BarChart";
 import StatBox from "../../components/dashboard_components/StatBox";
 import ProgressCircle from "../../components/dashboard_components/ProgressCircle";
-import EventsList from '../../components/dashboard_components/Upcoming Events';
+import EventsList from "../../components/dashboard_components/Upcoming Events";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 import Statistics from "../Database/Calculations/Statistics/Statistics";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import Loader from "../../components/SmallLoading";
-import {mapState} from "./../../redux/global_variables"
+import { mapState } from "./../../redux/global_variables";
 
- 
-
-const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe, wfa_underweight, wfa_normal, wfa_overweight,
-                    population}) => {
+const Dashboard = ({
+  lfa_severe,
+  lfa_normal,
+  lfa_stunted,
+  lfa_tall,
+  wfa_severe,
+  wfa_underweight,
+  wfa_normal,
+  wfa_overweight,
+  population,
+}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const statsData = Statistics();
   console.log(statsData.barangayData);
 
-    const data = {
-      // "Length for Age": [
-      //   {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: lfa_severe},
-      //   {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: lfa_stunted},
-      //   {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: lfa_normal},
-      //   {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: lfa_tall}
-      // ],
-      "Length for Age": [
-        {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: statsData.lfa_severe},
-        {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: statsData.lfa_stunted},
-        {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: statsData.lfa_normal},
-        {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: statsData.lfa_tall}
-      ],
-      "Weight for Length": [
-        {name: 'Severly Wasted', progress: Math.round((statsData.wfl_severe / statsData.population) * 100), number: statsData.wfl_severe},
-        {name: 'Wasted', progress: Math.round((statsData.wfl_wasted / statsData.population) * 100), number: statsData.wfl_wasted},
-        {name: 'Normal', progress: Math.round((statsData.wfl_normal / statsData.population) * 100), number: statsData.wfl_normal},
-        {name: 'Overweight', progress: Math.round((statsData.wfl_overweight / statsData.population) * 100), number: statsData.wfl_overweight},
-        {name: 'Obese', progress: Math.round((statsData.wfl_obese / statsData.population) * 100), number: statsData.wfl_obese}
-      ],
-      "Weight for Age": [
-        {name: 'Severly Underweight', progress: Math.round((statsData.wfa_severe / statsData.population) * 100), number: statsData.wfa_severe},
-        {name: 'Underweight', progress: Math.round((statsData.wfa_underweight / statsData.population) * 100), number: statsData.wfa_underweight},
-        {name: 'Normal', progress: Math.round((statsData.wfa_normal / statsData.population) * 100), number: statsData.wfa_normal},
-        {name: 'Overweight', progress: Math.round((statsData.wfa_overweight / statsData.population) * 100), number: statsData.wfa_overweight}
-      ],
-    };
+  const data = {
+    // "Length for Age": [
+    //   {name: 'Severly Stunted', progress:  Math.round((statsData.lfa_severe / statsData.population) * 100), number: lfa_severe},
+    //   {name: 'Stunted', progress:  Math.round((statsData.lfa_stunted / statsData.population) * 100), number: lfa_stunted},
+    //   {name: 'Normal', progress: Math.round((statsData.lfa_normal / statsData.population) * 100), number: lfa_normal},
+    //   {name: 'Tall', progress: Math.round((statsData.lfa_tall / statsData.population) * 100), number: lfa_tall}
+    // ],
+    "Length for Age": [
+      {
+        name: "Severly Stunted",
+        progress: Math.round(
+          (statsData.lfa_severe / statsData.population) * 100
+        ),
+        number: statsData.lfa_severe,
+      },
+      {
+        name: "Stunted",
+        progress: Math.round(
+          (statsData.lfa_stunted / statsData.population) * 100
+        ),
+        number: statsData.lfa_stunted,
+      },
+      {
+        name: "Normal",
+        progress: Math.round(
+          (statsData.lfa_normal / statsData.population) * 100
+        ),
+        number: statsData.lfa_normal,
+      },
+      {
+        name: "Tall",
+        progress: Math.round((statsData.lfa_tall / statsData.population) * 100),
+        number: statsData.lfa_tall,
+      },
+    ],
+    "Weight for Length": [
+      {
+        name: "Severly Wasted",
+        progress: Math.round(
+          (statsData.wfl_severe / statsData.population) * 100
+        ),
+        number: statsData.wfl_severe,
+      },
+      {
+        name: "Moderately Wasted",
+        progress: Math.round(
+          (statsData.wfl_wasted / statsData.population) * 100
+        ),
+        number: statsData.wfl_wasted,
+      },
+      {
+        name: "Normal",
+        progress: Math.round(
+          (statsData.wfl_normal / statsData.population) * 100
+        ),
+        number: statsData.wfl_normal,
+      },
+      {
+        name: "Overweight",
+        progress: Math.round(
+          (statsData.wfl_overweight / statsData.population) * 100
+        ),
+        number: statsData.wfl_overweight,
+      },
+      {
+        name: "Obese",
+        progress: Math.round(
+          (statsData.wfl_obese / statsData.population) * 100
+        ),
+        number: statsData.wfl_obese,
+      },
+    ],
+    "Weight for Age": [
+      {
+        name: "Severly Underweight",
+        progress: Math.round(
+          (statsData.wfa_severe / statsData.population) * 100
+        ),
+        number: statsData.wfa_severe,
+      },
+      {
+        name: "Underweight",
+        progress: Math.round(
+          (statsData.wfa_underweight / statsData.population) * 100
+        ),
+        number: statsData.wfa_underweight,
+      },
+      {
+        name: "Normal",
+        progress: Math.round(
+          (statsData.wfa_normal / statsData.population) * 100
+        ),
+        number: statsData.wfa_normal,
+      },
+      {
+        name: "Overweight",
+        progress: Math.round(
+          (statsData.wfa_overweight / statsData.population) * 100
+        ),
+        number: statsData.wfa_overweight,
+      },
+    ],
+  };
 
-    const colorsOption = [
-      { background: "linear-gradient(to bottom right, #F56545, #99201C)" },
-      { background: "linear-gradient(to bottom right, #D7816A, #BD4F6C)" },
-      { background: "linear-gradient(to bottom right, #3EADCF, #44B09E)" },
-      { background: "linear-gradient(to bottom right, #B621FE, #1FD1F9)" }
-    ];
+  const colorsOption = [
+    { background: "linear-gradient(to bottom right, #F56545, #99201C)" },
+    { background: "linear-gradient(to bottom right, #D7816A, #BD4F6C)" },
+    { background: "linear-gradient(to bottom right, #3EADCF, #44B09E)" },
+    { background: "linear-gradient(to bottom right, #B621FE, #1FD1F9)" },
+  ];
 
   /* State for selected category */
-  const [selectedCategory, setSelectedCategory] = React.useState("Length for Age");
+  const [selectedCategory, setSelectedCategory] =
+    React.useState("Length for Age");
 
   /* Function to be executed when a category is selected */
   const handleCategoryChange = (event) => {
-      setSelectedCategory(event.target.value);
+    setSelectedCategory(event.target.value);
   };
   return (
-    
     <Box m="20px">
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="Children Nutrional Status Reporting System" subtitle="Welcome to your dashboard" />
+        <Header
+          title="Children Nutrional Status Reporting System"
+          subtitle="Welcome to your dashboard"
+        />
 
-
-      {/* DropDown */}
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h3" sx={{ color: colors.redAccent[100], marginRight: '10px' }}>
-          📅 {statsData.latestQuarter.year} - {statsData.latestQuarter.quarter}  
+        {/* DropDown */}
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Typography
+            variant="h3"
+            sx={{ color: colors.redAccent[100], marginRight: "10px" }}
+          >
+            📅 {statsData.latestQuarter.year} -{" "}
+            {statsData.latestQuarter.quarter}
           </Typography>
 
-            <Select
+          <Select
             value={selectedCategory}
             onChange={handleCategoryChange}
             sx={{
@@ -93,15 +189,16 @@ const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe,
               fontSize: "17px",
               fontWeight: "bold",
               padding: "0px 10px",
-              }}
-            >
-            {Object.keys(data).map(category => (
-              <MenuItem key={category} value={category}>{category}</MenuItem>
+            }}
+          >
+            {Object.keys(data).map((category) => (
+              <MenuItem key={category} value={category}>
+                {category}
+              </MenuItem>
             ))}
           </Select>
         </Box>
       </Box>
-
 
       {/* GRID & CHARTS */}
       <Box
@@ -110,25 +207,24 @@ const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe,
         gridAutoRows="140px"
         gap="20px"
       >
-       {data[selectedCategory].map((item, index) => (
-  <Box
-    key={index} // Set the key prop here
-    gridColumn="span 3"
-    display="flex"
-    alignItems="center"
-    justifyContent="center"
-    borderRadius={2}
-    sx={colorsOption[index % colorsOption.length]}
-  >   
-    <StatBox
-      title={ item.name}
-      subtitle={item.subtitle}
-      progress={isNaN(item.progress) ? 0 : item.progress}
-      number={item.number === 0 ? <Loader/> : item.number}
-    />
-
-  </Box>
-))}
+        {data[selectedCategory].map((item, index) => (
+          <Box
+            key={index} // Set the key prop here
+            gridColumn="span 3"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            borderRadius={2}
+            sx={colorsOption[index % colorsOption.length]}
+          >
+            <StatBox
+              title={item.name}
+              subtitle={item.subtitle}
+              progress={isNaN(item.progress) ? 0 : item.progress}
+              number={item.number === 0 ? <Loader /> : item.number}
+            />
+          </Box>
+        ))}
 
         {/* ROW 2 */}
         <Box
@@ -165,7 +261,7 @@ const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe,
           </Box>
         </Box>
 
-           {/* EVENTS */}
+        {/* EVENTS */}
         <Box
           gridColumn="span 4"
           gridRow="span 2"
@@ -183,7 +279,11 @@ const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe,
               borderBottom={`4px solid ${colors.primary[500]}`}
               paddingBottom="15px"
             >
-              <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
+              <Typography
+                color={colors.grey[100]}
+                variant="h5"
+                fontWeight="600"
+              >
                 Upcoming Events
               </Typography>
             </Box>
@@ -262,5 +362,4 @@ const Dashboard = ({ lfa_severe, lfa_normal, lfa_stunted, lfa_tall , wfa_severe,
   );
 };
 
-
-export default connect(mapState) (Dashboard);
+export default connect(mapState)(Dashboard);
