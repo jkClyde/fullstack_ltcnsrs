@@ -408,6 +408,7 @@ const Table = () => {
 
       return {
         id: primaryChild.id,
+        fullName: primaryChild.fullName,
         surname: primaryChild.surname,
         firstname: primaryChild.firstname,
         middlename: primaryChild.middlename,

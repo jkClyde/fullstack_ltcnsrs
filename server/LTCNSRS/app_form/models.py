@@ -104,7 +104,7 @@ disability_choices = (
 
 class PrimaryChild(models.Model):
     id = models.AutoField(primary_key=True)
-    fullName = models.CharField(max_length=255)
+    fullName = models.CharField(max_length=255, default='Not specified')
     surname = models.CharField(max_length=100, default='Not specified')
     firstname = models.CharField(max_length=100, default='Not specified')
     middlename = models.CharField(max_length=100, default='Not specified')
@@ -158,15 +158,15 @@ class PrimaryChild(models.Model):
     caregiverContact = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
 
     archive = models.BooleanField(default=False) 
-
-    class Meta:
-        unique_together = [['surname', 'firstname', 'middlename', 'birthdate']]
-
     def save(self, *args, **kwargs):
-        self.fullName = ' '.join(filter(None, [self.firstname, self.middlename, self.surname, self.suffix]))
-        super().save(*args, **kwargs)
+        # Merge surname, firstname, and middlename to update fullName
+        if self.surname and self.firstname:
+            self.fullName = f"{self.surname}, {self.firstname}"
+            if self.middlename:
+                self.fullName += f" {self.middlename}"
+        else:
+            self.fullName = "Not specified"
 
-    def save(self, *args, **kwargs):
         # Check for duplicates based on fullName, birthdate, and barangay
         duplicates = PrimaryChild.objects.filter(
             fullName=self.fullName,
@@ -176,21 +176,22 @@ class PrimaryChild(models.Model):
             birthdate=self.birthdate,
         ).exclude(id=self.id)
 
-
         if duplicates.exists():
             raise ValueError("Duplicate entry found.")
+
+        # Calculate age and set the archive status based on age
         if self.birthdate:
             today = datetime.now().date()
             age = (today.year - self.birthdate.year) * 12 + today.month - self.birthdate.month
             self.aim = age
             
-        if self.aim > 60:
-            self.archive = True
-        else:
-            self.archive = False
+            if self.aim > 59:
+                self.archive = True
+            else:
+                self.archive = False
 
         super(PrimaryChild, self).save(*args, **kwargs)
-
+        
     def __str__(self):
         return self.fullName 
     
