@@ -549,8 +549,8 @@ const checkoutSchema = yup.object().shape({
   fatherContact: yup
     .number()
     .notRequired()
-    .test("isTwelveDigits", "Must be an 12-digit number", (value) =>
-      value ? /^[0-9]{12}$/.test(value) : true
+    .test("isElevenDigits", "Must be an 11-digit number", (value) =>
+      value ? /^[0-9]{10}$/.test(value) : true
     ),
   motherSurname: yup
     .string()
@@ -577,8 +577,8 @@ const checkoutSchema = yup.object().shape({
   motherContact: yup
     .number()
     .notRequired()
-    .test("isTwelveDigits", "Must be an 12-digit number", (value) =>
-      value ? /^[0-9]{12}$/.test(value) : true
+    .test("isElevenDigits", "Must be an 11-digit number", (value) =>
+      value ? /^[0-9]{10}$/.test(value) : true
     ),
   caregiverSurname: yup
     .string()
@@ -612,8 +612,8 @@ const checkoutSchema = yup.object().shape({
   caregiverContact: yup
     .number()
     .notRequired()
-    .test("isTwelveDigits", "Must be an 12-digit number", (value) =>
-      value ? /^[0-9]{12}$/.test(value) : true
+    .test("isElevenDigits", "Must be an 11-digit number", (value) =>
+      value ? /^[0-9]{10}$/.test(value) : true
     ),
 
   weight: yup.number().required("Required").typeError("Must be a number"),

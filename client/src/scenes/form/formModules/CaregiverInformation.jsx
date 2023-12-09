@@ -296,12 +296,8 @@ const CaregiverInformation = ({
         onChange={handleChange}
         value={values.caregiverFirstName}
         name="caregiverFirstName"
-        error={
-          !!touched.caregiverFirstName && !!caregiverFirstName.caregiverSurname
-        }
-        helperText={
-          touched.caregiverFirstName && caregiverFirstName.caregiverSurname
-        }
+        error={!!touched.caregiverFirstName && !!errors.caregiverFirstName}
+        helperText={touched.caregiverFirstName && errors.caregiverFirstName}
         className="textInput"
         sx={{ gridColumn: "span 1" }}
       />

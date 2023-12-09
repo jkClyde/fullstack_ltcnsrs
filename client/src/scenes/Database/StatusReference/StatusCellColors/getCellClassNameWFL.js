@@ -11,7 +11,7 @@ export const getCellClassNameWFL = (params) => {
 
   if (weightForLength === "Severely Wasted") {
     return "red-cell";
-  } else if (weightForLength === "Wasted") {
+  } else if (weightForLength === "Moderately Wasted") {
     return "yellow-cell";
   } else if (weightForLength === "Normal") {
     return "green-cell";
