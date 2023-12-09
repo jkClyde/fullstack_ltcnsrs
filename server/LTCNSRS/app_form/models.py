@@ -124,41 +124,38 @@ class PrimaryChild(models.Model):
     birthWeight = models.FloatField(default=0)
     birthOrder = models.CharField(max_length=255, default='Not specified')
 
-    #guardian info - father
-    fatherSurname = models.CharField(max_length=255, default='Unknown')
-    fatherFirstName =models.CharField(max_length=255, default='Unknown')
-    fatherMiddleName = models.CharField(max_length=255, default='Unknown')
+    fatherSurname = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    fatherFirstName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    fatherMiddleName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     fatherSuffix = models.CharField(max_length=10, blank=True, null=True)
-    fatherAge = models.CharField(max_length=255, default='Unknown')
+    fatherAge = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     fatherEthnicity = models.CharField(
-        max_length=100, choices=ethnicity_choices, default='Not specified')
-    fatherOccupation = models.CharField(max_length=255, default='Unknown')
-    fatherReligion = models.CharField(max_length=255, default='Unknown')
-    fatherContact = models.CharField(max_length=255, default='Unknown')
+        max_length=100, choices=ethnicity_choices, default='Not specified', null=True, blank=True)
+    fatherOccupation = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    fatherReligion = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    fatherContact = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
 
-    #guardian info - mother --------------------------------------------
-    motherSurname = models.CharField(max_length=255, default='Unknown')
-    motherFirstName =models.CharField(max_length=255, default='Unknown')
-    motherMiddleName = models.CharField(max_length=255, default='Unknown')
-    motherAge = models.CharField(max_length=255, default='Unknown')
+    motherSurname = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    motherFirstName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    motherMiddleName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    motherAge = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     motherEthnicity = models.CharField(
-        max_length=100, choices=ethnicity_choices, default='Not specified')
-    motherOccupation = models.CharField(max_length=255, default='Unknown')
-    motherReligion = models.CharField(max_length=255, default='Unknown')
-    motherContact = models.CharField(max_length=255, default='Unknown')
+        max_length=100, choices=ethnicity_choices, default='Not specified', null=True, blank=True)
+    motherOccupation = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    motherReligion = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    motherContact = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
 
-    #guardian info - caregiver
-    caregiverSurname = models.CharField(max_length=255, default='Unknown')
-    caregiverFirstName =models.CharField(max_length=255, default='Unknown')
-    caregiverMiddleName = models.CharField(max_length=255, default='Unknown')
+    caregiverSurname = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    caregiverFirstName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    caregiverMiddleName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     caregiverSuffix = models.CharField(max_length=10, blank=True, null=True)
-    caregiverRelationship = models.CharField(max_length=255, default='Unknown')
+    caregiverRelationship = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     caregiverEthnicity = models.CharField(
-        max_length=100, choices=ethnicity_choices, default='Not specified')
-    caregiverAge = models.CharField(max_length=255, default='Unknown')
-    caregiverOccupation = models.CharField(max_length=255, default='Unknown')
-    caregiverReligion = models.CharField(max_length=255, default='Unknown')
-    caregiverContact = models.CharField(max_length=255, default='Unknown')
+        max_length=100, choices=ethnicity_choices, default='Not specified', null=True, blank=True)
+    caregiverAge = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    caregiverOccupation = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    caregiverReligion = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    caregiverContact = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
 
     archive = models.BooleanField(default=False) 
 
@@ -173,8 +170,12 @@ class PrimaryChild(models.Model):
         # Check for duplicates based on fullName, birthdate, and barangay
         duplicates = PrimaryChild.objects.filter(
             fullName=self.fullName,
+            surname=self.surname,
+            firstname=self.firstname,
+            middlename=self.middlename,
             birthdate=self.birthdate,
         ).exclude(id=self.id)
+
 
         if duplicates.exists():
             raise ValueError("Duplicate entry found.")

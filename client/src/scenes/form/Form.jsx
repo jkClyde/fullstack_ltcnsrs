@@ -322,12 +322,13 @@ const Form = () => {
       },
       body: JSON.stringify(primaryChildData),
     })
-      .then((response) => response.json()) // Parse the response to get the new PrimaryChild instance
-      .then((primaryChildResponse) => {
-        if (!primaryChildResponse.id) {
+      .then((response) => {
+        if (!response.ok) {
           throw new Error("Failed to save primary child data.");
         }
-
+        return response.json();
+      })
+      .then((primaryChildResponse) => {
         const childId = primaryChildResponse.id; // Get the generated child_id
 
         // Update the quarterData object to include the child_id
@@ -346,6 +347,9 @@ const Form = () => {
         });
       })
       .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to save quarter data.");
+        }
         //------------------------------------------------------------------------------------------
         const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
         fetch(`${databaseURL}/auth/users/me/`, {
@@ -381,19 +385,18 @@ const Form = () => {
           });
 
         if (response.ok) {
-          // Both primary child and quarter data saved successfully
           notify();
           resetForm();
           setSelectedBirthdate(null);
           setSelectedDOW(null);
           setSelectedDate(null);
         } else {
-          alert("Failed to save quarter data.");
+          throw new Error("Failed to save quarter data.");
         }
       })
       .catch((error) => {
         console.error("Error while making the API call:", error);
-        alert("An error occurred. Please try again later.");
+        alert("An error occurred. Data was not submitted.");
       });
   };
 
@@ -423,10 +426,10 @@ const Form = () => {
       <Header title="Child Information" />
       <Formik
         onSubmit={(values, { resetForm }) =>
-          handleFormSubmit(values, { resetForm }, true)
-        } // Pass required as true
+          handleFormSubmit(values, { resetForm })
+        }
         initialValues={initialValues}
-        validationSchema={checkoutSchema}
+        validationSchema={checkoutSchema} // Pass the Yup schema for validation
       >
         {({
           values,
