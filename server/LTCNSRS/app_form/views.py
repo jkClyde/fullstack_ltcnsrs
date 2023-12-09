@@ -7,13 +7,12 @@ from .models import PrimaryChild, ChildHealthInfo, DuplicateChild
 from .serializers import PrimaryChildSerializer, ChildHealthInfoSerializer, DuplicateChildSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from django.http import JsonResponse
-from django.core import serializers
+
 from .models import PrimaryChild, ChildHealthInfo, DuplicateChild
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
-from collections import Counter
+
 
 class PrimaryChildListView(generics.ListCreateAPIView):
     queryset = PrimaryChild.objects.all()
@@ -132,43 +131,4 @@ def restore_database(request):
         print(f"An error occurred during restore: {ex}")
         return HttpResponse("Internal Server Error", status=500)
     
-from collections import defaultdict
 
-def get_most_frequent_statuses_view(request):
-    all_health_info = ChildHealthInfo.objects.all()
-
-    # Dictionary to store most frequent statuses by year and child
-    frequent_statuses = defaultdict(lambda: defaultdict(dict))
-
-    # Group statuses by year and child
-    for info in all_health_info:
-        child_id = info.child_id
-        year = info.getYear
-
-        if year not in frequent_statuses[child_id]:
-            frequent_statuses[child_id][year] = {
-                'weight_for_age': [],
-                'length_for_age': [],
-                'weight_for_length': [],
-            }
-
-        frequent_statuses[child_id][year]['weight_for_age'].append(info.weightForAge)
-        frequent_statuses[child_id][year]['length_for_age'].append(info.lengthForAge)
-        frequent_statuses[child_id][year]['weight_for_length'].append(info.weightForLength)
-
-    # Find the most frequent status for each child for each year
-    for child_id, years in frequent_statuses.items():
-        for year, statuses in years.items():
-            frequent_statuses[child_id][year] = {
-                'weight_for_age': Counter(statuses['weight_for_age']).most_common(1)[0][0] if statuses['weight_for_age'] else None,
-                'length_for_age': Counter(statuses['length_for_age']).most_common(1)[0][0] if statuses['length_for_age'] else None,
-                'weight_for_length': Counter(statuses['weight_for_length']).most_common(1)[0][0] if statuses['weight_for_length'] else None
-            }
-
-    # Convert PrimaryChild objects to their IDs for serialization
-    serializable_statuses = {
-        str(child_id): years_data
-        for child_id, years_data in frequent_statuses.items()
-    }
-
-    return JsonResponse(serializable_statuses)

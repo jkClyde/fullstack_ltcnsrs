@@ -22,7 +22,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import databaseURL from "../../databaseURL";
 
-
 const FormUser = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [selectedDate, setSelectedDate] = useState(null);
@@ -37,25 +36,23 @@ const FormUser = () => {
 
   useEffect(() => {
     const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch(`${databaseURL}/auth/users/me/`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${storedToken.data.access}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-              // const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
-              setSelectedBarangay(data.barangay)
-            })
-            .catch((error) => {
-                console.error('Error fetching user data:', error);
-            });
-            
-    return () => {
-    };
-  }, []); //------------------------------------------------------------------------------------------------- 
+    fetch(`${databaseURL}/auth/users/me/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${storedToken.data.access}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
+        setSelectedBarangay(data.barangay);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
 
+    return () => {};
+  }, []); //-------------------------------------------------------------------------------------------------
 
   const handleDateChange = (name, date, dateType) => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
@@ -206,34 +203,34 @@ const FormUser = () => {
         //------------------------------------------------------------------------------------------
         const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
         fetch(`${databaseURL}/auth/users/me/`, {
-          method: 'GET',
+          method: "GET",
           headers: {
-              Authorization: `Bearer ${storedToken.data.access}`,
+            Authorization: `Bearer ${storedToken.data.access}`,
           },
-      })
+        })
           .then((response) => response.json())
           .then((data) => {
-              const auditCreatePayload = {
-                  user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
-                  action: 'Create a new Data using forms ',  // Replace 'your_action_here' with the actual action
-              };
-              fetch(`${databaseURL}/audit/`, {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(auditCreatePayload),
+            const auditCreatePayload = {
+              user: data.first_name + " " + data.last_name, // Assuming you want to send the user data as part of the payload
+              action: "Create a new Data using forms ", // Replace 'your_action_here' with the actual action
+            };
+            fetch(`${databaseURL}/audit/`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(auditCreatePayload),
+            })
+              .then((auditResponse) => auditResponse.json())
+              .then((auditData) => {
+                console.log("Audit creation response:", auditData);
               })
-                  .then((auditResponse) => auditResponse.json())
-                  .then((auditData) => {
-                      console.log('Audit creation response:', auditData);
-                  })
-                  .catch((auditError) => {
-                      console.error('Error creating audit:', auditError);
-                  });
+              .catch((auditError) => {
+                console.error("Error creating audit:", auditError);
+              });
           })
           .catch((error) => {
-              console.error('Error fetching user data:', error);
+            console.error("Error fetching user data:", error);
           });
 
         if (response.ok) {
@@ -369,7 +366,7 @@ const FormUser = () => {
                 sx={{ gridColumn: "span 1" }}
               />
 
-               <TextInput
+              <TextInput
                 fullWidth
                 variant="filled"
                 type="text"
@@ -378,7 +375,7 @@ const FormUser = () => {
                 onChange={handleChange}
                 value={selectedBarangay}
                 name="barangay"
-                disabled={true} 
+                disabled={true}
                 className="textInput"
                 sx={{ gridColumn: "span 1" }}
               />
