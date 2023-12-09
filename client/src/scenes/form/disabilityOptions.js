@@ -5,6 +5,7 @@ const disabilityOptions = [
   "Hydrocepalus",
   "Down Syndrome",
   "Global Development Delay",
+  "None",
   "Others",
 ];
 

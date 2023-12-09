@@ -81,15 +81,8 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
       )
       .notRequired(),
     gender: Yup.string().required("Gender is required"),
-    birthWeight: Yup.number()
-      .notRequired()
-      .typeError("Birth Weight must be a number"),
-    birthOrder: Yup.string()
-      .notRequired()
-      .matches(
-        /^[A-Za-z0-9\s]{2,16}$/, // Allow letters (upper and lower case), numbers, and spaces
-        "Only letters, numbers, and spaces are allowed"
-      ),
+    birthWeight: Yup.number().notRequired(),
+    birthOrder: Yup.number().notRequired(),
     houseNumberAndStreet: Yup.string()
       .notRequired()
       .matches(/^[A-Za-z\d\s!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]{2,50}$/, ""),
@@ -105,87 +98,86 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     lengthOfStayType: Yup.string().notRequired(),
     fatherSurname: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "no special characters"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "no special characters"),
     fatherFirstName: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "no special characters"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "no special characters"),
     fatherMiddleName: Yup.string()
       .notRequired()
       .matches(
-        /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
+        /^[A-Za-z\s]{0,16}$/, // Only allow letters (upper and lower case) and spaces
         "Special characters not allowed"
       ),
     fatherSuffix: Yup.string()
       .notRequired()
       .matches(
-        /^[A-Za-z\s]{2,16}$/, // Only allow letters (upper and lower case) and spaces
+        /^[A-Za-z\s]{0,16}$/, // Only allow letters (upper and lower case) and spaces
         "Special characters not allowed"
       ),
-    fatherAge: Yup.number().notRequired().typeError("Must be a number"),
+    fatherAge: Yup.string()
+      .matches(/^[0-9]{0,2}$/, "Not a valid Age")
+      .nullable(),
     fatherEthnicity: Yup.string().notRequired(),
     fatherOccupation: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     fatherReligion: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
-    fatherContact: Yup.number()
-      .notRequired()
-      .test("isElevenDigits", "Must be an 11-digit number", (value) =>
-        value ? /^[0-9]{11}$/.test(value) : true
-      ),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
+    fatherContact: Yup.string()
+      .matches(/^[0-9]{0,11}$/, "Not a valid Contact No.")
+      .nullable(),
     motherSurname: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     motherFirstName: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     motherMiddleName: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
-    motherAge: Yup.number().notRequired().typeError("Must be a number"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
+    motherAge: Yup.string()
+      .matches(/^[0-9]{0,2}$/, "Not a valid age")
+      .nullable(),
     motherEthnicity: Yup.string().notRequired(),
     motherOccupation: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     motherReligion: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
-    motherContact: Yup.number()
-      .notRequired()
-      .test("isElevenDigits", "Must be an 11-digit number", (value) =>
-        value ? /^[0-9]{11}$/.test(value) : true
-      ),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
+    motherContact: Yup.string()
+      .matches(/^[0-9]{0,11}$/, "Not a valid Contact Number")
+      .nullable(),
+
     caregiverSurname: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     caregiverFirstName: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     caregiverMiddleName: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     caregiverSuffix: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s.]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s.]{0,16}$/, "Special characters not allowed"),
     caregiverRelationship: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
-    caregiverAge: Yup.number().notRequired(),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
+    caregiverAge: Yup.string()
+      .matches(/^[0-9]{0,2}$/, "Not a valid Age")
+      .nullable(),
     caregiverOccupation: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     caregiverReligion: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
-    caregiverContact: Yup.number()
-      .notRequired()
-      .test("isElevenDigits", "Must be an 11-digit number", (value) =>
-        value ? /^[0-9]{11}$/.test(value) : true
-      ),
-    muac: Yup.number()
-      .min(0, "MUAC must be a non-negative number")
-      .required("MUAC is required"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
+    caregiverContact: Yup.string()
+      .matches(/^[0-9]{0,11}$/, "Not a valid Contact No.")
+      .nullable(),
+    muac: Yup.number().nullable().min(0, "MUAC must be a non-negative number"),
     weight: Yup.number()
       .nullable()
       .positive("Weight must be a positive number")
@@ -735,16 +727,42 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
           // Clear the health-related fields in the editedChild state
           setEditedChild((prevChild) => ({
             ...prevChild,
-            weight: "N/A",
-            height: "N/A",
-            muac: "N/A",
-            disability: "N/A",
+            weight: "0",
+            height: "0",
+            muac: "0",
+            disability: "None",
             dow: "N/A",
-            vac: "N/A",
-            deworming: "N/A",
             weightForAge: "N/A",
             lengthForAge: "N/A",
             weightForLength: "N/A",
+            fatherSurname: "N/A",
+            fatherFirstName: "N/A",
+            fatherMiddleName: "N/A",
+            fatherSuffix: "N/A",
+            fatherAge: "0",
+            fatherEthnicity: "N/A",
+            fatherOccupation: "N/A",
+            fatherReligion: "N/A",
+            fatherContact: "0",
+
+            motherSurname: "N/A",
+            motherFirstName: "N/A",
+            motherMiddleName: "N/A",
+            motherAge: "0",
+            motherEthnicity: "N/A",
+            motherOccupation: "N/A",
+            motherReligion: "N/A",
+            motherContact: "0",
+
+            caregiverSurname: "N/A",
+            caregiverFirstName: "N/A",
+            caregiverMiddleName: "N/A",
+            caregiverSuffix: "N/A",
+            caregiverRelationship: "N/A",
+            caregiverEthnicity: "N/A",
+            caregiverAge: "0",
+            caregiverReligion: "N/A",
+            caregiverContact: "0",
           }));
         }
       })

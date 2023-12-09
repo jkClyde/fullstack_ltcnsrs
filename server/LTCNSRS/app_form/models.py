@@ -99,6 +99,7 @@ disability_choices = (
     ('Hydrocepalus', 'Hydrocepalus'),
     ('Down Syndrome', 'Down Syndrome'),
     ('Global Development Delay', 'Global Development Delay'),
+    ('None', 'None'),
     ('Others', 'Others'),
 )
 
@@ -220,7 +221,7 @@ class ChildHealthInfo(models.Model):
     deworming = models.CharField(max_length=10, choices=deworming_choices, default='No')
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='No')
     disability = models.CharField(
-        max_length=100, choices=disability_choices, default='Not specified')
+        max_length=100, choices=disability_choices, default='None')
     child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
     quarter = models.CharField(max_length=20, default='1st Quarter')
     year = models.IntegerField(null=True, blank=True)  # Add a year field
