@@ -416,6 +416,7 @@ const Table = () => {
         birthWeight: primaryChild.birthWeight,
         birthOrder: primaryChild.birthOrder,
         birthdate: primaryChild.birthdate,
+        fullAddress: primaryChild.fullAddress,
         houseNumberAndStreet: primaryChild.houseNumberAndStreet,
         pt: primaryChild.pt,
         gender: primaryChild.gender,
@@ -435,6 +436,7 @@ const Table = () => {
           : "N/A",
 
         // Guardian info
+        currentCaregiver: primaryChild.currentCaregiver,
         fatherSurname: primaryChild.fatherSurname,
         fatherFirstName: primaryChild.fatherFirstName,
         fatherMiddleName: primaryChild.fatherMiddleName,
@@ -857,7 +859,7 @@ const Table = () => {
   // Table columns on EOPT table or Tab 2
   const columnsTab2 = [
     {
-      field: "address",
+      field: "fullAddress",
       headerName: "Address",
       flex: 2,
       cellClassName: "address-column--cell",
@@ -866,7 +868,7 @@ const Table = () => {
       cellClassName: "centered-cell",
     },
     {
-      field: "parentName",
+      field: "currentCaregiver",
       headerName: "Caregiver",
       flex: 2,
       cellClassName: "parentName-column--cell",

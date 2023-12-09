@@ -109,6 +109,7 @@ class PrimaryChild(models.Model):
     firstname = models.CharField(max_length=100, default='Not specified')
     middlename = models.CharField(max_length=100, default='Not specified')
     suffix = models.CharField(max_length=10, blank=True, null=True)
+    fullAddress = models.CharField(max_length=255, default='Not specified')
     houseNumberAndStreet = models.CharField(max_length=255, default='Not specified')
     sitio = models.CharField(max_length=255, default='Not specified')
     pt = models.CharField(max_length=30, choices=housing_CHOICES, default='')
@@ -124,6 +125,7 @@ class PrimaryChild(models.Model):
     birthWeight = models.FloatField(default=0)
     birthOrder = models.CharField(max_length=255, default='Not specified')
 
+    currentCaregiver = models.CharField(max_length=255, default='Not specified')
     fatherSurname = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     fatherFirstName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     fatherMiddleName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
@@ -159,6 +161,19 @@ class PrimaryChild(models.Model):
 
     archive = models.BooleanField(default=False) 
     def save(self, *args, **kwargs):
+        caregivers = [self.fatherFirstName, self.motherFirstName, self.caregiverFirstName]
+        present_caregivers = [caregiver for caregiver in caregivers if caregiver]
+
+        if present_caregivers:
+            self.currentCaregiver = '/'.join(present_caregivers)
+        else:
+            self.currentCaregiver = "Not specified"
+
+        if self.houseNumberAndStreet and self.sitio:
+            self.fullAddress = f"{self.houseNumberAndStreet}, {self.sitio}"
+        else:
+            self.fullAddress = "Not specified"
+
         # Merge surname, firstname, and middlename to update fullName
         if self.surname and self.firstname:
             self.fullName = f"{self.surname}, {self.firstname}"
@@ -191,7 +206,7 @@ class PrimaryChild(models.Model):
                 self.archive = False
 
         super(PrimaryChild, self).save(*args, **kwargs)
-        
+
     def __str__(self):
         return self.fullName 
     
