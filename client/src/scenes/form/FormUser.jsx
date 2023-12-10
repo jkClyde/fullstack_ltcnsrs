@@ -74,7 +74,25 @@ const FormUser = () => {
       setAgeInMonths(calculatedAge);
     }
   }, [selectedBirthdate]);
+  useEffect(() => {
+    const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+    fetch(`${databaseURL}/auth/users/me/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${storedToken.data.access}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // const [selectedBarangay, setSelectedBarangay] = useState("All Barangay");
+        setSelectedBarangay(data.barangay);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
 
+    return () => {};
+  }, []);
   const handleDateChange = (name, date, dateType) => {
     const formattedDate = date ? dayjs(date).format("MM/DD/YYYY") : null;
     if (dateType === "birthdate") {

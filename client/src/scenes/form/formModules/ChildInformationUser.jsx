@@ -173,7 +173,8 @@ const ChildInformationUser = ({
         onChange={handleChange}
         value={selectedBarangay}
         name="barangay"
-        readOnly
+        disabled={true}
+        className="textInput"
         sx={{ gridColumn: "span 1" }}
       />
       <MenuSelect
