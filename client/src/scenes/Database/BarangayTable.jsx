@@ -356,15 +356,18 @@ const BarangayTable = () => {
       return {
         id: primaryChild.id,
         fullName: primaryChild.fullName,
+        surname: primaryChild.surname,
+        firstname: primaryChild.firstname,
+        middlename: primaryChild.middlename,
+        suffix: primaryChild.suffix,
+        birthWeight: primaryChild.birthWeight,
+        birthOrder: primaryChild.birthOrder,
         birthdate: primaryChild.birthdate,
-        address: primaryChild.address,
+        fullAddress: primaryChild.fullAddress,
+        houseNumberAndStreet: primaryChild.houseNumberAndStreet,
         pt: primaryChild.pt,
         gender: primaryChild.gender,
         aim: primaryChild.aim,
-        parentName: primaryChild.parentName,
-        occupation: primaryChild.occupation,
-        // relationship: primaryChild.relationship,
-        ethnicity: primaryChild.ethnicity,
         barangay: primaryChild.barangay,
         dow: matchingChildHealthInfo ? matchingChildHealthInfo.dow : "N/A",
         weight: matchingChildHealthInfo ? matchingChildHealthInfo.weight : 0,
@@ -377,6 +380,103 @@ const BarangayTable = () => {
         bpe: matchingChildHealthInfo ? matchingChildHealthInfo.bpe : "N/A",
         disability: matchingChildHealthInfo
           ? matchingChildHealthInfo.disability
+          : "N/A",
+
+        // Guardian info
+        currentCaregiver: primaryChild.currentCaregiver,
+        fatherSurname: primaryChild.fatherSurname,
+        fatherFirstName: primaryChild.fatherFirstName,
+        fatherMiddleName: primaryChild.fatherMiddleName,
+        fatherSuffix: primaryChild.fatherSuffix,
+        fatherAge: primaryChild.fatherAge,
+        fatherEthnicity: primaryChild.fatherEthnicity,
+        fatherOccupation: primaryChild.fatherOccupation,
+        fatherReligion: primaryChild.fatherReligion,
+        fatherContact: primaryChild.fatherContact,
+
+        motherSurname: primaryChild.motherSurname,
+        motherFirstName: primaryChild.motherFirstName,
+        motherMiddleName: primaryChild.motherMiddleName,
+        motherAge: primaryChild.motherAge,
+        motherEthnicity: primaryChild.motherEthnicity,
+        motherOccupation: primaryChild.motherOccupation,
+        motherReligion: primaryChild.motherReligion,
+        motherContact: primaryChild.motherContact,
+
+        caregiverSurname: primaryChild.caregiverSurname,
+        caregiverFirstName: primaryChild.caregiverFirstName,
+        caregiverMiddleName: primaryChild.caregiverMiddleName,
+        caregiverSuffix: primaryChild.caregiverSuffix,
+        caregiverRelationship: primaryChild.caregiverRelationship,
+        caregiverAge: primaryChild.caregiverAge,
+        caregiverEthnicity: primaryChild.caregiverEthnicity,
+        caregiverOccupation: primaryChild.caregiverOccupation,
+        caregiverReligion: primaryChild.caregiverReligion,
+        caregiverContact: primaryChild.caregiverContact,
+
+        //Address
+        sitio: primaryChild.sitio,
+        lengthOfStay: primaryChild.lengthOfStay,
+        lengthOfStayType: primaryChild.lengthOfStayType,
+
+        vitAOneHTIU: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitAOneHTIU
+          : "N/A",
+        vitATwoHTIUOneYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUOneYear
+          : "N/A",
+        vitATwoHTIUOneSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUOneSixYear
+          : "N/A",
+        vitATwoHTIUTwoYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUTwoYear
+          : "N/A",
+        vitATwoHTIUTwoSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUTwoSixYear
+          : "N/A",
+        vitATwoHTIUThreeYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUThreeYear
+          : "N/A",
+        vitATwoHTIUThreeSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUThreeSixYear
+          : "N/A",
+        vitATwoHTIUFourYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUFourYear
+          : "N/A",
+        vitATwoHTIUFourSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUFourSixYear
+          : "N/A",
+        vitATwoHTIUFiveYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.vitATwoHTIUFiveYear
+          : "N/A",
+
+        // Deworming fields
+        dewormingOneYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingOneYear
+          : "N/A",
+        dewormingOneSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingOneSixYear
+          : "N/A",
+        dewormingTwoYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingTwoYear
+          : "N/A",
+        dewormingTwoSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingTwoSixYear
+          : "N/A",
+        dewormingThreeYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingThreeYear
+          : "N/A",
+        dewormingThreeSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingThreeSixYear
+          : "N/A",
+        dewormingFourYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingFourYear
+          : "N/A",
+        dewormingFourSixYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingFourSixYear
+          : "N/A",
+        dewormingFiveYear: matchingChildHealthInfo
+          ? matchingChildHealthInfo.dewormingFiveYear
           : "N/A",
         childHealthInfo: matchingChildHealthInfo,
       };
@@ -640,7 +740,7 @@ const BarangayTable = () => {
   // Table columns on EOPT table or Tab 2
   const columnsTab2 = [
     {
-      field: "address",
+      field: "fullAddress",
       headerName: "Address",
       flex: 2,
       cellClassName: "address-column--cell",
@@ -649,7 +749,7 @@ const BarangayTable = () => {
       cellClassName: "centered-cell",
     },
     {
-      field: "parentName",
+      field: "currentCaregiver",
       headerName: "Caregiver",
       flex: 2,
       cellClassName: "parentName-column--cell",
