@@ -222,6 +222,7 @@ class ChildHealthInfo(models.Model):
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='No')
     disability = models.CharField(
         max_length=100, choices=disability_choices, default='None')
+    otherDisability = models.CharField(max_length=255, default='N/A', null=True, blank=True)
     child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
     quarter = models.CharField(max_length=20, default='1st Quarter')
     year = models.IntegerField(null=True, blank=True)  # Add a year field

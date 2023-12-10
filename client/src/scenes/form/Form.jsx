@@ -224,6 +224,7 @@ const Form = () => {
       deworming: values.deworming,
       bpe: values.bpe,
       disability: values.disability,
+      otherDisability: values.otherDisability,
       vaccinationRemarks: values.vaccinationRemarks,
 
       weightForAge: weightForAgeStatus(

@@ -434,7 +434,9 @@ const Table = () => {
         disability: matchingChildHealthInfo
           ? matchingChildHealthInfo.disability
           : "N/A",
-
+        otherDisability: matchingChildHealthInfo
+          ? matchingChildHealthInfo.otherDisability
+          : "N/A",
         // Guardian info
         currentCaregiver: primaryChild.currentCaregiver,
         fatherSurname: primaryChild.fatherSurname,

@@ -59,11 +59,6 @@ const HealthInfo = ({
                 <Typography variant="body1" style={{ fontWeight: "bold" }}>
                   {editedChild.disability}
                 </Typography>
-                {editedChild.disability === "Others" && (
-                  <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                    {editedChild.otherDisability}
-                  </Typography>
-                )}
               </Box>
             </Box>
           </Grid>
