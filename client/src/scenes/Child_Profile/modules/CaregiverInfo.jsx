@@ -111,7 +111,7 @@ const CaregiverInfo = ({
         {renderTextField(
           "Mother's Firstname",
           "motherFirstname",
-          editedChild.motherSurname
+          editedChild.motherFirstname
         )}
         {renderTextField(
           "Mother's Middlename",
