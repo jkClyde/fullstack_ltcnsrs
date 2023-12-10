@@ -307,7 +307,8 @@ CREATE TABLE public.app_form_primarychild (
     suffix character varying(10),
     surname character varying(100) NOT NULL,
     "caregiverEthnicity" character varying(100),
-    "fullAddress" character varying(255) NOT NULL
+    "fullAddress" character varying(255) NOT NULL,
+    "currentCaregiver" character varying(255) NOT NULL
 );
 
 
@@ -516,6 +517,7 @@ ALTER TABLE public.django_session OWNER TO postgres;
 COPY public.app_accounts_useraccount (id, password, last_login, is_superuser, email, first_name, last_name, barangay, phone_number, job_description, is_active, is_staff, is_admin, is_approved, is_disabled) FROM stdin;
 1	pbkdf2_sha256$600000$16wg7fkkLzSJD9OZVdAgFl$2JHVclzKE/LjEFXcqLfN21MWPh+tY/UIJrKKFRpjw50=	\N	t	admin@gmail.com	admin	admin	admin	admin	admin	t	t	t	f	f
 2	pbkdf2_sha256$600000$QGsV7IS8TwgR1LufkeA7Gv$VyOq9enXD2MzO3iYumVNLEqKUJHkoF8h75VOJMBRBSw=	\N	f	burcao.nigel22@gmail.com	Nigel	Burcao	Alapang	09201112923		t	f	f	f	f
+3	pbkdf2_sha256$600000$udPaQ964OaYdkZ92WePt0W$dTOE/uBPhz7EhkoHNdmFyr80Bb397YxeEdvEOrGyhHU=	\N	f	burcao.nigel21@gmail.com	Asd	Asd	Alno	09201112923		t	f	f	f	f
 \.
 
 
@@ -587,6 +589,10 @@ COPY public.app_audit_audit (id, time_created, "user", action) FROM stdin;
 45	2023-12-05 01:10:14.557826+08	admin admin	Imported An Excel File
 46	2023-12-05 01:10:31.405521+08	admin admin	Updated a Child Data
 47	2023-12-05 01:10:35.100036+08	admin admin	Updated a Child Data
+89	2023-12-09 19:54:27.932896+08	admin admin	Create a new Data using forms
+91	2023-12-09 23:07:10.172488+08	admin admin	Logged in to System
+93	2023-12-09 23:07:25.202014+08	Asd Asd	Logged in to System
+95	2023-12-10 15:38:48.405879+08	Asd Asd	Logged in to System
 48	2023-12-07 18:18:02.808941+08	admin admin	Logged in to System
 49	2023-12-07 18:18:08.122134+08	admin admin	Enabled a user
 50	2023-12-07 18:18:27.83079+08	Nigel Burcao	Logged in to System
@@ -626,6 +632,12 @@ COPY public.app_audit_audit (id, time_created, "user", action) FROM stdin;
 84	2023-12-09 18:48:19.680316+08	admin admin	Deleted a Data in the Database
 85	2023-12-09 18:48:22.062656+08	admin admin	Deleted a Data in the Database
 86	2023-12-09 18:49:00.756602+08	admin admin	Create a new Data using forms
+87	2023-12-09 19:00:39.064627+08	admin admin	Deleted a Data in the Database
+88	2023-12-09 19:53:05.011896+08	admin admin	Create a new Data using forms
+90	2023-12-09 19:56:52.822114+08	admin admin	Create a new Data using forms
+92	2023-12-09 23:07:14.494307+08	admin admin	Enabled a user
+94	2023-12-09 23:52:27.680367+08	admin admin	Logged in to System
+96	2023-12-10 15:47:52.954866+08	admin admin	Logged in to System
 \.
 
 
@@ -643,6 +655,10 @@ COPY public.app_calendar_calendarevent (id, title, date) FROM stdin;
 
 COPY public.app_form_childhealthinfo ("childHealth_id", dow, weight, height, muac, bpe, disability, quarter, year, "getYear", child_id, deworming, "lengthForAge", vac, "weightForAge", "weightForLength", "dewormingFiveYear", "dewormingFourSixYear", "dewormingFourYear", "dewormingOneSixYear", "dewormingOneYear", "dewormingThreeSixYear", "dewormingThreeYear", "dewormingTwoSixYear", "dewormingTwoYear", "vaccinationRemarks", "vitAOneHTIU", "vitATwoHTIUFiveYear", "vitATwoHTIUFourSixYear", "vitATwoHTIUFourYear", "vitATwoHTIUOneSixYear", "vitATwoHTIUOneYear", "vitATwoHTIUThreeSixYear", "vitATwoHTIUThreeYear", "vitATwoHTIUTwoSixYear", "vitATwoHTIUTwoYear") FROM stdin;
 763	2023-11-30	23	2	23	Yes	Congenital Heart Disease	4th Quarter	2023	2023	771	No	Severely Stunted	Ongoing	Overweight	Height not found	\N	\N	\N	\N	\N	\N	\N	\N	\N		\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+764	2023-12-01	23	2	23	Yes	Congenital Heart Disease	4th Quarter	2018	2023	772	No	Age Not Supported	Ongoing	Age Not Supported	Age not supported	\N	\N	\N	\N	\N	\N	\N	\N	\N		\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+765	2023-12-01	23	2	23	Yes	Cerebral Palsy	4th Quarter	2023	2023	773	No	Severely Stunted	None	Overweight	Height not found	\N	\N	\N	\N	\N	\N	\N	\N	\N		\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+766	2023-12-01	23	12	23	Yes	Cerebral Palsy	4th Quarter	2023	2023	774	No	Severely Stunted	Ongoing	Overweight	Height not found	\N	\N	\N	\N	\N	\N	\N	\N	\N		\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+767	2023-11-28	23	2	23	Yes	Congenital Heart Disease	4th Quarter	2023	2023	775	No	Severely Stunted	Ongoing	Overweight	Height not found	\N	\N	\N	\N	\N	\N	\N	\N	\N		\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -666,8 +682,12 @@ COPY public.app_form_duplicatechild (id, full_name, first_barangay, second_baran
 -- Data for Name: app_form_primarychild; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.app_form_primarychild (id, "fullName", "houseNumberAndStreet", pt, gender, birthdate, aim, "caregiverContact", "caregiverAge", barangay, archive, "birthOrder", "birthWeight", "caregiverFirstName", "caregiverMiddleName", "caregiverOccupation", "caregiverRelationship", "caregiverReligion", "caregiverSuffix", "caregiverSurname", "fatherAge", "fatherContact", "fatherEthnicity", "fatherFirstName", "fatherMiddleName", "fatherOccupation", "fatherReligion", "fatherSuffix", "fatherSurname", firstname, "lengthOfStay", "lengthOfStayType", middlename, "motherAge", "motherContact", "motherEthnicity", "motherFirstName", "motherMiddleName", "motherOccupation", "motherReligion", "motherSurname", sitio, suffix, surname, "caregiverEthnicity", "fullAddress") FROM stdin;
-771	Burcao, Nigel zarate	12 AMC	Permanent	Female	2023-12-01	0	Unknown		Ambiong	f	1	5								28		AGGAY	Bernette	ben	None		jr	Burcao	Nigel	23	Year/s	zarate									Central	jr	Burcao	Not specified	Not specified
+COPY public.app_form_primarychild (id, "fullName", "houseNumberAndStreet", pt, gender, birthdate, aim, "caregiverContact", "caregiverAge", barangay, archive, "birthOrder", "birthWeight", "caregiverFirstName", "caregiverMiddleName", "caregiverOccupation", "caregiverRelationship", "caregiverReligion", "caregiverSuffix", "caregiverSurname", "fatherAge", "fatherContact", "fatherEthnicity", "fatherFirstName", "fatherMiddleName", "fatherOccupation", "fatherReligion", "fatherSuffix", "fatherSurname", firstname, "lengthOfStay", "lengthOfStayType", middlename, "motherAge", "motherContact", "motherEthnicity", "motherFirstName", "motherMiddleName", "motherOccupation", "motherReligion", "motherSurname", sitio, suffix, surname, "caregiverEthnicity", "fullAddress", "currentCaregiver") FROM stdin;
+771	Burcao, Nigel zarate	12 AMC	Permanent	Female	2023-12-01	0	Unknown		Ambiong	f	1	5								28		AGGAY	Bernette	ben	None		jr	Burcao	Nigel	23	Year/s	zarate									Central	jr	Burcao	Not specified	Not specified	Not specified
+772	Archive, Nigel zarate	12 AMC	Permanent	Male	2018-12-06	60	Unknown		Alno	t	1	2								28	09090909043	AGGAY	Bernette	ben	None	sad	jr	Burcao	Nigel	23	Year/s	zarate									Central		Archive	Not specified	12 AMC, Central	Not specified
+773	asda, Nigelsdasd zarateasd	12 AMC	Permanent	Male	2023-12-06	0	Unknown		Ambiong	f	1	2								28	09090909092	AKEANON/AKLANON	Bernette	ben	None	Pedoism	jr	Burcao	Nigelsdasd	23	Month/s	zarateasd									Central	jr	asda	Not specified	12 AMC, Central	Not specified
+774	sadasd, asdads asdasd	12 AMC	Permanent	Female	2023-11-29	1	Unknown		Ambiong	f	1	2								23	09090909093	AGGAY	Bernette	ben	None	sad	jr	Burcao	asdads	23	Year/s	asdasd									Central		sadasd	Not specified	12 AMC, Central	Bernette/ /
+775	Burcaoasd, asd zarate	12 AMC	Permanent	Female	2023-11-29	1	Unknown		Alno	f	23	2								28	09090909092	AGGAY	Bernette	ben	None	sad	as	Burcao	asd	23	Year/s	zarate									Central		Burcaoasd	Not specified	12 AMC, Central	Bernette
 \.
 
 
@@ -816,6 +836,8 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 43	app_form	0004_alter_primarychild_unique_together	2023-12-09 12:59:35.494542+08
 44	app_form	0005_alter_primarychild_fullname	2023-12-09 18:46:33.648967+08
 45	app_form	0006_primarychild_fulladdress	2023-12-09 18:53:10.530907+08
+46	app_form	0007_primarychild_currentcaregiver	2023-12-09 19:36:54.465313+08
+47	app_form	0002_alter_childhealthinfo_disability	2023-12-10 15:37:53.052996+08
 \.
 
 
@@ -838,7 +860,7 @@ SELECT pg_catalog.setval('public.app_accounts_useraccount_groups_id_seq', 1, fal
 -- Name: app_accounts_useraccount_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.app_accounts_useraccount_id_seq', 2, true);
+SELECT pg_catalog.setval('public.app_accounts_useraccount_id_seq', 3, true);
 
 
 --
@@ -852,21 +874,21 @@ SELECT pg_catalog.setval('public.app_accounts_useraccount_user_permissions_id_se
 -- Name: app_audit_audit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.app_audit_audit_id_seq', 86, true);
+SELECT pg_catalog.setval('public.app_audit_audit_id_seq', 96, true);
 
 
 --
 -- Name: app_calendar_calendarevent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.app_calendar_calendarevent_id_seq', 1, false);
+SELECT pg_catalog.setval('public.app_calendar_calendarevent_id_seq', 1, true);
 
 
 --
 -- Name: app_form_childhealthinfo_childHealth_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."app_form_childhealthinfo_childHealth_id_seq"', 763, true);
+SELECT pg_catalog.setval('public."app_form_childhealthinfo_childHealth_id_seq"', 767, true);
 
 
 --
@@ -880,7 +902,7 @@ SELECT pg_catalog.setval('public.app_form_duplicatechild_id_seq', 819, true);
 -- Name: app_form_primarychild_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.app_form_primarychild_id_seq', 771, true);
+SELECT pg_catalog.setval('public.app_form_primarychild_id_seq', 775, true);
 
 
 --
@@ -922,7 +944,7 @@ SELECT pg_catalog.setval('public.django_content_type_id_seq', 11, true);
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.django_migrations_id_seq', 45, true);
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 47, true);
 
 
 --

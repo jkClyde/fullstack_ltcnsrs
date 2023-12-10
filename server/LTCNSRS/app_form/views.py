@@ -12,6 +12,7 @@ from .models import PrimaryChild, ChildHealthInfo, DuplicateChild
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
+from pathlib import Path
 
 
 class PrimaryChildListView(generics.ListCreateAPIView):
@@ -70,8 +71,11 @@ def backup_database(request):
         # Set the PGPASSWORD environment variable with your database password
         os.environ["PGPASSWORD"] = "group1"
 
-        # Define the path where the backup file will be stored
-        backup_file_path = 'E:/github/fullstack_ltcnsrs/Point4/fullstack_ltcnsrs/server/LTCNSRS/backup.sql'  # Update this path
+        # Get the user's download directory
+        download_dir = Path.home() / "Downloads"
+
+        # Define the path where the backup file will be stored in the Downloads directory
+        backup_file_path = download_dir / 'backup.sql'
 
         # Command to perform the backup using pg_dump
         command = f'pg_dump -U postgres -d db_cnsrs > {backup_file_path}'
@@ -95,7 +99,6 @@ def backup_database(request):
         print(f"An unexpected error occurred: {ex}")
         return HttpResponse("Internal Server Error", status=500)
     
-# Restore function
 @csrf_exempt
 def restore_database(request):
     try:
@@ -104,9 +107,12 @@ def restore_database(request):
 
         # Retrieve the uploaded .sql file from the request
         uploaded_file = request.FILES['file']
-        
-        # Define the path where the uploaded file will be stored temporarily
-        uploaded_file_path = 'E:/github/fullstack_ltcnsrs/Point4/fullstack_ltcnsrs/server/LTCNSRS/temp.sql'  # Update this path
+
+        # Get the user's download directory
+        download_dir = Path.home() / "Downloads"
+
+        # Define the path where the uploaded file will be stored temporarily in the Downloads directory
+        uploaded_file_path = download_dir / 'temp.sql'
 
         # Write the uploaded file to the temporary location
         with open(uploaded_file_path, 'wb+') as destination:
@@ -130,5 +136,3 @@ def restore_database(request):
     except Exception as ex:
         print(f"An error occurred during restore: {ex}")
         return HttpResponse("Internal Server Error", status=500)
-    
-
