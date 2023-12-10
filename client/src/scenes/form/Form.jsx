@@ -122,283 +122,294 @@ const Form = () => {
   };
 
   const handleFormSubmit = (values, { resetForm }) => {
-    if (!selectedBirthdate || !selectedDOW) {
-      alert("Birthdate and Date of Weighing are required");
-      return;
-    }
-    const formattedBirthdate = dayjs(selectedBirthdate).format("YYYY-MM-DD");
-    const formattedDOW = selectedDOW
-      ? dayjs(selectedDOW).format("YYYY-MM-DD")
-      : null;
-    const formattedvitAOneHTIU = selectedVitAOneHTIU
-      ? dayjs(selectedVitAOneHTIU).format("YYYY-MM-DD")
-      : null;
-    const formattedVitATwoHTIUOneYear = selectedVitATwoHTIUOneYear
-      ? dayjs(selectedVitATwoHTIUOneYear).format("YYYY-MM-DD")
-      : null;
-    const formattedVitATwoHTIUOneSixYear = selectedVitATwoHTIUOneSixYear
-      ? dayjs(selectedVitATwoHTIUOneSixYear).format("YYYY-MM-DD")
-      : null;
-    const formattedVitATwoHTIUTwoYear = selectedVitATwoHTIUTwoYear
-      ? dayjs(selectedVitATwoHTIUTwoYear).format("YYYY-MM-DD")
-      : null;
-    const formattedVitATwoHTIUTwoSixYear = selectedVitATwoHTIUTwoSixYear
-      ? dayjs(selectedVitATwoHTIUTwoSixYear).format("YYYY-MM-DD")
-      : null;
-    const formattedvitATwoHTIUThreeYear = selectedVitATwoHTIUThreeYear
-      ? dayjs(selectedVitATwoHTIUThreeYear).format("YYYY-MM-DD")
-      : null;
-    const formattedvitATwoHTIUThreeSixYear = selectedVitATwoHTIUThreeSixYear
-      ? dayjs(selectedVitATwoHTIUThreeSixYear).format("YYYY-MM-DD")
-      : null;
-    const formattedvitATwoHTIUFourYear = selectedVitATwoHTIUFourYear
-      ? dayjs(selectedVitATwoHTIUFourYear).format("YYYY-MM-DD")
-      : null;
-    const formattedvitATwoHTIUFourSixYear = selectedVitATwoHTIUFourSixYear
-      ? dayjs(selectedVitATwoHTIUFourSixYear).format("YYYY-MM-DD")
-      : null;
-    const formattedvitATwoHTIUFiveYear = selectedVitATwoHTIUFiveYear
-      ? dayjs(selectedVitATwoHTIUFiveYear).format("YYYY-MM-DD")
-      : null;
+    const confirmSubmission = window.confirm(
+      "Are you sure you want to submit the form?"
+    );
 
-    const formatteddewormingOneYear = selectedDewormingOneYear
-      ? dayjs(selectedDewormingOneYear).format("YYYY-MM-DD")
-      : null;
+    if (confirmSubmission) {
+      if (!selectedBirthdate || !selectedDOW) {
+        alert("Birthdate and Date of Weighing are required");
+        return;
+      }
+      const formattedBirthdate = dayjs(selectedBirthdate).format("YYYY-MM-DD");
+      const formattedDOW = selectedDOW
+        ? dayjs(selectedDOW).format("YYYY-MM-DD")
+        : null;
+      const formattedvitAOneHTIU = selectedVitAOneHTIU
+        ? dayjs(selectedVitAOneHTIU).format("YYYY-MM-DD")
+        : null;
+      const formattedVitATwoHTIUOneYear = selectedVitATwoHTIUOneYear
+        ? dayjs(selectedVitATwoHTIUOneYear).format("YYYY-MM-DD")
+        : null;
+      const formattedVitATwoHTIUOneSixYear = selectedVitATwoHTIUOneSixYear
+        ? dayjs(selectedVitATwoHTIUOneSixYear).format("YYYY-MM-DD")
+        : null;
+      const formattedVitATwoHTIUTwoYear = selectedVitATwoHTIUTwoYear
+        ? dayjs(selectedVitATwoHTIUTwoYear).format("YYYY-MM-DD")
+        : null;
+      const formattedVitATwoHTIUTwoSixYear = selectedVitATwoHTIUTwoSixYear
+        ? dayjs(selectedVitATwoHTIUTwoSixYear).format("YYYY-MM-DD")
+        : null;
+      const formattedvitATwoHTIUThreeYear = selectedVitATwoHTIUThreeYear
+        ? dayjs(selectedVitATwoHTIUThreeYear).format("YYYY-MM-DD")
+        : null;
+      const formattedvitATwoHTIUThreeSixYear = selectedVitATwoHTIUThreeSixYear
+        ? dayjs(selectedVitATwoHTIUThreeSixYear).format("YYYY-MM-DD")
+        : null;
+      const formattedvitATwoHTIUFourYear = selectedVitATwoHTIUFourYear
+        ? dayjs(selectedVitATwoHTIUFourYear).format("YYYY-MM-DD")
+        : null;
+      const formattedvitATwoHTIUFourSixYear = selectedVitATwoHTIUFourSixYear
+        ? dayjs(selectedVitATwoHTIUFourSixYear).format("YYYY-MM-DD")
+        : null;
+      const formattedvitATwoHTIUFiveYear = selectedVitATwoHTIUFiveYear
+        ? dayjs(selectedVitATwoHTIUFiveYear).format("YYYY-MM-DD")
+        : null;
 
-    const formatteddewormingOneSixYear = selectedDewormingOneSixYear
-      ? dayjs(selectedDewormingOneSixYear).format("YYYY-MM-DD")
-      : null;
-    const formatteddewormingTwoYear = selectedDewormingTwoYear
-      ? dayjs(selectedDewormingTwoYear).format("YYYY-MM-DD")
-      : null;
-    const formatteddewormingTwoSixYear = selectedDewormingTwoSixYear
-      ? dayjs(selectedDewormingTwoSixYear).format("YYYY-MM-DD")
-      : null;
-    const formatteddewormingThreeYear = selectedDewormingThreeYear
-      ? dayjs(selectedDewormingThreeYear).format("YYYY-MM-DD")
-      : null;
-    const formatteddewormingThreeSixYear = selectedDewormingThreeSixYear
-      ? dayjs(selectedDewormingThreeSixYear).format("YYYY-MM-DD")
-      : null;
-    const formatteddewormingFourYear = selectedDewormingFourYear
-      ? dayjs(selectedDewormingFourYear).format("YYYY-MM-DD")
-      : null;
-    const formatteddewormingFourSixYear = selectedDewormingFourSixYear
-      ? dayjs(selectedDewormingFourSixYear).format("YYYY-MM-DD")
-      : null;
-    const formatteddewormingFiveYear = selectedDewormingFiveYear
-      ? dayjs(selectedDewormingFiveYear).format("YYYY-MM-DD")
-      : null;
+      const formatteddewormingOneYear = selectedDewormingOneYear
+        ? dayjs(selectedDewormingOneYear).format("YYYY-MM-DD")
+        : null;
 
-    const dowDate = new Date(selectedDOW);
-    let quarter;
+      const formatteddewormingOneSixYear = selectedDewormingOneSixYear
+        ? dayjs(selectedDewormingOneSixYear).format("YYYY-MM-DD")
+        : null;
+      const formatteddewormingTwoYear = selectedDewormingTwoYear
+        ? dayjs(selectedDewormingTwoYear).format("YYYY-MM-DD")
+        : null;
+      const formatteddewormingTwoSixYear = selectedDewormingTwoSixYear
+        ? dayjs(selectedDewormingTwoSixYear).format("YYYY-MM-DD")
+        : null;
+      const formatteddewormingThreeYear = selectedDewormingThreeYear
+        ? dayjs(selectedDewormingThreeYear).format("YYYY-MM-DD")
+        : null;
+      const formatteddewormingThreeSixYear = selectedDewormingThreeSixYear
+        ? dayjs(selectedDewormingThreeSixYear).format("YYYY-MM-DD")
+        : null;
+      const formatteddewormingFourYear = selectedDewormingFourYear
+        ? dayjs(selectedDewormingFourYear).format("YYYY-MM-DD")
+        : null;
+      const formatteddewormingFourSixYear = selectedDewormingFourSixYear
+        ? dayjs(selectedDewormingFourSixYear).format("YYYY-MM-DD")
+        : null;
+      const formatteddewormingFiveYear = selectedDewormingFiveYear
+        ? dayjs(selectedDewormingFiveYear).format("YYYY-MM-DD")
+        : null;
 
-    if (dowDate.getMonth() >= 0 && dowDate.getMonth() <= 2) {
-      // First quarter (January to March)
-      quarter = "first";
-    } else if (dowDate.getMonth() >= 3 && dowDate.getMonth() <= 5) {
-      // Second quarter (April to June)
-      quarter = "second";
-    } else if (dowDate.getMonth() >= 6 && dowDate.getMonth() <= 8) {
-      // Third quarter (July to September)
-      quarter = "third";
-    } else {
-      // Fourth quarter (October to December)
-      quarter = "fourth";
-    }
+      const dowDate = new Date(selectedDOW);
+      let quarter;
 
-    setExistingEntries([
-      ...existingEntries,
-      {
-        fullName: values.fullName,
+      if (dowDate.getMonth() >= 0 && dowDate.getMonth() <= 2) {
+        // First quarter (January to March)
+        quarter = "first";
+      } else if (dowDate.getMonth() >= 3 && dowDate.getMonth() <= 5) {
+        // Second quarter (April to June)
+        quarter = "second";
+      } else if (dowDate.getMonth() >= 6 && dowDate.getMonth() <= 8) {
+        // Third quarter (July to September)
+        quarter = "third";
+      } else {
+        // Fourth quarter (October to December)
+        quarter = "fourth";
+      }
+
+      setExistingEntries([
+        ...existingEntries,
+        {
+          fullName: values.fullName,
+          birthdate: formattedBirthdate,
+        },
+      ]);
+      // Create a data object to send to your Django backend for saving in the appropriate quarter table
+      const quarterData = {
+        dow: formattedDOW,
+        weight: values.weight,
+        height: values.height,
+        muac: values.muac,
+        vac: values.vac,
+        deworming: values.deworming,
+        bpe: values.bpe,
+        disability: values.disability,
+        otherDisability: values.otherDisability,
+        vaccinationRemarks: values.vaccinationRemarks,
+
+        weightForAge: weightForAgeStatus(
+          formattedBirthdate,
+          values.weight,
+          values.gender
+        ),
+        lengthForAge: lengthForAgeStatus(
+          formattedBirthdate,
+          values.height,
+          values.gender
+        ),
+        weightForLength: weightForLengthStatus(
+          formattedBirthdate,
+          values.height,
+          values.weight,
+          values.gender
+        ),
+        // Vitamin fields
+        vitAOneHTIU: formattedvitAOneHTIU,
+        vitATwoHTIUOneYear: formattedVitATwoHTIUOneYear,
+        vitATwoHTIUOneSixYear: formattedVitATwoHTIUOneSixYear,
+        vitATwoHTIUTwoYear: formattedVitATwoHTIUTwoYear,
+        vitATwoHTIUTwoSixYear: formattedVitATwoHTIUTwoSixYear,
+        vitATwoHTIUThreeYear: formattedvitATwoHTIUThreeYear,
+        vitATwoHTIUThreeSixYear: formattedvitATwoHTIUThreeSixYear,
+        vitATwoHTIUFourYear: formattedvitATwoHTIUFourYear,
+        vitATwoHTIUFourSixYear: formattedvitATwoHTIUFourSixYear,
+        vitATwoHTIUFiveYear: formattedvitATwoHTIUFiveYear,
+
+        // Deworming fields
+        dewormingOneYear: formatteddewormingOneYear,
+        dewormingOneSixYear: formatteddewormingOneSixYear,
+        dewormingTwoYear: formatteddewormingTwoYear,
+        dewormingTwoSixYear: formatteddewormingTwoSixYear,
+        dewormingThreeYear: formatteddewormingThreeYear,
+        dewormingThreeSixYear: formatteddewormingThreeSixYear,
+        dewormingFourYear: formatteddewormingFourYear,
+        dewormingFourSixYear: formatteddewormingFourSixYear,
+        dewormingFiveYear: formatteddewormingFiveYear,
+      };
+
+      // Create a data object for saving in the PrimaryChild table
+      const primaryChildData = {
+        surname: values.surname,
+        firstname: values.firstname,
+        middlename: values.middlename,
+        suffix: values.suffix,
+        pt: values.pt,
+        gender: values.gender,
         birthdate: formattedBirthdate,
-      },
-    ]);
-    // Create a data object to send to your Django backend for saving in the appropriate quarter table
-    const quarterData = {
-      dow: formattedDOW,
-      weight: values.weight,
-      height: values.height,
-      muac: values.muac,
-      vac: values.vac,
-      deworming: values.deworming,
-      bpe: values.bpe,
-      disability: values.disability,
-      otherDisability: values.otherDisability,
-      vaccinationRemarks: values.vaccinationRemarks,
+        barangay: values.barangay,
+        sitio: values.sitio,
+        houseNumberAndStreet: values.houseNumberAndStreet,
+        birthOrder: values.birthOrder,
+        birthWeight: values.birthWeight,
+        lengthOfStay: values.lengthOfStay,
+        lengthOfStayType: values.lengthOfStayType,
 
-      weightForAge: weightForAgeStatus(
-        formattedBirthdate,
-        values.weight,
-        values.gender
-      ),
-      lengthForAge: lengthForAgeStatus(
-        formattedBirthdate,
-        values.height,
-        values.gender
-      ),
-      weightForLength: weightForLengthStatus(
-        formattedBirthdate,
-        values.height,
-        values.weight,
-        values.gender
-      ),
-      // Vitamin fields
-      vitAOneHTIU: formattedvitAOneHTIU,
-      vitATwoHTIUOneYear: formattedVitATwoHTIUOneYear,
-      vitATwoHTIUOneSixYear: formattedVitATwoHTIUOneSixYear,
-      vitATwoHTIUTwoYear: formattedVitATwoHTIUTwoYear,
-      vitATwoHTIUTwoSixYear: formattedVitATwoHTIUTwoSixYear,
-      vitATwoHTIUThreeYear: formattedvitATwoHTIUThreeYear,
-      vitATwoHTIUThreeSixYear: formattedvitATwoHTIUThreeSixYear,
-      vitATwoHTIUFourYear: formattedvitATwoHTIUFourYear,
-      vitATwoHTIUFourSixYear: formattedvitATwoHTIUFourSixYear,
-      vitATwoHTIUFiveYear: formattedvitATwoHTIUFiveYear,
+        // Add other fields from your model here
+        fatherSurname: values.fatherSurname,
+        fatherFirstName: values.fatherFirstName,
+        fatherMiddleName: values.fatherMiddleName,
+        fatherSuffix: values.fatherSuffix,
+        fatherAge: values.fatherAge,
+        fatherEthnicity: values.fatherEthnicity,
+        fatherOccupation: values.fatherOccupation,
+        fatherReligion: values.fatherReligion,
+        fatherContact: values.fatherContact,
+        motherSurname: values.motherSurname,
+        motherFirstName: values.motherFirstName,
+        motherMiddleName: values.motherMiddleName,
+        motherSuffix: values.motherSuffix,
+        motherAge: values.motherAge,
+        motherEthnicity: values.motherEthnicity,
+        motherOccupation: values.motherOccupation,
+        motherReligion: values.motherReligion,
+        motherContact: values.motherContact,
+        caregiverSurname: values.caregiverSurname,
+        caregiverFirstName: values.caregiverFirstName,
+        caregiverMiddleName: values.caregiverMiddleName,
+        caregiverSuffix: values.caregiverSuffix,
+        caregiverRelationship: values.caregiverRelationship,
+        caregiverEthnicity: values.caregiverEthnicity,
+        caregiverAge: values.caregiverAge,
+        caregiverOccupation: values.caregiverOccupation,
+        caregiverReligion: values.caregiverReligion,
+        caregiverContact: values.caregiverContact,
+      };
 
-      // Deworming fields
-      dewormingOneYear: formatteddewormingOneYear,
-      dewormingOneSixYear: formatteddewormingOneSixYear,
-      dewormingTwoYear: formatteddewormingTwoYear,
-      dewormingTwoSixYear: formatteddewormingTwoSixYear,
-      dewormingThreeYear: formatteddewormingThreeYear,
-      dewormingThreeSixYear: formatteddewormingThreeSixYear,
-      dewormingFourYear: formatteddewormingFourYear,
-      dewormingFourSixYear: formatteddewormingFourSixYear,
-      dewormingFiveYear: formatteddewormingFiveYear,
-    };
-
-    // Create a data object for saving in the PrimaryChild table
-    const primaryChildData = {
-      surname: values.surname,
-      firstname: values.firstname,
-      middlename: values.middlename,
-      suffix: values.suffix,
-      pt: values.pt,
-      gender: values.gender,
-      birthdate: formattedBirthdate,
-      barangay: values.barangay,
-      sitio: values.sitio,
-      houseNumberAndStreet: values.houseNumberAndStreet,
-      birthOrder: values.birthOrder,
-      birthWeight: values.birthWeight,
-      lengthOfStay: values.lengthOfStay,
-      lengthOfStayType: values.lengthOfStayType,
-
-      // Add other fields from your model here
-      fatherSurname: values.fatherSurname,
-      fatherFirstName: values.fatherFirstName,
-      fatherMiddleName: values.fatherMiddleName,
-      fatherSuffix: values.fatherSuffix,
-      fatherAge: values.fatherAge,
-      fatherEthnicity: values.fatherEthnicity,
-      fatherOccupation: values.fatherOccupation,
-      fatherReligion: values.fatherReligion,
-      fatherContact: values.fatherContact,
-      motherSurname: values.motherSurname,
-      motherFirstName: values.motherFirstName,
-      motherMiddleName: values.motherMiddleName,
-      motherSuffix: values.motherSuffix,
-      motherAge: values.motherAge,
-      motherEthnicity: values.motherEthnicity,
-      motherOccupation: values.motherOccupation,
-      motherReligion: values.motherReligion,
-      motherContact: values.motherContact,
-      caregiverSurname: values.caregiverSurname,
-      caregiverFirstName: values.caregiverFirstName,
-      caregiverMiddleName: values.caregiverMiddleName,
-      caregiverSuffix: values.caregiverSuffix,
-      caregiverRelationship: values.caregiverRelationship,
-      caregiverEthnicity: values.caregiverEthnicity,
-      caregiverAge: values.caregiverAge,
-      caregiverOccupation: values.caregiverOccupation,
-      caregiverReligion: values.caregiverReligion,
-      caregiverContact: values.caregiverContact,
-    };
-
-    // Make an API call to your Django backend to save data in the PrimaryChild table
-    fetch("http://127.0.0.1:8000/primarychild/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(primaryChildData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to save primary child data.");
-        }
-        return response.json();
+      // Make an API call to your Django backend to save data in the PrimaryChild table
+      fetch("http://127.0.0.1:8000/primarychild/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(primaryChildData),
       })
-      .then((primaryChildResponse) => {
-        const childId = primaryChildResponse.id; // Get the generated child_id
-
-        // Update the quarterData object to include the child_id
-        const updatedQuarterData = {
-          ...quarterData,
-          child: childId,
-        };
-
-        // Make an API call to save data in the appropriate quarter table
-        return fetch(`http://127.0.0.1:8000/childhealthinfo/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedQuarterData),
-        });
-      })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to save quarter data.");
-        }
-        //------------------------------------------------------------------------------------------
-        const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-        fetch(`${databaseURL}/auth/users/me/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${storedToken.data.access}`,
-          },
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to save primary child data.");
+          }
+          return response.json();
         })
-          .then((response) => response.json())
-          .then((data) => {
-            const auditCreatePayload = {
-              user: data.first_name + " " + data.last_name, // Assuming you want to send the user data as part of the payload
-              action: "Create a new Data using forms ", // Replace 'your_action_here' with the actual action
-            };
-            fetch(`${databaseURL}/audit/`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(auditCreatePayload),
-            })
-              .then((auditResponse) => auditResponse.json())
-              .then((auditData) => {
-                console.log("Audit creation response:", auditData);
-                console.log("Vita: ", vitAOneHTIU);
-              })
-              .catch((auditError) => {
-                console.error("Error creating audit:", auditError);
-              });
-          })
-          .catch((error) => {
-            console.error("Error fetching user data:", error);
-          });
+        .then((primaryChildResponse) => {
+          const childId = primaryChildResponse.id; // Get the generated child_id
 
-        if (response.ok) {
-          notify();
-          resetForm();
-          setSelectedBirthdate(null);
-          setSelectedDOW(null);
-          setSelectedDate(null);
-        } else {
-          throw new Error("Failed to save quarter data.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error while making the API call:", error);
-        alert("An error occurred. Data was not submitted.");
-      });
+          // Update the quarterData object to include the child_id
+          const updatedQuarterData = {
+            ...quarterData,
+            child: childId,
+          };
+
+          // Make an API call to save data in the appropriate quarter table
+          return fetch(`http://127.0.0.1:8000/childhealthinfo/`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedQuarterData),
+          });
+        })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to save quarter data.");
+          }
+          //------------------------------------------------------------------------------------------
+          const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
+          fetch(`${databaseURL}/auth/users/me/`, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${storedToken.data.access}`,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const auditCreatePayload = {
+                user: data.first_name + " " + data.last_name, // Assuming you want to send the user data as part of the payload
+                action: "Create a new Data using forms ", // Replace 'your_action_here' with the actual action
+              };
+              fetch(`${databaseURL}/audit/`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(auditCreatePayload),
+              })
+                .then((auditResponse) => auditResponse.json())
+                .then((auditData) => {
+                  console.log("Audit creation response:", auditData);
+                  console.log("Vita: ", vitAOneHTIU);
+                })
+                .catch((auditError) => {
+                  console.error("Error creating audit:", auditError);
+                });
+            })
+            .catch((error) => {
+              console.error("Error fetching user data:", error);
+            });
+
+          if (response.ok) {
+            notify();
+            resetForm();
+            setSelectedBirthdate(null);
+            setSelectedDOW(null);
+            setSelectedDate(null);
+          } else {
+            throw new Error("Failed to save quarter data.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error while making the API call:", error);
+          alert("An error occurred. Data was not submitted.");
+        });
+    } else {
+      // User cancelled submission
+      console.log("Form submission cancelled by user.");
+      // You might want to provide some feedback to the user here
+      // For instance, display a message or handle the cancellation appropriately
+    }
   };
 
   const handleClearForm = useCallback((resetForm, values, setFieldValue) => {
