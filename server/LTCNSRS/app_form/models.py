@@ -108,7 +108,7 @@ class PrimaryChild(models.Model):
     fullName = models.CharField(max_length=255, default='Not specified')
     surname = models.CharField(max_length=100, default='Not specified')
     firstname = models.CharField(max_length=100, default='Not specified')
-    middlename = models.CharField(max_length=100, default='Not specified')
+    middlename = models.CharField(max_length=100, blank=True, null=True)
     suffix = models.CharField(max_length=10, blank=True, null=True)
     fullAddress = models.CharField(max_length=255, default='Not specified')
     houseNumberAndStreet = models.CharField(max_length=255, default='Not specified')
