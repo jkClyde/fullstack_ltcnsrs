@@ -14,6 +14,8 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
+
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -127,6 +129,21 @@ const UserDrawer = () => {
               title="Calendar"
               to="/calendar"
               icon={<CalendarTodayOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+              <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "0px 0 0px 20px" }}
+            >
+               Logs
+            </Typography>
+
+            <Item
+              title="Audit Logs"
+              to="/auditLogs"
+              icon={<TableRowsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />

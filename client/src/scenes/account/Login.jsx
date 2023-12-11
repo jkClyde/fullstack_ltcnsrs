@@ -226,7 +226,7 @@ function SignInSide() {
                     .then((auditData) => {
                         console.log('Audit creation response:', auditData);
                          navigate("/loading");
-                        //  window.location.reload(); 
+                         window.location.reload(); 
                     })
                     .catch((auditError) => {
                         console.error('Error creating audit:', auditError);
