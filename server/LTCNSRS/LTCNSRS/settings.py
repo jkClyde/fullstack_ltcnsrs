@@ -114,7 +114,7 @@ WSGI_APPLICATION = 'LTCNSRS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_cnsrs',
+        'NAME': 'db_ltcnsrs',
         'USER': 'postgres',
         'PASSWORD': 'group1',
         'HOST': 'localhost'

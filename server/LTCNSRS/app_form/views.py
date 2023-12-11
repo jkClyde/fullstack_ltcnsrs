@@ -78,7 +78,8 @@ def backup_database(request):
         backup_file_path = download_dir / 'backup.sql'
 
         # Command to perform the backup using pg_dump
-        command = f'pg_dump -U postgres -d db_cnsrs > {backup_file_path}'
+        command = f'pg_dump -U postgres -d db_ltcnsrs -c > {backup_file_path}'
+
 
         # Execute the command using shell=True
         subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, env=os.environ)
@@ -120,7 +121,7 @@ def restore_database(request):
                 destination.write(chunk)
 
         # Command to restore the database using psql
-        command = f'psql -U postgres -d db_cnsrs -f {uploaded_file_path}'
+        command = f'psql -U postgres -d db_ltcnsrs -f {uploaded_file_path}'
 
         # Execute the command using shell=True
         subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, env=os.environ)

@@ -217,8 +217,8 @@ class ChildHealthInfo(models.Model):
     weight = models.FloatField(default=0)
     height = models.FloatField(default=0)
     muac = models.FloatField(default=0)
-    vac = models.CharField(max_length=10, choices=vac_choices, default='No')
-    deworming = models.CharField(max_length=10, choices=deworming_choices, default='No')
+ 
+    
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='No')
     disability = models.CharField(
         max_length=100, choices=disability_choices, default='None')
