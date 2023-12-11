@@ -68,7 +68,7 @@ const EditUserForm = ({ open, onClose, onSave, user }) => {
 
   const confirmSave = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/users/6/edit/`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/users/${editedUser.id}/edit/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
