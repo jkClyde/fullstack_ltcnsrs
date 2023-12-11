@@ -154,11 +154,11 @@ class PrimaryChild(models.Model):
     caregiverSuffix = models.CharField(max_length=10, blank=True, null=True)
     caregiverRelationship = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     caregiverEthnicity = models.CharField(
-        max_length=100, choices=ethnicity_choices, default='Not specified', null=True, blank=True)
+        max_length=100, choices=ethnicity_choices, null=True, blank=True)
     caregiverAge = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     caregiverOccupation = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     caregiverReligion = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
-    caregiverContact = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
+    caregiverContact = models.CharField(max_length=255, null=True, blank=True)
 
     archive = models.BooleanField(default=False) 
     def save(self, *args, **kwargs):
@@ -222,7 +222,7 @@ class ChildHealthInfo(models.Model):
     bpe = models.CharField(max_length=10, choices=bpe_choices, default='No')
     disability = models.CharField(
         max_length=100, choices=disability_choices, default='None')
-    otherDisability = models.CharField(max_length=255, default='N/A', null=True, blank=True)
+    otherDisability = models.CharField(max_length=255, null=True, blank=True)
     child = models.ForeignKey(PrimaryChild, on_delete=models.CASCADE)
     quarter = models.CharField(max_length=20, default='1st Quarter')
     year = models.IntegerField(null=True, blank=True)  # Add a year field

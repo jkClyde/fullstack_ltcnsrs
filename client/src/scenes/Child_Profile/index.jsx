@@ -76,7 +76,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
       ),
     suffix: Yup.string()
       .matches(
-        /^[A-Za-z\s.]{2,16}$/, // Allow letters (upper and lower case), spaces, and period
+        /^[A-Za-z\s.]{0,16}$/, // Allow letters (upper and lower case), spaces, and period
         "Only letters, spaces, and periods are allowed"
       )
       .notRequired(),
@@ -190,7 +190,7 @@ const ChildProfile = ({ child, updateChildData, selectedChildId }) => {
     disability: Yup.string().notRequired(),
     otherDisability: Yup.string()
       .notRequired()
-      .matches(/^[A-Za-z\s]{2,16}$/, "Special characters not allowed"),
+      .matches(/^[A-Za-z\s]{0,16}$/, "Special characters not allowed"),
     vac: Yup.string().notRequired(),
     vaccinationRemarks: Yup.string()
       .notRequired()

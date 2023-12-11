@@ -10,12 +10,35 @@ import databaseURL from "../../databaseURL";
 const BackupRestore = () => {
   const handleBackup = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/backup");
+      const response = await axios.get("http://127.0.0.1:8000/backup", {
+        responseType: "blob", // Set responseType to blob to handle binary data
+      });
+
+      // Generate current date and time
+      const currentDate = new Date();
+      const formattedDate = currentDate
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, ""); // YYYYMMDD format
+      const formattedTime = currentDate.toLocaleTimeString().replace(/:/g, ""); // HHMMSS format
+
+      // Extract filename from response headers
+      const disposition = response.headers["content-disposition"];
+      const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+      const matches = filenameRegex.exec(disposition);
+      let filename = `backup_${formattedDate}_${formattedTime}.sql`; // Default filename with formatted date and time
+
+      if (matches != null && matches[1]) {
+        const extractedFilename = matches[1].replace(/['"]/g, "");
+        const fileExtension = extractedFilename.split(".").pop(); // Get file extension
+        filename = `backup_${formattedDate}_${formattedTime}.${fileExtension}`; // Use obtained filename with formatted date and time
+      }
+
       // Trigger file download in the browser
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "backup.sql");
+      link.setAttribute("download", filename); // Use obtained filename
       document.body.appendChild(link);
       link.click();
     } catch (error) {
