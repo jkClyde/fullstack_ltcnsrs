@@ -18,6 +18,7 @@ import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import RestoreIcon from '@mui/icons-material/Restore';
 import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -192,6 +193,13 @@ const Sidebar = () => {
               title="Audit Logs"
               to="/auditLogs"
               icon={<TableRowsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Summary Report"
+              to="/report"
+              icon={<SummarizeIcon />}
               selected={selected}
               setSelected={setSelected}
             />
