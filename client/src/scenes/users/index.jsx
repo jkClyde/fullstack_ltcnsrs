@@ -10,6 +10,7 @@ import Header from "../../components/dashboard_components/Header";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import databaseURL from "../../databaseURL";
+import EditUserForm from "./EditUserForm";
 
 
 
@@ -20,19 +21,36 @@ const Users = () => {
   const [isPromptOpen, setPromptOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [refresher, setRefresher] = useState(1);
-  const [isDeletePromptOpen, setDeletePromptOpen] = useState(false);
 
-  const handleOpenDeletePrompt = (userId) => {
-    setSelectedUserId(userId);
-    setDeletePromptOpen(true);
+   // ------------------------------------------------------------------------------------------------
+  const [isEditFormOpen, setEditFormOpen] = useState(false);
+  const [selectedUserForEdit, setSelectedUserForEdit] = useState(null);
+  const [users, setUsers] = useState([]);
+
+
+  const handleOpenEditForm = (userId) => {
+    console.log("Opening edit form for user ID:", userId);
+    const userToEdit = users.find((user) => user.id === userId);
+    setSelectedUserForEdit(userToEdit);
+    setRefresher(refresher + 1);
+    setEditFormOpen(true);
   };
 
-  const handleCloseDeletePrompt = () => {
-    setSelectedUserId(null);
-    setDeletePromptOpen(false);
+  const handleCloseEditForm = () => {
+    setSelectedUserForEdit(null);
+    setRefresher(refresher + 1);
+    setEditFormOpen(false);
   };
 
-  // ------------------------------------------------
+  const handleSaveEditForm = (editedUser) => {
+    // Perform the update API call here and handle the response
+    console.log('Saving edited user:', editedUser);
+    setRefresher(refresher + 1);
+    handleCloseEditForm();
+  };
+
+
+  // ------------------------------------------------------------------------------------------------
 
   const handleOpenPrompt = (userId) => {
     setSelectedUserId(userId);
@@ -66,7 +84,7 @@ const Users = () => {
       if (response.ok) {
         //---------------------------------------------------------------------------------------------------
         const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-          fetch('http://127.0.0.1:8000/auth/users/me/', {
+          fetch( `${databaseURL}/auth/users/me/`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${storedToken.data.access}`,
@@ -78,7 +96,7 @@ const Users = () => {
                     user: data.first_name + " " + data.last_name,  
                     action: 'Disabled a User',  
                 };
-                fetch('http://127.0.0.1:8000/audit/', {
+                fetch( `${databaseURL}/audit/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -131,7 +149,7 @@ const Users = () => {
 
       if (response.ok) {
         const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-        fetch('http://127.0.0.1:8000/auth/users/me/', {
+        fetch( `${databaseURL}/auth/users/me/`, {
           method: 'GET',
           headers: {
               Authorization: `Bearer ${storedToken.data.access}`,
@@ -143,7 +161,7 @@ const Users = () => {
                   user: data.first_name + " " + data.last_name,  // Assuming you want to send the user data as part of the payload
                   action: 'Enabled a user',  // Replace 'your_action_here' with the actual action
               };
-              fetch('http://127.0.0.1:8000/audit/', {
+              fetch( `${databaseURL}/audit/`, {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json',
@@ -174,35 +192,7 @@ const Users = () => {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
-    try {
-      const storedToken = JSON.parse(localStorage.getItem("ACCESS_TOKEN"));
-      if (!storedToken) {
-        console.error("No token found in local storage.");
-        return;
-      }
-  
-      const response = await fetch(`${databaseURL}/users/${userId}/delete/`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${storedToken.data.access}`,
-          "Content-Type": "application/json",
-        },
-      });
-  
-      if (response.ok) {
-        toast.warning("User has been deleted!"); // Show a success toast
-        setRefresher(refresher + 1);
-      } else {
-        console.error("Failed to delete user. Status:", response.status);
-        const data = await response.json();
-        console.error("Error details:", data);
-      }
-    } catch (error) {
-      console.error("Error while deleting user:", error);
-    }
-  };
-  
+
 
   const columns = [
     {
@@ -277,8 +267,8 @@ const Users = () => {
       ),
     },
     {
-      field: "delete",
-      headerName: "Delete",
+      field: "Edit",
+      headerName: "Edit",
       flex: 1,
       renderCell: ({ row }) => (
         <div
@@ -287,17 +277,16 @@ const Users = () => {
             alignItems: "center",
             cursor: "pointer",
           }}
-          onClick={() => handleOpenDeletePrompt(row.id)}
+          onClick={() => handleOpenEditForm(row.id)}
         >
-          <Typography variant="body2" style={{ color: "red" }}>
-            Delete
+          <Typography variant="body2" style={{ color: "green" }}>
+            Edit
           </Typography>
         </div>
       ),
     },
   ];
 
-  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -309,7 +298,7 @@ const Users = () => {
 
       try {
         console.log("Token used for request:", storedToken.access);
-        const response = await fetch("http://127.0.0.1:8000/api/users/", {
+        const response = await fetch( `${databaseURL}/api/users/`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${storedToken.data.access}`,
@@ -369,51 +358,8 @@ const Users = () => {
       >
         <DataGrid rows={users} columns={columns} />
       </Box>
-      <ConfirmationPrompt
-        open={isPromptOpen}
-        onClose={handleClosePrompt}
-        onConfirm={() => {
-          if (selectedUserId !== null) {
-            const selectedUser = users.find((user) => user.id === selectedUserId);
-            if (selectedUser) {
-              selectedUser.is_disabled
-                ? handleEnableUser(selectedUserId)
-                : handleDisableUser(selectedUserId);
-              handleClosePrompt();
-            }
-          }
-        }}
-        message={
-          selectedUserId !== null
-            ? users.find((user) => user.id === selectedUserId).is_disabled
-              ? "Are you sure you want to enable this user?"
-              : "Are you sure you want to disable this user?"
-            : ""
-        }
-      />
-        {/* Delete Confirmation Prompt */}
-      <Dialog open={isDeletePromptOpen} onClose={handleCloseDeletePrompt}>
-        <DialogTitle>Delete User</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete this user?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeletePrompt} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              handleDeleteUser(selectedUserId);
-              handleCloseDeletePrompt();
-            }}
-            color="primary"
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+   
+
 
       <ConfirmationPrompt
         open={isPromptOpen}
@@ -439,9 +385,19 @@ const Users = () => {
             : ""
         }
       />
+
+      
+      {/* Add EditUserForm component */}
+      <EditUserForm
+        open={isEditFormOpen}
+        onClose={handleCloseEditForm}
+        onSave={handleSaveEditForm}
+        user={selectedUserForEdit}
+      />
+
+
       <ToastContainer position="top-right" autoClose={3000} />
     </Box>
   );
 };
-
-export default Users;
+  export default Users;

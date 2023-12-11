@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views import View
 import requests
 from rest_framework import permissions
-from .serializers import UserCreateSerializer
+from .serializers import UserCreateSerializer, UserEditSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -16,6 +16,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import Token
 from django.shortcuts import get_object_or_404
+from rest_framework.generics import RetrieveUpdateAPIView
+
 
 
 
@@ -109,6 +111,28 @@ class DeleteUserView(generics.DestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class EditUserView(RetrieveUpdateAPIView):
+    queryset = UserAccount.objects.all()
+    permission_classes = [permissions.AllowAny]  # Add your authentication logic
+
+    def get_serializer_class(self):
+        # Use different serializers for create and edit operations
+        if self.request.method == 'PUT':
+            return UserEditSerializer
+        else:
+            return UserCreateSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer

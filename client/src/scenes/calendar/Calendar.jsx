@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { formatDate } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -12,16 +12,27 @@ import {
   ListItemText,
   Typography,
   useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
 } from "@mui/material";
 import Header from "../../components/dashboard_components/Header";
 import { tokens } from "../../theme";
-import axios from "axios"; // Import Axios
+import axios from "axios";
 import databaseURL from "../../databaseURL";
 
 const Calendar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [currentEvents, setCurrentEvents] = useState([]);
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [updatedTitle, setUpdatedTitle] = useState("");
+  const [newEventDialogOpen, setNewEventDialogOpen] = useState(false);
+  const [newEventTitle, setNewEventTitle] = useState("");
 
   const fetchEvents = () => {
     axios
@@ -40,23 +51,27 @@ const Calendar = () => {
   }, []);
 
   const handleDateClick = (selected) => {
-    const title = prompt("Please enter a new title for your event");
-    const calendarApi = selected.view.calendar;
-    calendarApi.unselect();
+    setNewEventTitle(""); // Reset the title for the new event
+    setNewEventDialogOpen(true);
+  };
 
-    if (title) {
+  const closeNewEventDialog = () => {
+    setNewEventDialogOpen(false);
+  };
+
+  const handleCreateNewEvent = () => {
+    if (newEventTitle.trim()) {
       const newEvent = {
-        title,
-        date: selected.startStr,
+        title: newEventTitle.trim(),
+        date: selectedEvent.startStr,
       };
-
-      calendarApi.addEvent(newEvent);
 
       axios
         .post(`${databaseURL}/calendar/`, newEvent)
         .then((response) => {
           console.log("Event saved to the database:", response.data);
           setCurrentEvents([...currentEvents, response.data]);
+          closeNewEventDialog();
         })
         .catch((error) => {
           console.error("Error saving event to the database:", error);
@@ -64,20 +79,35 @@ const Calendar = () => {
     }
   };
 
-  const handleEventClick = (selected) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the event '${selected.event.title}'`
-      )
-    ) {
+  const openUpdateDialog = (selected) => {
+    setSelectedEvent(selected);
+    setUpdatedTitle(selected.event.title);
+    setUpdateDialogOpen(true);
+  };
+
+  const closeUpdateDialog = () => {
+    setUpdateDialogOpen(false);
+    setSelectedEvent(null);
+    setUpdatedTitle("");
+  };
+
+  const handleUpdateEvent = () => {
+    if (updatedTitle.trim()) {
+      const updatedEvent = {
+        id: selectedEvent.event.id,
+        title: updatedTitle.trim(),
+        date: selectedEvent.event.startStr,
+      };
+
       axios
-        .delete(`${databaseURL}/events/${selected.event.id}/`)
+        .put(`${databaseURL}/calendar/${selectedEvent.event.id}/`, updatedEvent)
         .then(() => {
-          console.log("Event deleted from the database");
-          fetchEvents(); // Refetch events after deletion
+          console.log("Event updated in the database");
+          fetchEvents(); // Refetch events after updating
+          closeUpdateDialog();
         })
         .catch((error) => {
-          console.error("Error deleting event from the database:", error);
+          console.error("Error updating event in the database:", error);
         });
     }
   };
@@ -103,6 +133,7 @@ const Calendar = () => {
                   margin: "10px 0",
                   borderRadius: "2px",
                 }}
+                onClick={() => openUpdateDialog({ event })}
               >
                 <ListItemText
                   primary={event.title}
@@ -141,11 +172,56 @@ const Calendar = () => {
             selectMirror={true}
             dayMaxEvents={true}
             select={handleDateClick}
-            eventClick={handleEventClick}
+            eventClick={(selected) => openUpdateDialog(selected)}
             events={currentEvents}
           />
         </Box>
       </Box>
+
+      <Dialog open={updateDialogOpen} onClose={closeUpdateDialog}>
+      <DialogTitle sx={{  fontSize: '1.5rem', fontWeight: 'bold' }}>
+        Edit Event
+      </DialogTitle>
+        <DialogContent>
+          <TextField
+            variant="outlined"
+            fullWidth
+            value={updatedTitle}
+            onChange={(e) => setUpdatedTitle(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeUpdateDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleUpdateEvent} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={newEventDialogOpen} onClose={closeNewEventDialog}>
+      <DialogTitle sx={{  fontSize: '1.5rem', fontWeight: 'bold' }}>
+        Create new event
+      </DialogTitle>
+        <DialogContent>
+          <TextField
+            variant="outlined"
+            fullWidth
+            label="Event Title"
+            value={newEventTitle}
+            onChange={(e) => setNewEventTitle(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeNewEventDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleCreateNewEvent} color="primary">
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

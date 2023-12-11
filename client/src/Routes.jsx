@@ -35,7 +35,9 @@ import Statistics from "./scenes/Database/Calculations/Statistics/Statistics";
 import LoadingPage from "./components/LoadingPage";
 import BackupRestore from "./scenes/backupRestore";
 import AuditLogs from "./scenes/auditLogs";
+import UserAudit from "./scenes/auditLogs/userAudit";
 import FormUser from "./scenes/form/FormUser";
+import SummaryReport from "./scenes/Database/Calculations/Statistics/SummaryReport";
 
 
 
@@ -125,6 +127,11 @@ const admin_route = [
         path: '/auditLogs',
         element: <AuditLogs />
       },
+      {
+        path: '/report',
+        element: <SummaryReport />
+      },
+    
     
       
 ]
@@ -165,6 +172,10 @@ const user_route = [
       {
         path: '/profile',
         element: <UserProfile/>
+      },
+      {
+        path: '/auditLogs',
+        element: <UserAudit />
       },
     
 ]

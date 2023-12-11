@@ -48,6 +48,8 @@ const Statistics = () => {
   const [wfl_overweight, set_WFL_overweight] = useState(0);
   const [wfl_obese, set_WFL_obese] = useState(0);
 
+
+
  
 
   
@@ -242,6 +244,53 @@ const Statistics = () => {
       ); 
   }, [data, dispatch]);
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const LineData = [
     {

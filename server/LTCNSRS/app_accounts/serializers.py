@@ -1,6 +1,8 @@
 from djoser.serializers import UserCreateSerializer
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import serializers
+
 
 
 User = get_user_model()
@@ -11,7 +13,13 @@ class UserCreateSerializer(UserCreateSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'password', 
                   'barangay', 'phone_number', 'job_description',
                     'is_approved','is_admin', 'is_disabled')
-        
+
+
+class UserEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ['password', 'last_login', 'is_superuser', 'job_description', 'is_active', 'is_staff', 'is_admin', 'is_approved',
+                   'is_disabled', 'groups', 'user_permissions', 'id', 'email']
 
 # class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 #     def validate(self, attrs):

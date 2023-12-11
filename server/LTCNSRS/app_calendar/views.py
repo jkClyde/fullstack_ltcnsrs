@@ -1,5 +1,5 @@
-from django.shortcuts import render
 
+from rest_framework.generics import RetrieveUpdateAPIView
 
 from rest_framework.generics import DestroyAPIView
 from rest_framework import status
@@ -44,7 +44,20 @@ class EventDeleteView(DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class EventUpdateView(RetrieveUpdateAPIView):
+    permission_classes = [permissions.AllowAny]  # Excludes authentication
+    queryset = CalendarEvent.objects.all()  # Queryset to fetch the event to update
+    serializer_class = CalendarSerializer  # Serializer for event updating
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
