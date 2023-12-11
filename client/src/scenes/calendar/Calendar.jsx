@@ -52,6 +52,7 @@ const Calendar = () => {
 
   const handleDateClick = (selected) => {
     setNewEventTitle(""); // Reset the title for the new event
+    setSelectedEvent(selected);
     setNewEventDialogOpen(true);
   };
 
@@ -60,12 +61,12 @@ const Calendar = () => {
   };
 
   const handleCreateNewEvent = () => {
-    if (newEventTitle.trim()) {
+    if (selectedEvent && newEventTitle.trim()) {
       const newEvent = {
         title: newEventTitle.trim(),
         date: selectedEvent.startStr,
       };
-
+  
       axios
         .post(`${databaseURL}/calendar/`, newEvent)
         .then((response) => {
