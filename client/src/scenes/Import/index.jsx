@@ -102,7 +102,13 @@ const ExcelToJSON = ({ population }) => {
               );
             } else if (sourceKey === "P/T" || sourceKey === "__EMPTY_12") {
               transformedItem[keyMapping[sourceKey]] = mapPT(item[sourceKey]);
-            } else {
+            }else if (sourceKey === "NAME OF CHILD" || sourceKey === "__EMPTY_1"){
+              // Split fullName into firstName and lastName
+              const [firstname, surname] = item[sourceKey].split(',').map(namePart => namePart.trim());
+              transformedItem["firstname"] = firstname;
+              transformedItem["surname"] = surname || ''; // Handle case where there's no last name
+            } 
+            else {
               transformedItem[keyMapping[sourceKey]] = item[sourceKey];
             }
           }
