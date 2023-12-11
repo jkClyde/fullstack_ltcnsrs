@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,10 +8,16 @@ import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
 
 
-function ReportTable({summaryCount}) {
+function ReportTable({summaryCount, chosenBarangay}) {
+ const [refresh, setRefresh] = useState(false);
+ useEffect(() => {
+    console.log('Chosen Barangay changed:', chosenBarangay);
+    setRefresh((prevRefresh) => !prevRefresh);
+  }, [chosenBarangay]);
+
   return (
 
-<Table size="small" style={{ margin: '0 auto', maxWidth: '98%' }}>    
+<Table size="small" style={{ margin: '0 auto', maxWidth: '98%'}}>    
     <TableHead>
         <TableRow style={{ background: '#f2f2f2' }}>
         <TableCell style={{ border: '1px solid #000', fontWeight: 'bold', verticalAlign: 'bottom' }}></TableCell>

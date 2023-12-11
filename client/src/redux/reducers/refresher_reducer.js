@@ -1,8 +1,9 @@
-import { SET_REFRESHER } from "../actions";
+import { SET_REFRESHER, SET_SELECTED_BARANGAY } from "../actions";
 
 const initialRefresherState = {
     success : 0,
-    closed : false
+    closed : false,
+    selectedBarangay: 'All Barangays',
 }
 
 const refresherReducer = (state = initialRefresherState, action) => {
@@ -12,6 +13,11 @@ const refresherReducer = (state = initialRefresherState, action) => {
           ...state,
           success: action.payload.success || state.success,
           closed : action.payload.closed || state.closed,
+        };
+        case 'SET_SELECTED_BARANGAY':
+        return {
+          ...state,
+          selectedBarangay: action.payload,
         };
        
       default:
