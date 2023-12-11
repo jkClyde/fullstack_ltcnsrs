@@ -1,5 +1,5 @@
  const keyMapping = {
-    "NAME OF CHILD": "fullName",
+    "NAME OF CHILD": "fullname",
     "SEX": "gender",
     "DOB": "birthdate",
     "DOW": "dow",
