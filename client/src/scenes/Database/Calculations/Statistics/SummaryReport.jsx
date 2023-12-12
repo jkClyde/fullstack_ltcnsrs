@@ -34,7 +34,7 @@ const SummaryReport = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
+        setSummaryCount(generateInitialSummaryCount);
        let mergedData = []
        let filteredData = []
         const primaryChildResponse = await axios.get(`${databaseURL}/primarychild/`);

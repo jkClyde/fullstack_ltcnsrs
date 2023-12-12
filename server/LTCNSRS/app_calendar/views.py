@@ -21,6 +21,7 @@ class CalendarView(APIView):
         output = [{"id": output.id,
                    "title": output.title,
                    "date": output.date.isoformat(),
+                    "isFinished": output.isFinished,
                   } 
                   for output in CalendarEvent.objects.all()]
         return Response(output) 

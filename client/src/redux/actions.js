@@ -3,6 +3,7 @@ export const SET_STATS = 'SET_STATS';
 export const SET_BARANGAY_DATA = 'SET_BARANGAY_DATA';
 export const SET_REFRESHER = 'SET_REFRESHER'
 export const SET_SELECTED_BARANGAY = "SET_SELECTED_BARANGAY"
+export const SET_MARKED = "SET_MARKED";
 
 export const setStats = (stats) => {
   return{
@@ -27,6 +28,13 @@ export const setBarangayData = (data) => {
 export const setRefresher = (data) => {
   return{
     type: SET_REFRESHER,
+    payload: data,
+  }
+}
+
+export const setMark = (data) => {
+  return{
+    type: SET_MARKED,
     payload: data,
   }
 }
