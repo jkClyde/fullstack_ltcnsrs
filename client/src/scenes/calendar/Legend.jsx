@@ -36,7 +36,7 @@ const Legend = () => {
           borderRadius="4px"
           mr="5px"
         />
-        <Typography>Not Finished</Typography>
+        <Typography>Missed</Typography>
       </Box>
     </Box>
   );
