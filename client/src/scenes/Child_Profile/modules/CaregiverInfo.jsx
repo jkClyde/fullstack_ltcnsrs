@@ -44,7 +44,11 @@ const CaregiverInfo = ({
           "fatherMiddleName",
           editedChild.fatherMiddleName
         )}
-        {renderTextField("Father's Age", "fatherAge", editedChild.fatherAge)}
+        {renderTextField(
+          "Father's Age at Child's Birth",
+          "fatherAge",
+          editedChild.fatherAge
+        )}
         {isEditing ? (
           <Box mt="10px">
             <FormControl fullWidth variant="outlined">
@@ -75,7 +79,7 @@ const CaregiverInfo = ({
               borderRadius="5px"
               border="1px solid grey"
             >
-              <Typography variant="h6">Father's Ethnicity:</Typography>
+              <Typography variant="h6">Father's Ethnicity</Typography>
               <Typography variant="body1" style={{ fontWeight: "bold" }}>
                 {editedChild.fatherEthnicity}
               </Typography>
@@ -118,7 +122,11 @@ const CaregiverInfo = ({
           "motherMiddleName",
           editedChild.motherMiddleName
         )}
-        {renderTextField("Mother's Age", "motherAge", editedChild.motherAge)}
+        {renderTextField(
+          "Mother's Age at Child's Birth",
+          "motherAge",
+          editedChild.motherAge
+        )}
         {isEditing ? (
           <Box mt="10px">
             <FormControl fullWidth variant="outlined">
@@ -149,7 +157,7 @@ const CaregiverInfo = ({
               borderRadius="5px"
               border="1px solid grey"
             >
-              <Typography variant="h6">Mother's Ethnicity:</Typography>
+              <Typography variant="h6">Mother's Ethnicity</Typography>
               <Typography variant="body1" style={{ fontWeight: "bold" }}>
                 {editedChild.motherEthnicity}
               </Typography>
@@ -233,12 +241,17 @@ const CaregiverInfo = ({
               borderRadius="5px"
               border="1px solid grey"
             >
-              <Typography variant="h6">Caregiver's Ethnicity:</Typography>
+              <Typography variant="h6">Caregiver's Ethnicity</Typography>
               <Typography variant="body1" style={{ fontWeight: "bold" }}>
                 {editedChild.caregiverEthnicity}
               </Typography>
             </Box>
           </Box>
+        )}
+        {renderTextField(
+          "Caregiver's Relationship to Child",
+          "caregiverRelationship",
+          editedChild.caregiverRelationship
         )}
         {renderTextField(
           "Caregiver's Occupation",
