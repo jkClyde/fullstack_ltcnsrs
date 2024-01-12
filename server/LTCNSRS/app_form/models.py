@@ -89,6 +89,7 @@ ethnicity_choices = (
     ('TAGALOG', 'Tagalog'),
     ('TAUSUG', 'Tausug'),
     ('WARAY', 'Waray'),
+    ('NOT SPECIFIED', 'Not specified'),
 )
 
 

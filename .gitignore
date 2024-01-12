@@ -1,2 +1,7 @@
 server/LTCNSRS/db.sqlite3
 server/LTCNSRS/backup.sql
+__pycache__/
+*/__pycache__/
+migrations/
+*/migrations/
+
