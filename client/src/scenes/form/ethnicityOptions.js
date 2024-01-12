@@ -32,7 +32,6 @@ const ethnicityOptions = [
   "Tagalog",
   "Tausug",
   "Waray",
-  "Not specified",
 ];
 const uppercaseEthnicityOptions = ethnicityOptions.map((option) =>
   option.toUpperCase()

@@ -89,7 +89,7 @@ ethnicity_choices = (
     ('TAGALOG', 'Tagalog'),
     ('TAUSUG', 'Tausug'),
     ('WARAY', 'Waray'),
-    ('NOT SPECIFIED', 'Not specified'),
+
 )
 
 
@@ -125,7 +125,7 @@ class PrimaryChild(models.Model):
     barangay = models.CharField(
         max_length=200, choices=barangay_choices, default='Not specified')
     birthWeight = models.FloatField(default=0)
-    birthOrder = models.CharField(max_length=255, blank=True)
+    birthOrder = models.CharField(max_length=255, null=True, blank=True)
 
     currentCaregiver = models.CharField(max_length=255, default='Not specified')
     fatherSurname = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
@@ -134,7 +134,7 @@ class PrimaryChild(models.Model):
     fatherSuffix = models.CharField(max_length=10, blank=True, null=True)
     fatherAge = models.CharField(max_length=255,  null=True, blank=True)
     fatherEthnicity = models.CharField(
-        max_length=100, choices=ethnicity_choices, default='Not specified', null=True, blank=True)
+        max_length=100, choices=ethnicity_choices, null=True, blank=True)
     fatherOccupation = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     fatherReligion = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     fatherContact = models.CharField(max_length=255,  null=True, blank=True)
@@ -144,7 +144,7 @@ class PrimaryChild(models.Model):
     motherMiddleName = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     motherAge = models.CharField(max_length=255, null=True, blank=True)
     motherEthnicity = models.CharField(
-        max_length=100, choices=ethnicity_choices, default='Not specified', null=True, blank=True)
+        max_length=100, choices=ethnicity_choices, null=True, blank=True)
     motherOccupation = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     motherReligion = models.CharField(max_length=255, default='Unknown', null=True, blank=True)
     motherContact = models.CharField(max_length=255, null=True, blank=True)
